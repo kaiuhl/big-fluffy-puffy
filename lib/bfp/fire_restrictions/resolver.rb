@@ -111,8 +111,8 @@ module BFP
       def latest_checked_at(land_unit)
         SourceFetch
           .join(:restriction_sources, id: :restriction_source_id)
-          .where(restriction_sources__land_unit_id: land_unit.id)
-          .max(:fetched_at)
+          .where(Sequel[:restriction_sources][:land_unit_id] => land_unit.id)
+          .max(Sequel[:source_fetches][:fetched_at])
       end
 
       def candidate_sort_key(candidate)
