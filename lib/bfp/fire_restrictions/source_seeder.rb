@@ -50,7 +50,7 @@ module BFP
           market_bucket: config.fetch("market_bucket", "core_pnw"),
           official_url: config["official_url"],
           boundary_source_url: config["boundary_source_url"],
-          geometry_json: config["geometry_json"],
+          geometry_json: Jsonb.wrap(config["geometry_json"]),
           active: config.fetch("active", true),
           updated_at: now
         )
@@ -72,7 +72,7 @@ module BFP
           parser_key: config.fetch("parser_key", "usfs_html"),
           poll_interval_minutes: config.fetch("poll_interval_minutes", 720),
           active: config.fetch("active", land_unit.active),
-          metadata_json: config["metadata_json"] || {},
+          metadata_json: Jsonb.wrap(config["metadata_json"] || {}),
           updated_at: now
         )
         source.save

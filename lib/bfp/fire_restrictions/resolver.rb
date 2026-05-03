@@ -54,7 +54,7 @@ module BFP
           confidence: 0.0,
           review_status: "needs_review",
           summary: "No accepted fire restriction observation is available yet.",
-          evidence_quotes: [],
+          evidence_quotes: Jsonb.wrap([]),
           last_checked_at: latest_checked_at(land_unit),
           updated_at: Time.now
         )
@@ -70,7 +70,7 @@ module BFP
           confidence: 0.0,
           review_status: "needs_review",
           summary: "Accepted sources conflict; human review is required before publishing a status.",
-          evidence_quotes: conflict_evidence(candidates),
+          evidence_quotes: Jsonb.wrap(conflict_evidence(candidates)),
           last_checked_at: latest_checked_at(land_unit),
           updated_at: Time.now
         )
@@ -89,9 +89,9 @@ module BFP
           effective_end: observation.effective_end,
           order_number: observation.order_number,
           affected_area: observation.affected_area,
-          geometry_json: observation.geometry_json,
+          geometry_json: Jsonb.wrap(observation.geometry_json),
           summary: observation.summary,
-          evidence_quotes: observation.evidence_quotes || [],
+          evidence_quotes: Jsonb.wrap(observation.evidence_quotes || []),
           confidence: observation.confidence,
           review_status: observation.review_status,
           source_url: observation.source_url,

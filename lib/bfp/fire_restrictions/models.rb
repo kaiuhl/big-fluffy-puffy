@@ -1,6 +1,18 @@
+require "sequel/extensions/pg_json"
+
 module BFP
   module FireRestrictions
+    BFP.db.extension :pg_json
     Sequel::Model.db = BFP.db
+
+    module Jsonb
+      def self.wrap(value)
+        return if value.nil?
+        return value if value.is_a?(Sequel::Postgres::JSONBObject)
+
+        Sequel.pg_jsonb(value)
+      end
+    end
 
     class LandUnit < Sequel::Model(:land_units)
       one_to_many :restriction_sources

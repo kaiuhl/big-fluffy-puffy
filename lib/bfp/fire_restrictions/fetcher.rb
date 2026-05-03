@@ -88,7 +88,7 @@ module BFP
           content_hash: content_hash,
           content_changed: !!content_changed,
           duration_ms: duration_ms,
-          metadata_json: {headers: safe_headers(response)}
+          metadata_json: Jsonb.wrap(headers: safe_headers(response))
         )
 
         update_source_checked_at(source, fetched_at, content_changed)
@@ -103,7 +103,7 @@ module BFP
           error_class: error.class.name,
           error_message: error.message,
           duration_ms: duration_ms,
-          metadata_json: {}
+          metadata_json: Jsonb.wrap({})
         )
         update_source_checked_at(source, fetched_at, false)
         fetch
@@ -118,7 +118,7 @@ module BFP
             content_hash: content_hash,
             content_type: response["content-type"],
             body: Sequel.blob(body),
-            metadata_json: {}
+            metadata_json: Jsonb.wrap({})
           )
       end
 

@@ -82,7 +82,7 @@ RSpec.describe "fire restriction database integration", :db do
       content_hash: Digest::SHA256.hexdigest(body),
       content_type: "text/html; charset=utf-8",
       body: Sequel.blob(body),
-      metadata_json: {}
+      metadata_json: BFP::FireRestrictions::Jsonb.wrap({})
     )
 
     BFP::FireRestrictions::SourceFetch.create(
@@ -94,7 +94,7 @@ RSpec.describe "fire restriction database integration", :db do
       content_type: "text/html; charset=utf-8",
       content_hash: document.content_hash,
       content_changed: true,
-      metadata_json: {}
+      metadata_json: BFP::FireRestrictions::Jsonb.wrap({})
     )
   end
 

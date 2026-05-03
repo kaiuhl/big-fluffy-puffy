@@ -56,7 +56,7 @@ module BFP
           extraction_status: extraction[:extraction_status],
           extraction_error: extraction[:extraction_error],
           extracted_text: extraction[:extracted_text],
-          metadata_json: (document.metadata_json || {}).merge(extraction[:metadata_json] || {}),
+          metadata_json: Jsonb.wrap((document.metadata_json || {}).merge(extraction[:metadata_json] || {})),
           updated_at: Time.now
         )
         document.save
@@ -141,9 +141,9 @@ module BFP
           effective_end: parse_date(result["effective_end"]),
           order_number: result["order_number"],
           affected_area: result["affected_area"],
-          geometry_json: result["geometry_json"],
+          geometry_json: Jsonb.wrap(result["geometry_json"]),
           summary: result["summary"],
-          evidence_quotes: Array(result["evidence_quotes"]),
+          evidence_quotes: Jsonb.wrap(Array(result["evidence_quotes"])),
           confidence: result["confidence"].to_f,
           review_status: review_status,
           parser_provider: result["parser_provider"],
@@ -151,9 +151,9 @@ module BFP
           parser_version: "2026-05-03",
           source_url: fetch.source_document&.canonical_url || fetch.final_url || source.url,
           source_title: fetch.source_document&.title || source.name,
-          needs_review_reasons: reasons,
-          validation_errors: validation.errors,
-          raw_output: result
+          needs_review_reasons: Jsonb.wrap(reasons),
+          validation_errors: Jsonb.wrap(validation.errors),
+          raw_output: Jsonb.wrap(result)
         )
       end
 
@@ -214,7 +214,7 @@ module BFP
             canonical_url: final_url,
             extracted_text: body.to_s,
             extraction_status: "ok",
-            metadata_json: {}
+            metadata_json: Jsonb.wrap({})
           }
         end
       end
