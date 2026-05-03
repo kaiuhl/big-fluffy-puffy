@@ -1,10 +1,59 @@
 require_relative "../config/boot"
+require "time"
 
 class RodaApp < Roda
   NAV_LINKS = [
     {href: "/", label: "Home"},
     {href: "/fire-restrictions", label: "Fire Restrictions"}
   ].freeze
+
+  STATE_LABELS = {
+    "or" => "OR",
+    "wa" => "WA",
+    "ca" => "CA",
+    "other" => "Other"
+  }.freeze
+  STATE_NAMES = {
+    "or" => "Oregon",
+    "wa" => "Washington",
+    "ca" => "California",
+    "other" => "Other"
+  }.freeze
+  STATE_ORDER = %w[or wa ca other].freeze
+  STATE_BY_MARKET_BUCKET = {
+    "oregon" => "or",
+    "washington" => "wa",
+    "northern_california" => "ca",
+    "extended_tahoe" => "ca"
+  }.freeze
+  STATE_BY_LAND_UNIT_SLUG = {
+    "colville" => "wa",
+    "deschutes" => "or",
+    "fremont-winema" => "or",
+    "gifford-pinchot" => "wa",
+    "malheur" => "or",
+    "mt-baker-snoqualmie" => "wa",
+    "mt-hood" => "or",
+    "ochoco-crooked-river" => "or",
+    "okanogan-wenatchee" => "wa",
+    "olympic" => "wa",
+    "rogue-river-siskiyou" => "or",
+    "siuslaw" => "or",
+    "umatilla" => "or",
+    "umpqua" => "or",
+    "wallowa-whitman" => "or",
+    "willamette" => "or",
+    "klamath" => "ca",
+    "six-rivers" => "ca",
+    "shasta-trinity" => "ca",
+    "mendocino" => "ca",
+    "modoc" => "ca",
+    "lassen" => "ca",
+    "plumas" => "ca",
+    "tahoe" => "ca",
+    "eldorado" => "ca",
+    "lake-tahoe-basin" => "ca"
+  }.freeze
 
   opts[:root] = BFP.root
 
@@ -256,18 +305,17 @@ class RodaApp < Roda
   end
 
   def fire_restrictions_table(records)
-    rows = records.map { |forest| fire_restrictions_row(forest) }.join
+    rows = region_state_sorted_records(records).map { |forest| fire_restrictions_row(forest) }.join
 
     <<~HTML
       <table class="restrictions-table">
         <thead>
           <tr>
             <th scope="col">Forest</th>
-            <th scope="col">Status</th>
             <th scope="col">Campfires</th>
             <th scope="col">Source</th>
-            <th scope="col">Updated</th>
-            <th scope="col">Evidence</th>
+            <th scope="col">Checked</th>
+            <th scope="col">Note</th>
           </tr>
         </thead>
         <tbody>
@@ -284,15 +332,34 @@ class RodaApp < Roda
       <tr>
         <th scope="row">
           <span>#{h(forest[:name])}</span>
-          <small>#{h(forest[:region_code])} / #{h(forest[:market_bucket].to_s.tr("_", " "))}</small>
+          <small>#{h(region_state_label(forest))}</small>
         </th>
-        <td><strong>#{h(status_label(forest))}</strong></td>
         <td>#{h(labelize(forest[:campfire_policy]))}</td>
         <td>#{source_link(source)}</td>
-        <td>#{h(timestamp_for(forest, source))}</td>
-        <td>#{h(evidence_summary(forest))}</td>
+        <td>#{checked_at_cell(forest, source)}</td>
+        <td>#{h(restriction_note(forest))}</td>
       </tr>
     HTML
+  end
+
+  def region_state_sorted_records(records)
+    records.sort_by do |forest|
+      state = state_code(forest)
+      [STATE_ORDER.index(state) || STATE_ORDER.length, forest[:name].to_s]
+    end
+  end
+
+  def region_state_label(forest)
+    region = forest[:region_code].to_s
+    state = STATE_NAMES.fetch(state_code(forest))
+
+    [region, state].reject(&:empty?).join(" / ")
+  end
+
+  def state_code(forest)
+    STATE_BY_LAND_UNIT_SLUG.fetch(forest[:slug].to_s) do
+      STATE_BY_MARKET_BUCKET.fetch(forest[:market_bucket].to_s, "other")
+    end
   end
 
   def empty_fire_restrictions_message
@@ -333,24 +400,50 @@ class RodaApp < Roda
     %(<a href="#{h(source[:url])}" rel="noreferrer">#{h(source[:name])}</a>)
   end
 
-  def timestamp_for(forest, source)
-    forest[:last_checked_at] || source&.fetch(:last_checked_at, nil) || "Never"
+  def checked_at_cell(forest, source)
+    checked_at = checked_at_for(forest, source)
+    return "not checked" unless checked_at
+
+    %(<time datetime="#{h(checked_at)}">#{h(relative_time_label(checked_at))}</time>)
   end
 
-  def evidence_summary(forest)
-    forest[:summary] || Array(forest[:evidence_quotes]).first || review_label(forest)
+  def checked_at_for(forest, source)
+    forest[:last_checked_at] || source&.fetch(:last_checked_at, nil)
   end
 
-  def status_label(forest)
-    return "Needs Review" unless published_status?(forest)
+  def relative_time_label(value)
+    timestamp = Time.iso8601(value.to_s)
+    days = ((Time.now - timestamp) / 86_400).floor
+    days = 0 if days.negative?
 
-    labelize(forest[:status])
+    return "today" if days.zero?
+    return "yesterday" if days == 1
+    return "#{days} days ago" if days < 7
+
+    weeks = (days / 7.0).round
+    return "1 week ago" if weeks == 1
+    return "#{weeks} weeks ago" if days < 60
+
+    months = (days / 30.0).round
+    return "1 month ago" if months == 1
+    return "#{months} months ago" if days < 365
+
+    years = (days / 365.0).round
+    return "1 year ago" if years == 1
+
+    "#{years} years ago"
+  rescue ArgumentError
+    "checked"
   end
 
-  def review_label(forest)
-    return "Published" if published_status?(forest)
+  def restriction_note(forest)
+    summary = forest[:summary].to_s.strip
+    return summary unless summary.empty?
 
-    labelize(forest[:review_status])
+    evidence = Array(forest[:evidence_quotes]).find { |quote| !quote.to_s.strip.empty? }
+    return evidence if evidence
+
+    published_status?(forest) ? "Published source reviewed." : "Needs source review."
   end
 
   def labelize(value)

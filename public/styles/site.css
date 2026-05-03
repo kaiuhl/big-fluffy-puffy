@@ -317,7 +317,7 @@ h1 {
 
 .restrictions-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 760px;
   border-collapse: collapse;
   font-size: 0.92rem;
 }
@@ -356,18 +356,24 @@ h1 {
   text-transform: uppercase;
 }
 
-.restrictions-table td:nth-child(4) {
+.restrictions-table td:nth-child(3) {
   min-width: 180px;
 }
 
-.restrictions-table td:nth-child(4) a {
+.restrictions-table td:nth-child(3) a {
   display: inline-block;
   margin: 0 8px 6px 0;
   color: var(--signal);
   font-weight: 800;
 }
 
-.restrictions-table td:nth-child(6) {
+.restrictions-table td:nth-child(4) {
+  color: var(--mid-gray);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.restrictions-table td:nth-child(5) {
   max-width: 420px;
   color: var(--charcoal);
 }

@@ -45,9 +45,9 @@ RSpec.describe RodaApp do
   it "renders grouped fire restriction sections" do
     stub_fire_restriction_records(
       [
-        restriction_record(name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
-        restriction_record(name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
-        restriction_record(name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
+        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
+        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
+        restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
       ]
     )
 
@@ -60,11 +60,35 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Restriction Forest")
     expect(last_response.body).to include("Clear Forest")
     expect(last_response.body).to include("Review Forest")
-    expect(last_response.body).to include("Stage 1")
+    expect(last_response.body).to include("Developed Sites Only")
     expect(last_response.body).to include("Needs Review")
+    expect(last_response.body).not_to include("<th scope=\"col\">Status</th>")
   end
 
-  it "renders source links and updated timestamps on the fire restrictions page" do
+  it "renders region and state under the forest name and sorts by state then forest" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(slug: "colville", name: "Colville National Forest", region_code: "R06"),
+        restriction_record(slug: "modoc", name: "Modoc National Forest", region_code: "R05"),
+        restriction_record(slug: "deschutes", name: "Deschutes National Forest", region_code: "R06")
+      ]
+    )
+
+    get "/fire-restrictions"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).not_to include("<th scope=\"col\">State</th>")
+    expect(last_response.body).to include("<small>R06 / Oregon</small>")
+    expect(last_response.body).to include("<small>R06 / Washington</small>")
+    expect(last_response.body).to include("<small>R05 / California</small>")
+    expect(last_response.body).not_to include("restrictions-state-row")
+    expect(last_response.body.index("Deschutes National Forest")).to be < last_response.body.index("Colville National Forest")
+    expect(last_response.body.index("Colville National Forest")).to be < last_response.body.index("Modoc National Forest")
+  end
+
+  it "renders source links and relative checked labels on the fire restrictions page" do
+    allow(Time).to receive(:now).and_return(Time.utc(2026, 5, 3, 6, 0, 0))
+
     stub_fire_restriction_records(
       [
         restriction_record(
@@ -73,6 +97,11 @@ RSpec.describe RodaApp do
           source_url: "https://example.test/current-order",
           source_title: "Current fire order",
           last_checked_at: "2026-05-03T05:25:08Z"
+        ),
+        restriction_record(
+          name: "Week Old Forest",
+          status: "none",
+          last_checked_at: "2026-04-26T06:00:00Z"
         )
       ]
     )
@@ -82,7 +111,8 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("https://example.test/current-order")
     expect(last_response.body).to include("Current fire order")
-    expect(last_response.body).to include("2026-05-03T05:25:08Z")
+    expect(last_response.body).to include(">today</time>")
+    expect(last_response.body).to include(">1 week ago</time>")
   end
 
   it "renders a celebratory message when no forests have active published restrictions" do
