@@ -102,10 +102,15 @@ module BFPConsoleHelpers
     BFP::FireRestrictions::ReviewPresenter.new.queue(limit: limit, status: status, land_unit: land_unit)
   end
 
-  def review_candidates(limit = nil, status: nil, land_unit: nil)
+  def review_candidates(limit = nil, status: nil, land_unit: nil, include_published: false)
     ensure_fire_loaded!
 
-    BFP::FireRestrictions::ReviewPresenter.new.candidates(limit: limit, status: status, land_unit: land_unit)
+    BFP::FireRestrictions::ReviewPresenter.new.candidates(
+      limit: limit,
+      status: status,
+      land_unit: land_unit,
+      include_published: include_published
+    )
   end
 
   def review_forest(slug)

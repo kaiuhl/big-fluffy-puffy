@@ -13,11 +13,13 @@ module BFP
           .map { |observation| row(observation) }
       end
 
-      def candidates(limit: nil, status: nil, land_unit: nil)
+      def candidates(limit: nil, status: nil, land_unit: nil, include_published: false)
         units = LandUnit.where(active: true).order(:market_bucket, :name).all
         units = units.select { |unit| unit.slug == land_unit.to_s } if present?(land_unit)
 
         rows = units.filter_map do |unit|
+          next if !include_published && published_status?(unit)
+
           observations = candidate_observations(unit, status: status)
           next if observations.empty?
 
@@ -90,8 +92,13 @@ module BFP
         end.join("\n")
       end
 
-      def format_candidates(limit: nil, status: nil, land_unit: nil)
-        rows = candidates(limit: limit, status: status, land_unit: land_unit)
+      def format_candidates(limit: nil, status: nil, land_unit: nil, include_published: false)
+        rows = candidates(
+          limit: limit,
+          status: status,
+          land_unit: land_unit,
+          include_published: include_published
+        )
         return "No candidate observations need review." if rows.empty?
 
         rows.map do |row|
@@ -180,6 +187,11 @@ module BFP
           .where(land_unit_id: land_unit.id, review_status: "needs_review")
         dataset = dataset.where(status: status.to_s) if present?(status)
         dataset.all
+      end
+
+      def published_status?(land_unit)
+        review_status = land_unit.restriction_status&.review_status
+        review_status && review_status != "needs_review"
       end
 
       def candidate_score(observation)
