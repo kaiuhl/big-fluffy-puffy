@@ -7,6 +7,10 @@
   --off-white: #f7f6f2;
   --white: #ffffff;
   --signal: #ff4b1f;
+  --spark-line: #aaa59a;
+  --spark-guide: rgba(170, 165, 154, 0.18);
+  --spark-shadow: rgba(170, 165, 154, 0.1);
+  --spark-label: #8f897d;
   --shell-max-width: 1280px;
 }
 
@@ -541,28 +545,63 @@ h1 {
 }
 
 .restrictions-table td:nth-child(3) {
-  min-width: 220px;
+  min-width: 190px;
 }
 
-.climate-low-context,
-.climate-low-month,
-.climate-low-bands {
+.climate-low-context {
   display: block;
+  width: max-content;
+  max-width: 100%;
 }
 
-.climate-low-month {
-  color: var(--mid-gray);
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.climate-low-sparkline {
+  display: block;
+  width: 154px;
+  height: 48px;
+  max-width: 100%;
+  overflow: visible;
+  font-family: inherit;
 }
 
-.climate-low-bands {
-  margin-top: 4px;
-  color: var(--black);
+.climate-low-guide {
+  stroke: var(--spark-guide);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.climate-low-path-shadow {
+  fill: none;
+  stroke: var(--spark-shadow);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+}
+
+.climate-low-path {
+  fill: none;
+  stroke: var(--spark-line);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.climate-low-dot {
+  stroke: var(--white);
+  stroke-width: 1;
+}
+
+.climate-low-temp {
+  fill: var(--black);
+  font-size: 9px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.climate-low-elevation {
+  fill: var(--spark-label);
+  font-size: 8px;
   font-weight: 800;
-  line-height: 1.35;
+  text-anchor: middle;
 }
 
 .restrictions-table td:nth-child(4) {

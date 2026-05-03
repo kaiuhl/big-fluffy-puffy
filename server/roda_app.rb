@@ -1,4 +1,5 @@
 require_relative "../config/boot"
+require "bfp/climate/low_sparkline"
 require "bfp/fire_restrictions/status_display"
 require "time"
 
@@ -55,7 +56,6 @@ class RodaApp < Roda
     "eldorado" => "ca",
     "lake-tahoe-basin" => "ca"
   }.freeze
-
   opts[:root] = BFP.root
 
   plugin :common_logger
@@ -363,7 +363,8 @@ class RodaApp < Roda
   end
 
   def fire_restrictions_table(records)
-    rows = region_state_sorted_records(records).map { |forest| fire_restrictions_row(forest) }.join
+    climate_label = climate_low_column_label(records)
+    rows = region_state_sorted_records(records).map { |forest| fire_restrictions_row(forest, climate_label: climate_label) }.join
 
     <<~HTML
       <table class="restrictions-table">
@@ -371,7 +372,7 @@ class RodaApp < Roda
           <tr>
             <th scope="col">Forest</th>
             <th scope="col">Campfires</th>
-            <th scope="col">Typical Lows</th>
+            <th scope="col">#{h(climate_label)}</th>
             <th scope="col">Source</th>
             <th scope="col">Checked</th>
             <th scope="col">Note</th>
@@ -384,7 +385,7 @@ class RodaApp < Roda
     HTML
   end
 
-  def fire_restrictions_row(forest)
+  def fire_restrictions_row(forest, climate_label:)
     source = preferred_source(forest)
 
     <<~HTML
@@ -394,12 +395,20 @@ class RodaApp < Roda
           <small>#{h(region_state_label(forest))}</small>
         </th>
         <td data-label="Campfires">#{h(labelize(campfire_policy_for(forest)))}</td>
-        <td data-label="Typical Lows">#{climate_low_cell(forest)}</td>
+        <td data-label="#{h(climate_label)}">#{climate_low_cell(forest)}</td>
         <td data-label="Source">#{source_link(source)}</td>
         <td data-label="Checked">#{checked_at_cell(forest, source)}</td>
         <td data-label="Note">#{h(restriction_note(forest))}</td>
       </tr>
     HTML
+  end
+
+  def climate_low_column_label(records)
+    month_name = records
+      .filter_map { |forest| forest.dig(:climate_low_context, :month_name).to_s.strip }
+      .find { |name| !name.empty? }
+
+    month_name ? "Typical #{month_name} lows" : "Typical lows"
   end
 
   def region_state_sorted_records(records)
@@ -507,20 +516,9 @@ class RodaApp < Roda
 
     <<~HTML
       <span class="climate-low-context">
-        <span class="climate-low-month">Typical #{h(context[:month_name])} lows</span>
-        <span class="climate-low-bands">#{climate_low_band_labels(bands)}</span>
+        #{BFP::Climate::LowSparkline.render(context)}
       </span>
     HTML
-  end
-
-  def climate_low_band_labels(bands)
-    bands
-      .map { |band| "#{h(band[:label])}: #{temperature_label(band[:mean_low_f])}" }
-      .join('<span aria-hidden="true"> &middot; </span>')
-  end
-
-  def temperature_label(value)
-    "#{value.to_f.round}&deg;F"
   end
 
   def labelize(value)

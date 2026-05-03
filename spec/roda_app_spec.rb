@@ -92,8 +92,11 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Clear Forest")
     expect(last_response.body).to include("Review Forest")
     expect(last_response.body).to include("Developed Sites Only")
-    expect(last_response.body).to include("Typical May lows")
-    expect(last_response.body).to include("4,000-6,000 ft: 40&deg;F")
+    expect(last_response.body).to include("<th scope=\"col\">Typical May lows</th>")
+    expect(last_response.body).to include('class="climate-low-sparkline"')
+    expect(last_response.body).not_to include("Average May lows</text>")
+    expect(last_response.body).to include("Average May overnight lows by elevation: 3K 42 degrees Fahrenheit, 5K 40 degrees Fahrenheit, 7K 33 degrees Fahrenheit")
+    expect(last_response.body).to include('class="climate-low-dot"')
     expect(last_response.body).to include("Allowed")
     expect(last_response.body).to include("Needs Review")
     expect(last_response.body).to include('id="restrictions-map"')
@@ -103,7 +106,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('for="restrictions-search"')
     expect(last_response.body).to include('id="restrictions-filter-status"')
     expect(last_response.body).to include('data-label="Campfires"')
-    expect(last_response.body).to include('data-label="Typical Lows"')
+    expect(last_response.body).to include('data-label="Typical May lows"')
     expect(last_response.body).to include('data-label="Source"')
     expect(last_response.body).to include('data-label="Checked"')
     expect(last_response.body).to include('data-label="Note"')
@@ -258,6 +261,16 @@ RSpec.describe RodaApp do
       source_url: "https://prism.oregonstate.edu/normals/",
       bands: [
         {
+          label: "2,000-4,000 ft",
+          elevation_min_ft: 2000,
+          elevation_max_ft: 4000,
+          mean_low_f: 42.1,
+          cold_p10_low_f: 39.8,
+          warm_p90_low_f: 44.9,
+          sample_cell_count: 40,
+          area_pct_of_forest: 12.0
+        },
+        {
           label: "4,000-6,000 ft",
           elevation_min_ft: 4000,
           elevation_max_ft: 6000,
@@ -266,6 +279,16 @@ RSpec.describe RodaApp do
           warm_p90_low_f: 44.2,
           sample_cell_count: 12,
           area_pct_of_forest: 4.2
+        },
+        {
+          label: "6,000-8,000 ft",
+          elevation_min_ft: 6000,
+          elevation_max_ft: 8000,
+          mean_low_f: 33.2,
+          cold_p10_low_f: 29.8,
+          warm_p90_low_f: 36.7,
+          sample_cell_count: 16,
+          area_pct_of_forest: 5.4
         }
       ]
     }
