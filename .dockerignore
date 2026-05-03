@@ -1,0 +1,11 @@
+.bridgetown-cache/
+.bundle/
+.env
+.git/
+.github/
+coverage/
+log/
+node_modules/
+output/
+tmp/
+vendor/bundle/

@@ -7,7 +7,7 @@ ENV APP_HOME=/app \
 WORKDIR $APP_HOME
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends build-essential libpq-dev pkg-config git \
+  && apt-get install -y --no-install-recommends build-essential git libpq-dev libyaml-dev pkg-config \
   && rm -rf /var/lib/apt/lists/*
 
 COPY Gemfile Gemfile.lock* ./
