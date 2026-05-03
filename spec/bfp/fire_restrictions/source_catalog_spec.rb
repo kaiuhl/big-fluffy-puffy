@@ -90,6 +90,16 @@ RSpec.describe "fire restriction source catalog" do
     expect(arcgis_sources).to all(satisfy { |source| source.dig("metadata_json", "auto_publish") == true })
   end
 
+  it "tracks Colville's maintained current fire restrictions page" do
+    source = generated_sources(unit("colville")).find { |candidate| candidate.fetch("slug") == "colville-fire-restrictions" }
+
+    expect(source).to include(
+      "source_type" => "fs_fire_info_page",
+      "url" => "https://www.fs.usda.gov/r06/colville/fire/fire-restrictions",
+      "parser_key" => "usfs_html"
+    )
+  end
+
   def unit(slug)
     units.find { |candidate| candidate.fetch("slug") == slug }
   end

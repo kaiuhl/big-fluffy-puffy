@@ -31,6 +31,12 @@ land_units:
     market_bucket: core_pnw
     official_url: https://www.fs.usda.gov/r06/colville
     active: true
+    extra_source_paths:
+      - key: fire-restrictions
+        name: Fire Restrictions
+        source_type: fs_fire_info_page
+        path: /fire/fire-restrictions
+        parser_key: usfs_html
 
   - slug: deschutes
     name: Deschutes National Forest

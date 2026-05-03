@@ -42,6 +42,31 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(should_escalate?(result, validation, "Campfire restrictions may apply.")).to be(false)
   end
 
+  it "passes extracted text into the auto-review policy" do
+    policy = Object.new
+    parser = described_class.new(parser_client: Object.new, validator: Object.new, auto_review_policy: policy)
+    result = parser_result("none", confidence: 0.95)
+    validation = validation_result(true, errors: [])
+    captured_text = nil
+
+    policy.define_singleton_method(:review_status_for_result) do |extracted_text:, **|
+      captured_text = extracted_text
+      "auto_accepted"
+    end
+
+    status = parser.send(
+      :review_status_for,
+      source,
+      result,
+      validation,
+      [],
+      extracted_text: "No fire restrictions are in effect."
+    )
+
+    expect(status).to eq("auto_accepted")
+    expect(captured_text).to eq("No fire restrictions are in effect.")
+  end
+
   def should_escalate?(result, validation, text)
     parser.send(:should_escalate?, result, validation, text, source, land_unit)
   end
@@ -54,9 +79,10 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     }
   end
 
-  def validation_result(valid)
+  def validation_result(valid, errors: [])
     Object.new.tap do |object|
       object.define_singleton_method(:valid?) { valid }
+      object.define_singleton_method(:errors) { errors }
     end
   end
 end

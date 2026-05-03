@@ -138,7 +138,13 @@ module BFP
 
       def create_observation(fetch, source, land_unit, result, validation)
         reasons = Array(result["needs_review_reasons"]) + validation.errors
-        review_status = review_status_for(source, result, validation, reasons)
+        review_status = review_status_for(
+          source,
+          result,
+          validation,
+          reasons,
+          extracted_text: fetch.source_document&.extracted_text.to_s
+        )
 
         RestrictionObservation.create(
           land_unit_id: land_unit.id,
@@ -174,13 +180,13 @@ module BFP
         create_observation(fetch, source, land_unit, result, validation)
       end
 
-      def review_status_for(source, result, validation, reasons)
+      def review_status_for(source, result, validation, reasons, extracted_text:)
         @auto_review_policy.review_status_for_result(
           source: source,
           result: result,
           validation: validation,
           reasons: reasons,
-          extracted_text: fetch.source_document&.extracted_text.to_s
+          extracted_text: extracted_text
         )
       end
 
