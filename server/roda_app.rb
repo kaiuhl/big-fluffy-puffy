@@ -23,6 +23,8 @@ class RodaApp < Roda
 
     r.root do
       response["Content-Type"] = "text/html"
+      r.halt "" if r.head?
+
       <<~HTML
         <!doctype html>
         <html lang="en">

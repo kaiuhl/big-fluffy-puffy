@@ -35,6 +35,13 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("nonprofit building fireless camp culture")
   end
 
+  it "responds to head requests for the landing page" do
+    head "/"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to be_empty
+  end
+
   it "serves public stylesheets" do
     get "/styles/site.css"
 
