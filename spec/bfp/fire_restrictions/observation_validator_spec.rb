@@ -58,6 +58,17 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result.errors).to include("Incident context sources cannot set campfire policy.")
   end
 
+  it "does not require exact raw-text evidence matching for ArcGIS feature layers" do
+    arcgis_source = source_class.new("arcgis_feature_layer")
+    result = described_class.new.validate(
+      {"status" => "none", "campfire_policy" => "allowed", "evidence_quotes" => ["normalized feature evidence"]},
+      source: arcgis_source,
+      extracted_text: "{\"features\":[]}"
+    )
+
+    expect(result).to be_valid
+  end
+
   def validate(result, text)
     described_class.new.validate(result, source: source, extracted_text: text)
   end

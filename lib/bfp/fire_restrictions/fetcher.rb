@@ -50,8 +50,14 @@ module BFP
 
         response = http.request(request)
         case response
+        when Net::HTTPNotModified
+          response.instance_variable_set(:@bfp_final_url, uri.to_s)
+          response
         when Net::HTTPRedirection
-          request(URI.join(url, response["location"]).to_s, source, redirect_limit - 1)
+          location = response["location"].to_s
+          raise "Redirect response did not include a Location header" if location.empty?
+
+          request(URI.join(url, location).to_s, source, redirect_limit - 1)
         else
           body = response.body.to_s
           raise "Response exceeded #{@max_body_bytes} bytes" if body.bytesize > @max_body_bytes

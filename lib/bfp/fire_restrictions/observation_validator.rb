@@ -13,11 +13,13 @@ module BFP
         text = extracted_text.to_s
         evidence_quotes = Array(result["evidence_quotes"]).compact.map(&:to_s)
 
-        evidence_quotes.each do |quote|
-          next if quote.strip.empty?
+        unless source.source_type == "arcgis_feature_layer"
+          evidence_quotes.each do |quote|
+            next if quote.strip.empty?
 
-          unless includes_normalized?(text, quote)
-            errors << "Evidence quote does not match extracted text: #{quote[0, 120]}"
+            unless includes_normalized?(text, quote)
+              errors << "Evidence quote does not match extracted text: #{quote[0, 120]}"
+            end
           end
         end
 
