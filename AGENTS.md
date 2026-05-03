@@ -95,9 +95,10 @@ The catalog currently seeds:
 Cost safety matters. Defaults should stay manual and cheap:
 
 - `LLM_PARSE_ENABLED=false`
+- `LLM_ESCALATION_ENABLED=false`
 - `FIRE_AUTO_POLL_ENABLED=false`
 
-Do not start automatic polling or enable Bedrock parsing unless the user explicitly asks. Manual fetches can still persist source documents with LLM parsing off.
+Do not start automatic polling or enable Bedrock parsing unless the user explicitly asks. Do not enable Sonnet escalation unless the user explicitly asks for an escalation run. Manual fetches can still persist source documents with LLM parsing off.
 
 Manual commands:
 
@@ -114,6 +115,12 @@ To intentionally run paid parsing:
 
 ```sh
 LLM_PARSE_ENABLED=true mise exec -- bundle exec rake fire:poll_due
+```
+
+That uses the primary parser only by default. To intentionally allow Sonnet escalation for ambiguous cases:
+
+```sh
+LLM_PARSE_ENABLED=true LLM_ESCALATION_ENABLED=true mise exec -- bundle exec rake fire:poll_due
 ```
 
 After Bedrock-backed parsing, inspect captured token usage and estimated cost with:
@@ -208,7 +215,7 @@ Last known production smoke state after deploying fire ingestion:
 - `/api/fire-restrictions/forests` returned 23 forests.
 - Deschutes ArcGIS source resolved to `none / allowed`, `auto_accepted`.
 - Willamette HTML source persisted with `unknown / needs_review` while `LLM_PARSE_ENABLED=false`.
-- Production `.env` had `LLM_PARSE_ENABLED=false` and `FIRE_AUTO_POLL_ENABLED=false`.
+- Production `.env` had `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false`.
 
 ## Coding Notes
 

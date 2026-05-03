@@ -81,7 +81,7 @@ bundle exec rake 'fire:review:accept[123]'
 bundle exec rake fire:status:list
 ```
 
-Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM.
+Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
 
 Run background workers explicitly when needed:
 

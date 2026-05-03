@@ -87,6 +87,10 @@ module BFP
         ENV.fetch("LLM_PARSE_ENABLED", "false") == "true" || BFP.env == "test"
       end
 
+      def llm_escalation_enabled?
+        ENV.fetch("LLM_ESCALATION_ENABLED", "false") == "true"
+      end
+
       def primary_model_id
         ENV.fetch("BEDROCK_PRIMARY_MODEL_ID", PRIMARY_MODEL_ID)
       end
@@ -96,6 +100,7 @@ module BFP
       end
 
       def should_escalate?(result, validation, text, source, land_unit)
+        return false unless llm_escalation_enabled?
         return false if source.source_type == "arcgis_feature_layer"
         return false if parser_failure?(result)
 
