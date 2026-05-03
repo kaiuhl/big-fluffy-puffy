@@ -46,3 +46,10 @@ docker compose --profile jobs up worker clock
 ```
 
 Secrets belong in environment variables, GitHub Actions secrets, or AWS secret stores. Never commit them.
+
+## Project Notes
+
+- [Architecture](docs/architecture.md)
+- [Brand language](docs/brand-language.md)
+- [Operations](docs/operations.md)
+- [Site roadmap](docs/site-roadmap.md)
