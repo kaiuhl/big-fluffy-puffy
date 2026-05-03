@@ -371,6 +371,7 @@ class RodaApp < Roda
           <tr>
             <th scope="col">Forest</th>
             <th scope="col">Campfires</th>
+            <th scope="col">Typical Lows</th>
             <th scope="col">Source</th>
             <th scope="col">Checked</th>
             <th scope="col">Note</th>
@@ -393,6 +394,7 @@ class RodaApp < Roda
           <small>#{h(region_state_label(forest))}</small>
         </th>
         <td data-label="Campfires">#{h(labelize(campfire_policy_for(forest)))}</td>
+        <td data-label="Typical Lows">#{climate_low_cell(forest)}</td>
         <td data-label="Source">#{source_link(source)}</td>
         <td data-label="Checked">#{checked_at_cell(forest, source)}</td>
         <td data-label="Note">#{h(restriction_note(forest))}</td>
@@ -496,6 +498,29 @@ class RodaApp < Roda
     return evidence if evidence
 
     published_status?(forest) ? "Published source reviewed." : "Needs source review."
+  end
+
+  def climate_low_cell(forest)
+    context = forest[:climate_low_context]
+    bands = Array(context && context[:bands])
+    return "not available" if bands.empty?
+
+    <<~HTML
+      <span class="climate-low-context">
+        <span class="climate-low-month">Typical #{h(context[:month_name])} lows</span>
+        <span class="climate-low-bands">#{climate_low_band_labels(bands)}</span>
+      </span>
+    HTML
+  end
+
+  def climate_low_band_labels(bands)
+    bands
+      .map { |band| "#{h(band[:label])}: #{temperature_label(band[:mean_low_f])}" }
+      .join('<span aria-hidden="true"> &middot; </span>')
+  end
+
+  def temperature_label(value)
+    "#{value.to_f.round}&deg;F"
   end
 
   def labelize(value)

@@ -1,0 +1,122 @@
+{
+  "build": {
+    "boundary_path": "data/fire_restriction_boundaries.geojson",
+    "boundary_sha256": "3a320a85fb732e87b12f934609fc7aa6383c29931451e57d2c5ca9fd96c0ab31",
+    "forest_count": 23,
+    "generated_at": "2026-05-03T17:02:15.346733+00:00",
+    "numpy": "2.1.3",
+    "python": "3.12.3",
+    "rasterio": "1.4.3",
+    "row_count": 1272,
+    "script": "scripts/climate/build_normals.py"
+  },
+  "dataset": {
+    "citation": "PRISM Climate Group, Oregon State University, https://prism.oregonstate.edu, data created 2025-01-30.",
+    "metadata": {
+      "display_band_policy": {
+        "band_size_ft": 2000,
+        "hide_public_bands_below_area_pct": 0.5,
+        "hide_public_bands_below_sample_cells": 5
+      },
+      "elevation_output_units": "ft",
+      "elevation_source": "PRISM 800m DEM supporting dataset aligned to PRISM normals grid",
+      "temperature_output_units": "F",
+      "temperature_statistic": "monthly average daily minimum temperature"
+    },
+    "name": "PRISM 1991-2020 Monthly Minimum Temperature Normals",
+    "normal_period_end_year": 2020,
+    "normal_period_start_year": 1991,
+    "provider": "PRISM",
+    "slug": "prism-1991-2020-tmin-800m",
+    "source_url": "https://prism.oregonstate.edu/normals/",
+    "spatial_resolution_m": 800,
+    "variable": "tmin"
+  },
+  "sources": {
+    "downloads": {
+      "dem": {
+        "raster_path": "tmp/climate/extracted/PRISM_us_dem_800m_bil/PRISM_us_dem_800m_bil.bil",
+        "sha256": "86f09741acde75a73e6342fb0b300cd56415ae3fa8986120e67d9ac88ac3fbc7",
+        "url": "https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip",
+        "zip_path": "tmp/climate/raw/PRISM_us_dem_800m_bil.zip"
+      },
+      "tmin": {
+        "1": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202001_avg_30y/prism_tmin_us_30s_202001_avg_30y.tif",
+          "sha256": "3e5a07948b2429b3c2aa42c598e43ae3d56972a745624596de1cb4b96c71e69f",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202001_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202001_avg_30y.zip"
+        },
+        "10": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202010_avg_30y/prism_tmin_us_30s_202010_avg_30y.tif",
+          "sha256": "0eaa7c436484426343031f2b8bd4952c44b21af5937764c435e328c624087db7",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202010_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202010_avg_30y.zip"
+        },
+        "11": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202011_avg_30y/prism_tmin_us_30s_202011_avg_30y.tif",
+          "sha256": "04c4cf1ce7809cc13bb8d2df951ab41e49ce8159bfbf4468ee4be084542e7af0",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202011_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202011_avg_30y.zip"
+        },
+        "12": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202012_avg_30y/prism_tmin_us_30s_202012_avg_30y.tif",
+          "sha256": "f33c488823446f519f5208a979af8053098ef49881c635636fa9ac687c133720",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202012_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202012_avg_30y.zip"
+        },
+        "2": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202002_avg_30y/prism_tmin_us_30s_202002_avg_30y.tif",
+          "sha256": "30bde159e216b2d627dc0f5d6e8dc06e1d0388f0814737ae3ea97c435400b546",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202002_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202002_avg_30y.zip"
+        },
+        "3": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202003_avg_30y/prism_tmin_us_30s_202003_avg_30y.tif",
+          "sha256": "2c01675808c1b2f5d30bba1d7dd4e44e819c8949366c0a97a1ae25cd6aef54ae",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202003_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202003_avg_30y.zip"
+        },
+        "4": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202004_avg_30y/prism_tmin_us_30s_202004_avg_30y.tif",
+          "sha256": "327d9395746a4a96589e972767c6e0ace643c6fe1159458557e92118302ba32d",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202004_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202004_avg_30y.zip"
+        },
+        "5": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202005_avg_30y/prism_tmin_us_30s_202005_avg_30y.tif",
+          "sha256": "1a312e4c4070e5ea38352045c4a90f6ec61dedfbf1e44db5f8793849fdea8cbe",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202005_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202005_avg_30y.zip"
+        },
+        "6": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202006_avg_30y/prism_tmin_us_30s_202006_avg_30y.tif",
+          "sha256": "6e840648de1ca97ae14db6d70f0880a7bef5dca5336c241580c24457ea6bf3fe",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202006_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202006_avg_30y.zip"
+        },
+        "7": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202007_avg_30y/prism_tmin_us_30s_202007_avg_30y.tif",
+          "sha256": "282f409610515029b816f407864acf7d24c7118f0c607a52bc05e4b77943e42b",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202007_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202007_avg_30y.zip"
+        },
+        "8": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202008_avg_30y/prism_tmin_us_30s_202008_avg_30y.tif",
+          "sha256": "91544faee25f5be5f345992dd280c93fdb8a5584c97e8f1fc53d3a57349c4382",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202008_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202008_avg_30y.zip"
+        },
+        "9": {
+          "raster_path": "tmp/climate/extracted/prism_tmin_us_30s_202009_avg_30y/prism_tmin_us_30s_202009_avg_30y.tif",
+          "sha256": "478d8281f21782d574c6fb2a26b271979751b5ba2647b7c92b1f7b7d09b038dd",
+          "url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly/prism_tmin_us_30s_202009_avg_30y.zip",
+          "zip_path": "tmp/climate/raw/prism_tmin_us_30s_202009_avg_30y.zip"
+        }
+      }
+    },
+    "prism_dem_url": "https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip",
+    "prism_normals_page": "https://prism.oregonstate.edu/normals/",
+    "prism_tmin_base_url": "https://data.prism.oregonstate.edu/normals/us/800m/tmin/monthly"
+  }
+}

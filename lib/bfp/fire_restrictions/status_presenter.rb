@@ -1,21 +1,35 @@
 require_relative "status_display"
+require "bfp/climate"
 
 module BFP
   module FireRestrictions
     class StatusPresenter
+      def initialize(month: Date.today.month)
+        @month = month
+      end
+
       def forests
-        LandUnit
+        land_units = LandUnit
           .where(active: true)
           .order(:market_bucket, :name)
           .all
-          .map { |land_unit| serialize_land_unit(land_unit) }
+
+        climate_contexts = load_climate_contexts(land_units)
+
+        land_units.map { |land_unit| serialize_land_unit(land_unit, climate_contexts[land_unit.id]) }
       rescue Sequel::DatabaseError
         []
       end
 
       private
 
-      def serialize_land_unit(land_unit)
+      def load_climate_contexts(land_units)
+        BFP::Climate::LowContext.for_land_units(land_units, month: @month)
+      rescue Sequel::DatabaseError
+        {}
+      end
+
+      def serialize_land_unit(land_unit, climate_context)
         status = land_unit.restriction_status
 
         {
@@ -42,6 +56,7 @@ module BFP
           last_checked_at: status&.last_checked_at&.iso8601,
           source_url: status&.source_url,
           source_title: status&.source_title,
+          climate_low_context: climate_context,
           sources: land_unit.metadata_sources.map { |source| serialize_source(source) }
         }
       end

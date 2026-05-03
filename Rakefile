@@ -25,6 +25,34 @@ namespace :que do
   end
 end
 
+namespace :climate do
+  def load_climate_normals
+    require_relative "config/boot"
+    require "bfp/climate"
+  end
+
+  desc "Import committed forest climate normals into Postgres"
+  task :import_normals, [:csv_path, :manifest_path] do |_task, args|
+    load_climate_normals
+
+    importer = BFP::Climate::NormalImporter.new(
+      csv_path: args[:csv_path] || BFP::Climate::NormalImporter::DEFAULT_CSV_PATH,
+      manifest_path: args[:manifest_path] || BFP::Climate::NormalImporter::DEFAULT_MANIFEST_PATH
+    )
+    result = importer.import
+    puts "Imported #{result.fetch(:rows)} climate normal rows for #{result.fetch(:dataset)}."
+  end
+
+  desc "Validate imported forest climate normals"
+  task :validate_normals, [:dataset_slug] do |_task, args|
+    load_climate_normals
+
+    puts BFP::Climate::NormalValidator.new(
+      dataset_slug: args[:dataset_slug] || BFP::Climate::NormalValidator::DEFAULT_DATASET_SLUG
+    ).report
+  end
+end
+
 namespace :fire do
   def load_fire_restrictions
     require_relative "config/boot"

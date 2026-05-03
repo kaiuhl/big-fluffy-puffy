@@ -13,6 +13,8 @@
 
 *.gem
 *.rbc
+*.pyc
+__pycache__/
 .DS_Store
 
 /vendor/bundle/

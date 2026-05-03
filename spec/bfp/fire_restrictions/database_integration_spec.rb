@@ -80,9 +80,9 @@ RSpec.describe "fire restriction database integration", :db do
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"
-    require "bfp/fire_restrictions"
 
     Sequel::Migrator.run(BFP.db, File.join(BFP.root, "db/migrations"))
+    require "bfp/fire_restrictions"
     BFP.db.run(<<~SQL)
       TRUNCATE
         restriction_statuses,

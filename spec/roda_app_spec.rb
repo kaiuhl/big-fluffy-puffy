@@ -48,7 +48,7 @@ RSpec.describe RodaApp do
   it "exposes a GeoJSON fire restriction map endpoint" do
     stub_fire_restriction_records(
       [
-        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
+        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted", climate_low_context: climate_context),
         restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "unknown", review_status: "auto_accepted", last_checked_at: "2026-05-03T06:00:05Z"),
         restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
       ]
@@ -69,13 +69,14 @@ RSpec.describe RodaApp do
     expect(features_by_slug.fetch("colville").dig("properties", "campfire_policy")).to eq("allowed")
     expect(features_by_slug.fetch("colville").dig("properties", "last_checked_label")).to eq("May 3, 2026")
     expect(features_by_slug.fetch("modoc").dig("properties", "map_status")).to eq("unknown")
+    expect(features_by_slug.fetch("deschutes").dig("properties", "climate_low_context", "month_name")).to eq("May")
     expect(features_by_slug.fetch("deschutes").fetch("geometry")).to include("type", "coordinates")
   end
 
   it "renders grouped fire restriction sections" do
     stub_fire_restriction_records(
       [
-        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
+        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted", climate_low_context: climate_context),
         restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "unknown", review_status: "auto_accepted"),
         restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
       ]
@@ -91,6 +92,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Clear Forest")
     expect(last_response.body).to include("Review Forest")
     expect(last_response.body).to include("Developed Sites Only")
+    expect(last_response.body).to include("Typical May lows")
+    expect(last_response.body).to include("4,000-6,000 ft: 40&deg;F")
     expect(last_response.body).to include("Allowed")
     expect(last_response.body).to include("Needs Review")
     expect(last_response.body).to include('id="restrictions-map"')
@@ -100,6 +103,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('for="restrictions-search"')
     expect(last_response.body).to include('id="restrictions-filter-status"')
     expect(last_response.body).to include('data-label="Campfires"')
+    expect(last_response.body).to include('data-label="Typical Lows"')
     expect(last_response.body).to include('data-label="Source"')
     expect(last_response.body).to include('data-label="Checked"')
     expect(last_response.body).to include('data-label="Note"')
@@ -202,6 +206,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("dataset.filterText")
     expect(last_response.body).to include("timeZone: \"UTC\"")
     expect(last_response.body).to include("last_checked_label")
+    expect(last_response.body).to include("climate_low_context")
   end
 
   def stub_fire_restriction_records(records)
@@ -230,6 +235,7 @@ RSpec.describe RodaApp do
       last_checked_at: "2026-05-03T05:00:00Z",
       source_url: nil,
       source_title: nil,
+      climate_low_context: nil,
       sources: [
         {
           slug: "example-fire-info",
@@ -241,5 +247,27 @@ RSpec.describe RodaApp do
         }
       ]
     }.merge(overrides)
+  end
+
+  def climate_context
+    {
+      month: 5,
+      month_name: "May",
+      dataset_slug: "prism-1991-2020-tmin-800m",
+      source_label: "PRISM 1991-2020 normals",
+      source_url: "https://prism.oregonstate.edu/normals/",
+      bands: [
+        {
+          label: "4,000-6,000 ft",
+          elevation_min_ft: 4000,
+          elevation_max_ft: 6000,
+          mean_low_f: 39.7,
+          cold_p10_low_f: 35.1,
+          warm_p90_low_f: 44.2,
+          sample_cell_count: 12,
+          area_pct_of_forest: 4.2
+        }
+      ]
+    }
   end
 end

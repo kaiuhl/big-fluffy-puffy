@@ -60,6 +60,7 @@ module BFP
             last_checked_label: checked_at ? StatusDisplay.checked_date_label(checked_at) : "not checked",
             source_url: record[:source_url] || source&.fetch(:url, nil),
             source_title: record[:source_title] || source&.fetch(:name, nil),
+            climate_low_context: record[:climate_low_context],
             map_status: map_status(record)
           }
         }
