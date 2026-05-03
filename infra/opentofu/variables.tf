@@ -6,7 +6,7 @@ variable "aws_region" {
 
 variable "aws_account_id" {
   type        = string
-  description = "AWS account ID that owns BFP production infrastructure. The provider refuses to apply to any other account."
+  description = "AWS account ID that owns repo-managed BFP AWS resources. The provider refuses to apply to any other account."
 }
 
 variable "environment" {

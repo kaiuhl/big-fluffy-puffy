@@ -35,7 +35,7 @@ tofu plan
 tofu apply
 ```
 
-The AWS provider is pinned to `aws_account_id`, so OpenTofu will refuse to apply if your active AWS credentials point at a different account.
+The AWS provider is pinned to `aws_account_id`, so OpenTofu will refuse to apply if your active AWS credentials point at a different account. This should be the AWS account that owns the repo-managed Bedrock parser credentials; it does not have to be the same account that currently owns the manually created Lightsail instance.
 
 ## Production App Credentials
 

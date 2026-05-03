@@ -83,6 +83,7 @@ Production secrets live outside git. The production `.env` file should stay on t
 Current secret flow:
 
 - Bedrock parser credentials are created by OpenTofu in `infra/opentofu`.
+- These credentials are created in the AWS account configured by `infra/opentofu/terraform.tfvars`, currently the account used by the local AWS CLI.
 - The IAM user is restricted to the configured Haiku primary model and explicitly denied other Bedrock model invocations.
 - Ansible writes the generated key into `/srv/bfp/.env`.
 - OpenTofu state contains the generated secret access key, so keep state private and do not commit local state files.
