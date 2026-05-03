@@ -1,0 +1,310 @@
+defaults:
+  poll_interval_minutes: 720
+  source_paths:
+    - key: fire
+      name: Fire
+      source_type: fs_fire_page
+      path: /fire
+      parser_key: usfs_html
+    - key: fire-info
+      name: Fire Information
+      source_type: fs_fire_info_page
+      path: /fire/info
+      parser_key: usfs_html
+    - key: alerts
+      name: Alerts
+      source_type: fs_alerts_page
+      path: /alerts
+      parser_key: usfs_html
+    - key: releases
+      name: News Releases
+      source_type: fs_release_page
+      path: /newsroom/releases
+      parser_key: usfs_html
+
+land_units:
+  - slug: colville
+    name: Colville National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: colville
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/colville
+    active: true
+
+  - slug: deschutes
+    name: Deschutes National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: deschutes
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/deschutes
+    active: true
+    extra_source_paths:
+      - key: public-use-restrictions
+        name: Public Use Restrictions
+        source_type: fs_fire_info_page
+        path: /fire/info/public-use-restrictions
+        parser_key: usfs_html
+    sources:
+      - slug: deschutes-central-oregon-restrictions
+        name: Central Oregon Fire Restriction Layer
+        source_type: arcgis_feature_layer
+        authority: partner_interagency
+        url: https://services1.arcgis.com/gGHDlz6USftL5Pau/arcgis/rest/services/Fire_Restriction_Status_2023PublicView2/FeatureServer/2
+        parser_key: central_oregon_arcgis
+        poll_interval_minutes: 360
+        metadata_json:
+          auto_publish: true
+          data_source: USFS - Deschutes National Forest
+
+  - slug: fremont-winema
+    name: Fremont-Winema National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: fremont-winema
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/fremont-winema
+    active: true
+
+  - slug: gifford-pinchot
+    name: Gifford Pinchot National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: giffordpinchot
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/giffordpinchot
+    active: true
+
+  - slug: malheur
+    name: Malheur National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: malheur
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/malheur
+    active: true
+    extra_source_paths:
+      - key: prevention
+        name: Fire Prevention
+        source_type: fs_fire_info_page
+        path: /fire/prevention
+        parser_key: usfs_html
+
+  - slug: mt-baker-snoqualmie
+    name: Mt. Baker-Snoqualmie National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: mbs
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/mbs
+    active: true
+
+  - slug: mt-hood
+    name: Mt. Hood National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: mthood
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/mthood
+    active: true
+
+  - slug: ochoco-crooked-river
+    name: Ochoco National Forest and Crooked River National Grassland
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: ochoco
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/ochoco
+    active: true
+    extra_source_paths:
+      - key: public-use-restrictions
+        name: Public Use Restrictions
+        source_type: fs_fire_info_page
+        path: /fire/info/public-use-restrictions
+        parser_key: usfs_html
+    sources:
+      - slug: ochoco-central-oregon-restrictions
+        name: Central Oregon Fire Restriction Layer
+        source_type: arcgis_feature_layer
+        authority: partner_interagency
+        url: https://services1.arcgis.com/gGHDlz6USftL5Pau/arcgis/rest/services/Fire_Restriction_Status_2023PublicView2/FeatureServer/2
+        parser_key: central_oregon_arcgis
+        poll_interval_minutes: 360
+        metadata_json:
+          auto_publish: true
+          data_source: USFS - Ochoco National Forest
+
+  - slug: okanogan-wenatchee
+    name: Okanogan-Wenatchee National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: okanogan-wenatchee
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/okanogan-wenatchee
+    active: true
+
+  - slug: olympic
+    name: Olympic National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: olympic
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/olympic
+    active: true
+
+  - slug: rogue-river-siskiyou
+    name: Rogue River-Siskiyou National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: rogue-siskiyou
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/rogue-siskiyou
+    active: true
+
+  - slug: siuslaw
+    name: Siuslaw National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: siuslaw
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/siuslaw
+    active: true
+
+  - slug: umatilla
+    name: Umatilla National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: umatilla
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/umatilla
+    active: true
+
+  - slug: umpqua
+    name: Umpqua National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: umpqua
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/umpqua
+    active: true
+    extra_source_paths:
+      - key: public-use-restrictions
+        name: Public Use Restrictions
+        source_type: fs_fire_info_page
+        path: /fire/info/public-use-restrictions
+        parser_key: usfs_html
+
+  - slug: wallowa-whitman
+    name: Wallowa-Whitman National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: wallowa-whitman
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/wallowa-whitman
+    active: true
+
+  - slug: willamette
+    name: Willamette National Forest
+    unit_type: national_forest
+    region_code: R06
+    forest_slug: willamette
+    market_bucket: core_pnw
+    official_url: https://www.fs.usda.gov/r06/willamette
+    active: true
+
+  - slug: klamath
+    name: Klamath National Forest and Butte Valley National Grassland
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: klamath
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/klamath
+    active: true
+
+  - slug: six-rivers
+    name: Six Rivers National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: sixrivers
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/sixrivers
+    active: true
+
+  - slug: shasta-trinity
+    name: Shasta-Trinity National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: shasta-trinity
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/shasta-trinity
+    active: true
+
+  - slug: mendocino
+    name: Mendocino National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: mendocino
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/mendocino
+    active: true
+
+  - slug: modoc
+    name: Modoc National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: modoc
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/modoc
+    active: true
+    extra_source_paths:
+      - key: forest-fire-restrictions
+        name: Forest Fire Restrictions
+        source_type: fs_alert_detail
+        path: /alerts/forest-fire-restrictions
+        parser_key: usfs_html
+
+  - slug: lassen
+    name: Lassen National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: lassen
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/lassen
+    active: true
+
+  - slug: plumas
+    name: Plumas National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: plumas
+    market_bucket: northern_california
+    official_url: https://www.fs.usda.gov/r05/plumas
+    active: true
+
+  - slug: tahoe
+    name: Tahoe National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: tahoe
+    market_bucket: extended_tahoe
+    official_url: https://www.fs.usda.gov/r05/tahoe
+    active: false
+
+  - slug: eldorado
+    name: Eldorado National Forest
+    unit_type: national_forest
+    region_code: R05
+    forest_slug: eldorado
+    market_bucket: extended_tahoe
+    official_url: https://www.fs.usda.gov/r05/eldorado
+    active: false
+
+  - slug: lake-tahoe-basin
+    name: Lake Tahoe Basin Management Unit
+    unit_type: management_unit
+    region_code: R05
+    forest_slug: lake-tahoe-basin
+    market_bucket: extended_tahoe
+    official_url: https://www.fs.usda.gov/r05/lake-tahoe-basin
+    active: false

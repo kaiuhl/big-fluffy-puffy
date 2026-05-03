@@ -26,6 +26,20 @@ RSpec.describe RodaApp do
     )
   end
 
+  it "exposes the fire restriction forests endpoint" do
+    get "/api/fire-restrictions/forests"
+
+    expect(last_response).to be_ok
+    expect(JSON.parse(last_response.body)).to include("forests")
+  end
+
+  it "serves the fire restrictions page shell" do
+    get "/fire-restrictions"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("National Forest Fire Restrictions")
+  end
+
   it "serves the initial landing page" do
     get "/"
 

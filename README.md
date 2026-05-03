@@ -35,11 +35,25 @@ This is intentionally just the foundation:
 
 - `/health` returns a JSON health check.
 - `/api/version` returns a minimal API identity payload.
+- `/api/fire-restrictions/forests` returns the public fire-restriction status list.
+- `/fire-restrictions` renders the public forest status table.
 - Bridgetown content lives in `src/`.
 - Infrastructure scaffolding lives in `infra/`.
-- Background job placeholders live in `jobs/`.
+- Fire-restriction ingestion jobs live in `jobs/`.
 
-Run background placeholders explicitly when needed:
+Seed and run the fire-restriction ingestion loop:
+
+```sh
+bundle exec rake db:migrate
+bundle exec rake que:migrate
+bundle exec rake fire:sources:seed
+bundle exec rake fire:poll_due
+bundle exec rake fire:review:list
+bundle exec rake 'fire:review:accept[123]'
+bundle exec rake fire:status:list
+```
+
+Run background workers explicitly when needed:
 
 ```sh
 docker compose --profile jobs up worker clock
@@ -51,5 +65,6 @@ Secrets belong in environment variables, GitHub Actions secrets, or AWS secret s
 
 - [Architecture](docs/architecture.md)
 - [Brand language](docs/brand-language.md)
+- [Fire restrictions data inventory](docs/fire-restrictions-data-inventory.md)
 - [Operations](docs/operations.md)
 - [Site roadmap](docs/site-roadmap.md)

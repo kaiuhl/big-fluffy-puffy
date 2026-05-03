@@ -34,3 +34,5 @@ module BFP
     end
   end
 end
+
+$LOAD_PATH.unshift(File.join(BFP.root, "lib"))

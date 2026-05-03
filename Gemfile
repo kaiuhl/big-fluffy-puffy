@@ -9,7 +9,10 @@ gem "roda", "~> 3.102"
 gem "sequel", "~> 5.103"
 gem "pg", "~> 1.5"
 
+gem "aws-sdk-bedrockruntime", "~> 1.0"
 gem "dotenv", "~> 3.1"
+gem "nokogiri", "~> 1.18"
+gem "pdf-reader", "~> 2.14"
 gem "rake", "~> 13.2"
 
 group :development, :test do

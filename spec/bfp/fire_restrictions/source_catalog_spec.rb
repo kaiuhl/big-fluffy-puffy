@@ -1,0 +1,123 @@
+require "yaml"
+require_relative "../../spec_helper"
+
+RSpec.describe "fire restriction source catalog" do
+  let(:config) { YAML.load_file(File.expand_path("../../../config/fire_restriction_sources.yml", __dir__)) }
+  let(:units) { config.fetch("land_units") }
+  let(:active_unit_slugs) do
+    %w[
+      colville
+      deschutes
+      fremont-winema
+      gifford-pinchot
+      malheur
+      mt-baker-snoqualmie
+      mt-hood
+      ochoco-crooked-river
+      okanogan-wenatchee
+      olympic
+      rogue-river-siskiyou
+      siuslaw
+      umatilla
+      umpqua
+      wallowa-whitman
+      willamette
+      klamath
+      six-rivers
+      shasta-trinity
+      mendocino
+      modoc
+      lassen
+      plumas
+    ]
+  end
+  let(:inactive_unit_slugs) { %w[tahoe eldorado lake-tahoe-basin] }
+  let(:core_source_suffixes) { %w[fire fire-info alerts releases] }
+
+  it "tracks every active forest in the PNW and Northern California launch market" do
+    active_slugs = units.select { |unit| unit.fetch("active", true) }.map { |unit| unit.fetch("slug") }
+
+    expect(active_slugs).to match_array(active_unit_slugs)
+  end
+
+  it "keeps the Tahoe extension units present but inactive" do
+    inactive_slugs = units.reject { |unit| unit.fetch("active", true) }.map { |unit| unit.fetch("slug") }
+
+    expect(inactive_slugs).to match_array(inactive_unit_slugs)
+  end
+
+  it "has unique land-unit and generated source slugs" do
+    unit_slugs = units.map { |unit| unit.fetch("slug") }
+    source_slugs = units.flat_map { |unit| generated_sources(unit).map { |source| source.fetch("slug") } }
+
+    expect(unit_slugs).to eq(unit_slugs.uniq)
+    expect(source_slugs).to eq(source_slugs.uniq)
+  end
+
+  it "gives every unit the core Forest Service source pages" do
+    units.each do |unit|
+      aggregate_failures(unit.fetch("slug")) do
+        source_slugs = generated_sources(unit).map { |source| source.fetch("slug") }
+
+        core_source_suffixes.each do |suffix|
+          expect(source_slugs).to include("#{unit.fetch("slug")}-#{suffix}")
+        end
+      end
+    end
+  end
+
+  it "uses parseable HTTPS URLs and parser keys for every generated source" do
+    units.each do |unit|
+      generated_sources(unit).each do |source|
+        aggregate_failures(source.fetch("slug")) do
+          expect(source.fetch("url")).to start_with("https://")
+          expect(source.fetch("url")).not_to match(/\s/)
+          expect(source.fetch("source_type")).not_to be_empty
+          expect(source.fetch("parser_key")).not_to be_empty
+        end
+      end
+    end
+  end
+
+  it "includes the Central Oregon ArcGIS restriction layer for both Central Oregon units" do
+    arcgis_sources = generated_sources(unit("deschutes")) + generated_sources(unit("ochoco-crooked-river"))
+    arcgis_sources = arcgis_sources.select { |source| source.fetch("source_type") == "arcgis_feature_layer" }
+
+    expect(arcgis_sources.map { |source| source.fetch("slug") }).to match_array(
+      %w[deschutes-central-oregon-restrictions ochoco-central-oregon-restrictions]
+    )
+    expect(arcgis_sources).to all(include("parser_key" => "central_oregon_arcgis"))
+    expect(arcgis_sources).to all(satisfy { |source| source.dig("metadata_json", "auto_publish") == true })
+  end
+
+  def unit(slug)
+    units.find { |candidate| candidate.fetch("slug") == slug }
+  end
+
+  def generated_sources(unit_config)
+    defaults = config.fetch("defaults")
+    default_paths = defaults.fetch("source_paths")
+    default_interval = defaults.fetch("poll_interval_minutes")
+
+    path_sources = (default_paths + unit_config.fetch("extra_source_paths", [])).map do |source_path|
+      source_from_path(unit_config, source_path, default_interval)
+    end
+
+    explicit_sources = unit_config.fetch("sources", []).map do |source|
+      source.merge("poll_interval_minutes" => source.fetch("poll_interval_minutes", default_interval))
+    end
+
+    path_sources + explicit_sources
+  end
+
+  def source_from_path(unit_config, source_path, default_interval)
+    {
+      "slug" => "#{unit_config.fetch("slug")}-#{source_path.fetch("key")}",
+      "name" => source_path.fetch("name"),
+      "source_type" => source_path.fetch("source_type"),
+      "url" => "#{unit_config.fetch("official_url").sub(%r{/\z}, "")}#{source_path.fetch("path")}",
+      "parser_key" => source_path.fetch("parser_key"),
+      "poll_interval_minutes" => source_path.fetch("poll_interval_minutes", default_interval)
+    }
+  end
+end

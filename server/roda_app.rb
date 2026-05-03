@@ -20,6 +20,51 @@ class RodaApp < Roda
         response["Content-Type"] = "application/json"
         JSON.generate(app: "big-fluffy-puffy", env: BFP.env)
       end
+
+      r.on "fire-restrictions" do
+        r.get "forests" do
+          response["Content-Type"] = "application/json"
+          JSON.generate(forests: fire_restriction_records)
+        end
+      end
+    end
+
+    r.get "fire-restrictions" do
+      response["Content-Type"] = "text/html"
+      records = fire_restriction_records
+
+      <<~HTML
+        <!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Fire Restrictions | Big Fluffy Puffy</title>
+            <meta
+              name="description"
+              content="National forest fire restriction status for Big Fluffy Puffy's Pacific Northwest market."
+            >
+            <link rel="stylesheet" href="/styles/site.css">
+          </head>
+          <body>
+            <main class="restrictions-page">
+              <header class="restrictions-header">
+                <a href="/">Big Fluffy Puffy</a>
+                <p>Fire Restrictions</p>
+              </header>
+
+              <section class="restrictions-intro" aria-labelledby="restrictions-title">
+                <p class="kicker">Official source monitor</p>
+                <h1 id="restrictions-title">National Forest Fire Restrictions</h1>
+              </section>
+
+              <section class="restrictions-table-wrap" aria-label="National forest fire restrictions">
+                #{fire_restrictions_table(records)}
+              </section>
+            </main>
+          </body>
+        </html>
+      HTML
     end
 
     r.root do
@@ -76,5 +121,92 @@ class RodaApp < Roda
         </html>
       HTML
     end
+  end
+
+  private
+
+  def fire_restriction_records
+    require "bfp/fire_restrictions"
+
+    BFP::FireRestrictions::StatusPresenter.new.forests
+  rescue Sequel::DatabaseError, LoadError
+    []
+  end
+
+  def fire_restrictions_table(records)
+    return empty_fire_restrictions_message if records.empty?
+
+    rows = records.map do |forest|
+      source_links = forest[:sources].first(4).map do |source|
+        %(<a href="#{h(source[:url])}" rel="noreferrer">#{h(source[:name])}</a>)
+      end.join(" ")
+
+      <<~HTML
+        <tr>
+          <th scope="row">
+            <span>#{h(forest[:name])}</span>
+            <small>#{h(forest[:region_code])} / #{h(forest[:market_bucket].to_s.tr("_", " "))}</small>
+          </th>
+          <td><strong>#{h(labelize(forest[:status]))}</strong></td>
+          <td>#{h(labelize(forest[:campfire_policy]))}</td>
+          <td>#{h(confidence_label(forest[:confidence]))}</td>
+          <td>#{h(labelize(forest[:review_status]))}</td>
+          <td>#{h(forest[:last_checked_at] || "Never")}</td>
+          <td>
+            #{source_links}
+            #{primary_source_link(forest)}
+          </td>
+          <td>#{h(forest[:summary] || forest[:evidence_quotes].first || "")}</td>
+        </tr>
+      HTML
+    end.join
+
+    <<~HTML
+      <table class="restrictions-table">
+        <thead>
+          <tr>
+            <th scope="col">Forest</th>
+            <th scope="col">Status</th>
+            <th scope="col">Campfires</th>
+            <th scope="col">Confidence</th>
+            <th scope="col">Review</th>
+            <th scope="col">Last Checked</th>
+            <th scope="col">Sources</th>
+            <th scope="col">Evidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          #{rows}
+        </tbody>
+      </table>
+    HTML
+  end
+
+  def empty_fire_restrictions_message
+    <<~HTML
+      <div class="empty-state">
+        <p>No fire restriction sources have been seeded yet.</p>
+      </div>
+    HTML
+  end
+
+  def primary_source_link(forest)
+    return "" unless forest[:source_url]
+
+    %(<a href="#{h(forest[:source_url])}" rel="noreferrer">Current evidence</a>)
+  end
+
+  def labelize(value)
+    value.to_s.tr("_", " ").split.map(&:capitalize).join(" ")
+  end
+
+  def confidence_label(value)
+    return "Unknown" unless value
+
+    "#{(value.to_f * 100).round}%"
+  end
+
+  def h(value)
+    Rack::Utils.escape_html(value.to_s)
   end
 end
