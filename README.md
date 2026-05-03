@@ -91,6 +91,8 @@ docker compose --profile jobs up worker clock
 
 Secrets belong in environment variables, GitHub Actions secrets, or AWS secret stores. Never commit them.
 
+Bedrock parser AWS credentials are managed in `infra/opentofu` as a least-privilege IAM user with Haiku-only invoke permissions. `infra/ansible` installs those credentials into the production `.env` on the Lightsail box.
+
 ## Project Notes
 
 - [Architecture](docs/architecture.md)

@@ -1,0 +1,3 @@
+aws_account_id = "026890252124"
+aws_region     = "us-west-2"
+environment    = "production"

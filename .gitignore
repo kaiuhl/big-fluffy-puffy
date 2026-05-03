@@ -16,3 +16,14 @@
 .DS_Store
 
 /vendor/bundle/
+
+# OpenTofu/Terraform local state and generated plans can contain secrets.
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/terraform.tfvars
+**/terraform.tfvars.json
+
+# Local Ansible inventories may contain private host overrides.
+infra/ansible/inventory.ini

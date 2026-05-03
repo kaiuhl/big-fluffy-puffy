@@ -19,6 +19,8 @@ Useful docs:
 - `docs/operations.md`: deploy and server operations.
 - `docs/architecture.md`: current production shape.
 - `docs/fire-restrictions-data-inventory.md`: source inventory and ingestion rationale.
+- `infra/opentofu/README.md`: repo-managed AWS resources, including Bedrock parser IAM.
+- `infra/ansible/README.md`: Lightsail host configuration, including production `.env` management.
 
 ## Local Development
 
@@ -69,6 +71,14 @@ bin/prod-shell
 ```
 
 Both production scripts default to `ubuntu@34.223.75.206`, `~/.ssh/bfp-lightsail.pem`, and `/srv/bfp`. Override with `BFP_HOST`, `BFP_USER`, `BFP_KEY`, or `BFP_PATH` if needed.
+
+## Infrastructure
+
+Keep production cheap on Lightsail. The app uses least-privilege AWS access keys in `/srv/bfp/.env` for Bedrock instead of moving to EC2 instance roles.
+
+OpenTofu in `infra/opentofu` owns the Bedrock parser IAM user, access key, Haiku-only allow policy, and explicit deny for other Bedrock model invocations. Its provider is pinned to `aws_account_id`; do not remove that guard. OpenTofu state contains the generated secret access key, so never commit local state files and move state to an encrypted/locked backend before managing more production resources.
+
+Ansible in `infra/ansible` writes those credentials and conservative parser flags into the production `.env`. By default it keeps `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false`.
 
 ## Fire Restrictions
 

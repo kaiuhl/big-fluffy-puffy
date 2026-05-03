@@ -2,7 +2,68 @@
 - name: Provision BFP host
   hosts: bfp
   become: true
+  vars:
+    bfp_app_path: /srv/bfp
+    bfp_env_file: "{{ bfp_app_path }}/.env"
+    bfp_aws_region: us-west-2
+    bfp_llm_provider: bedrock
+    bfp_llm_parse_enabled: "false"
+    bfp_llm_escalation_enabled: "false"
+    bfp_fire_auto_poll_enabled: "false"
+    bfp_bedrock_primary_model_id: global.anthropic.claude-haiku-4-5-20251001-v1:0
+    bfp_bedrock_escalation_model_id: global.anthropic.claude-sonnet-4-5-20250929-v1:0
   tasks:
-    - name: Placeholder until host details are available
-      ansible.builtin.debug:
-        msg: "BFP provisioning playbook scaffolded."
+    - name: Ensure app directory exists
+      ansible.builtin.file:
+        path: "{{ bfp_app_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure production env file exists
+      ansible.builtin.file:
+        path: "{{ bfp_env_file }}"
+        state: touch
+        mode: "0600"
+
+    - name: Configure non-secret fire parser environment
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_env_file }}"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+        create: true
+        mode: "0600"
+      loop:
+        - key: AWS_REGION
+          value: "{{ bfp_aws_region }}"
+        - key: LLM_PROVIDER
+          value: "{{ bfp_llm_provider }}"
+        - key: LLM_PARSE_ENABLED
+          value: "{{ bfp_llm_parse_enabled }}"
+        - key: LLM_ESCALATION_ENABLED
+          value: "{{ bfp_llm_escalation_enabled }}"
+        - key: FIRE_AUTO_POLL_ENABLED
+          value: "{{ bfp_fire_auto_poll_enabled }}"
+        - key: BEDROCK_PRIMARY_MODEL_ID
+          value: "{{ bfp_bedrock_primary_model_id }}"
+        - key: BEDROCK_ESCALATION_MODEL_ID
+          value: "{{ bfp_bedrock_escalation_model_id }}"
+
+    - name: Configure Bedrock parser access key ID
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_env_file }}"
+        regexp: "^AWS_ACCESS_KEY_ID="
+        line: "AWS_ACCESS_KEY_ID={{ bfp_aws_access_key_id }}"
+        create: true
+        mode: "0600"
+      when: bfp_aws_access_key_id is defined
+      no_log: true
+
+    - name: Configure Bedrock parser secret access key
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_env_file }}"
+        regexp: "^AWS_SECRET_ACCESS_KEY="
+        line: "AWS_SECRET_ACCESS_KEY={{ bfp_aws_secret_access_key }}"
+        create: true
+        mode: "0600"
+      when: bfp_aws_secret_access_key is defined
+      no_log: true

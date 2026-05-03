@@ -80,10 +80,36 @@ Recreate Caddy when DNS has just settled and TLS issuance needs a clean retry.
 
 Production secrets live outside git. The production `.env` file should stay on the server and should never be committed.
 
-Near-term secret needs:
+Current secret flow:
+
+- Bedrock parser credentials are created by OpenTofu in `infra/opentofu`.
+- The IAM user is restricted to the configured Haiku primary model and explicitly denied other Bedrock model invocations.
+- Ansible writes the generated key into `/srv/bfp/.env`.
+- OpenTofu state contains the generated secret access key, so keep state private and do not commit local state files.
+
+Apply the IAM configuration:
+
+```sh
+cd infra/opentofu
+cp terraform.tfvars.example terraform.tfvars
+tofu init
+tofu plan
+tofu apply
+```
+
+Install the generated credentials on the Lightsail box:
+
+```sh
+ansible-playbook \
+  -i infra/ansible/inventory.ini \
+  infra/ansible/playbook.yml \
+  -e bfp_aws_access_key_id="$(cd infra/opentofu && tofu output -raw bedrock_parser_access_key_id)" \
+  -e bfp_aws_secret_access_key="$(cd infra/opentofu && tofu output -raw bedrock_parser_secret_access_key)"
+```
+
+Remaining secret needs:
 
 - Production database password
-- Future AWS credentials or instance role for backups
 - Future email/API tokens for contact forms or notifications
 
 ## Backups
