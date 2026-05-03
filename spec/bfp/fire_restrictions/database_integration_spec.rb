@@ -63,10 +63,17 @@ RSpec.describe "fire restriction database integration", :db do
       forest: "Willamette National Forest",
       status: "stage_1"
     )
+    expect(presenter.candidates(land_unit: "willamette").first).to include(
+      id: observation.id,
+      best_candidate: true
+    )
+    expect(presenter.forest("willamette").first).to include(id: observation.id)
 
     detail = presenter.detail(observation.id)
     expect(detail[:commands]).to include("bin/prod-console -e 'accept_observation(#{observation.id})'")
     expect(detail[:evidence_quotes]).not_to be_empty
+    expect(presenter.format_candidates(land_unit: "willamette")).to include("Willamette National Forest")
+    expect(presenter.format_forest("willamette")).to include("willamette-fire-info")
     expect(presenter.format_detail(observation.id)).to include("Observation #{observation.id}")
   end
 

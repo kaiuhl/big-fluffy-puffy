@@ -60,7 +60,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `llm_costs`.
+The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `llm_costs`.
 
 Production console and shell:
 
@@ -116,6 +116,8 @@ Manual commands:
 mise exec -- bundle exec rake fire:sources:seed
 mise exec -- bundle exec rake 'fire:poll[willamette-fire-info]'
 mise exec -- bundle exec rake fire:poll_due
+mise exec -- bundle exec rake fire:review:candidates
+mise exec -- bundle exec rake 'fire:review:forest[willamette]'
 mise exec -- bundle exec rake fire:review:list
 mise exec -- bundle exec rake 'fire:review:show[123]'
 mise exec -- bundle exec rake 'fire:review:accept[123]'

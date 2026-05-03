@@ -60,11 +60,28 @@ namespace :fire do
   end
 
   namespace :review do
+    desc "List best fire restriction review candidates by forest"
+    task :candidates, [:limit] do |_task, args|
+      load_fire_restrictions
+
+      limit = args[:limit] ? Integer(args[:limit]) : nil
+      puts BFP::FireRestrictions::ReviewPresenter.new.format_candidates(limit: limit)
+    end
+
     desc "List fire restriction observations awaiting review"
     task :list, [:limit] do |_task, args|
       load_fire_restrictions
 
       puts BFP::FireRestrictions::ReviewPresenter.new.format_queue(limit: args[:limit] || 50)
+    end
+
+    desc "List review observations for one forest, ranked by likely usefulness"
+    task :forest, [:land_unit_slug] do |_task, args|
+      load_fire_restrictions
+
+      raise "Usage: rake fire:review:forest[land_unit_slug]" unless args[:land_unit_slug]
+
+      puts BFP::FireRestrictions::ReviewPresenter.new.format_forest(args[:land_unit_slug])
     end
 
     desc "Show one parsed fire restriction observation"
