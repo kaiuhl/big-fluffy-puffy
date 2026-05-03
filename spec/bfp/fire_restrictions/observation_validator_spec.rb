@@ -16,6 +16,22 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result.errors.first).to include("Evidence quote does not match")
   end
 
+  it "does not reject a mismatched supporting quote when core none evidence is present" do
+    result = validate(
+      {
+        "status" => "none",
+        "campfire_policy" => "unknown",
+        "evidence_quotes" => [
+          "There are currently no fire restrictions on the Olympic National Forest.",
+          "Fireworks and explosives (including explosive targets) are always prohibited on national forest lands."
+        ]
+      },
+      "There are currently no fire restrictions on the Olympic National Forest. Fireworks and explosives are always prohibited on national forest lands."
+    )
+
+    expect(result).to be_valid
+  end
+
   it "accepts Stage 1 restriction evidence" do
     text = "Stage 1 public use restrictions are in effect. Campfires are only allowed in developed campgrounds."
     result = validate(
@@ -40,6 +56,16 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     text = "Public use restrictions have been rescinded across the forest."
     result = validate(
       {"status" => "none", "campfire_policy" => "allowed", "evidence_quotes" => [text]},
+      text
+    )
+
+    expect(result).to be_valid
+  end
+
+  it "accepts no current fire restrictions evidence" do
+    text = "There are no current fire restrictions."
+    result = validate(
+      {"status" => "none", "campfire_policy" => "unknown", "evidence_quotes" => [text]},
       text
     )
 

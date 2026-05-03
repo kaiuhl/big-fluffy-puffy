@@ -179,7 +179,8 @@ module BFP
           source: source,
           result: result,
           validation: validation,
-          reasons: reasons
+          reasons: reasons,
+          extracted_text: fetch.source_document&.extracted_text.to_s
         )
       end
 

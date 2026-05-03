@@ -1,3 +1,5 @@
+require_relative "observation_validator"
+
 module BFP
   module FireRestrictions
     class AutoReviewPolicy
@@ -19,15 +21,13 @@ module BFP
         /geographically limited|not forest[- ]wide|partial area|limited to/i
       ].freeze
 
-      def review_status_for_result(source:, result:, validation:, reasons:)
-        return "auto_accepted" if auto_publish_metadata?(source, validation_errors: validation.errors, reasons: reasons, confidence: result["confidence"])
+      def review_status_for_result(source:, result:, validation:, reasons:, extracted_text: nil)
+        context = result_context(result, validation_errors: validation.errors, reasons: reasons, extracted_text: extracted_text)
+        return "auto_accepted" if auto_publish_metadata?(source, context: context)
 
         if official_auto_publish?(
           source: source,
-          status: result["status"],
-          confidence: result["confidence"],
-          validation_errors: validation.errors,
-          reasons: reasons
+          context: context
         )
           return "auto_accepted"
         end
@@ -37,22 +37,13 @@ module BFP
 
       def review_status_for_observation(observation)
         source = observation.restriction_source
-        reasons = json_array(observation.needs_review_reasons)
-        validation_errors = json_array(observation.validation_errors)
+        context = observation_context(observation)
 
-        return "auto_accepted" if auto_publish_metadata?(
-          source,
-          validation_errors: validation_errors,
-          reasons: reasons,
-          confidence: observation.confidence
-        )
+        return "auto_accepted" if auto_publish_metadata?(source, context: context)
 
         if official_auto_publish?(
           source: source,
-          status: observation.status,
-          confidence: observation.confidence,
-          validation_errors: validation_errors,
-          reasons: reasons
+          context: context
         )
           return "auto_accepted"
         end
@@ -62,30 +53,69 @@ module BFP
 
       private
 
-      def auto_publish_metadata?(source, validation_errors:, reasons:, confidence:)
+      def auto_publish_metadata?(source, context:)
         source.metadata["auto_publish"] == true &&
-          confidence.to_f >= 0.8 &&
-          validation_errors.empty? &&
-          hard_review_reasons(reasons).empty?
+          context.fetch(:confidence).to_f >= 0.8 &&
+          context.fetch(:hard_review_reasons).empty?
       end
 
-      def official_auto_publish?(source:, status:, confidence:, validation_errors:, reasons:)
+      def official_auto_publish?(source:, context:)
         return false unless source.authority == "official_usfs"
         return false unless OFFICIAL_AUTO_SOURCE_TYPES.include?(source.source_type)
-        return false unless validation_errors.empty?
-        return false unless hard_review_reasons(reasons).empty?
+        return false unless context.fetch(:hard_review_reasons).empty?
 
-        if status.to_s == "none"
-          return confidence.to_f >= 0.85
+        if context.fetch(:status).to_s == "none"
+          return context.fetch(:confidence).to_f >= 0.85 && none_evidence_clear?(context)
         end
 
-        ACTIVE_AUTO_STATUSES.include?(status.to_s) && confidence.to_f >= 0.9
+        ACTIVE_AUTO_STATUSES.include?(context.fetch(:status).to_s) &&
+          context.fetch(:confidence).to_f >= 0.9
       end
 
-      def hard_review_reasons(reasons)
-        json_array(reasons).select do |reason|
+      def result_context(result, validation_errors:, reasons:, extracted_text:)
+        context = {
+          status: result["status"],
+          confidence: result["confidence"],
+          evidence_quotes: json_array(result["evidence_quotes"]),
+          extracted_text: extracted_text.to_s,
+          reasons: json_array(reasons) + json_array(validation_errors)
+        }
+        context.merge(hard_review_reasons: hard_review_reasons(context))
+      end
+
+      def observation_context(observation)
+        document = observation.source_fetch&.source_document
+        context = {
+          status: observation.status,
+          confidence: observation.confidence,
+          evidence_quotes: json_array(observation.evidence_quotes),
+          extracted_text: document&.extracted_text.to_s,
+          reasons: json_array(observation.needs_review_reasons) + json_array(observation.validation_errors)
+        }
+        context.merge(hard_review_reasons: hard_review_reasons(context))
+      end
+
+      def hard_review_reasons(context)
+        json_array(context.fetch(:reasons)).select do |reason|
+          next false if ignorable_none_evidence_issue?(reason, context)
+
           HARD_REVIEW_REASON_PATTERNS.any? { |pattern| reason.to_s.match?(pattern) }
         end
+      end
+
+      def ignorable_none_evidence_issue?(reason, context)
+        return false unless context.fetch(:status).to_s == "none"
+        return false unless reason.to_s.match?(/evidence quote does not match|None status lacks explicit/i)
+
+        none_evidence_clear?(context)
+      end
+
+      def none_evidence_clear?(context)
+        evidence_text = [
+          json_array(context.fetch(:evidence_quotes)).join("\n"),
+          context.fetch(:extracted_text).to_s
+        ].join("\n")
+        evidence_text.match?(ObservationValidator::NONE_EVIDENCE)
       end
 
       def json_array(value)

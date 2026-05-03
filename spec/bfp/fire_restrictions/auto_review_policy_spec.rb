@@ -19,7 +19,8 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       source: official_fire_source,
       result: result,
       validation: validation,
-      reasons: result.fetch("needs_review_reasons")
+      reasons: result.fetch("needs_review_reasons"),
+      extracted_text: "No public use restrictions in effect."
     )
 
     expect(status).to eq("auto_accepted")
@@ -33,7 +34,8 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       source: official_fire_source,
       result: result,
       validation: validation,
-      reasons: result.fetch("needs_review_reasons") + validation.errors
+      reasons: result.fetch("needs_review_reasons") + validation.errors,
+      extracted_text: "Fire danger is low."
     )
 
     expect(status).to eq("needs_review")
@@ -47,7 +49,8 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       source: official_fire_source,
       result: result,
       validation: validation,
-      reasons: result.fetch("needs_review_reasons")
+      reasons: result.fetch("needs_review_reasons"),
+      extracted_text: "Building, maintaining, attending or using a fire is prohibited."
     )
 
     expect(status).to eq("needs_review")
@@ -67,7 +70,32 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       source: source,
       result: result,
       validation: validation,
-      reasons: []
+      reasons: [],
+      extracted_text: ""
+    )
+
+    expect(status).to eq("auto_accepted")
+  end
+
+  it "auto-accepts clear none observations with stale supporting quote mismatch errors" do
+    result = parser_result(
+      "none",
+      confidence: 0.95,
+      reasons: ["Evidence quote does not match extracted text: Fireworks and explosives are always prohibited"]
+    ).merge(
+      "evidence_quotes" => [
+        "There are currently no fire restrictions on the Olympic National Forest.",
+        "Fireworks and explosives are always prohibited on national forest lands."
+      ]
+    )
+    validation = validation_result(errors: ["Evidence quote does not match extracted text: Fireworks and explosives are always prohibited"])
+
+    status = policy.review_status_for_result(
+      source: official_fire_source,
+      result: result,
+      validation: validation,
+      reasons: result.fetch("needs_review_reasons") + validation.errors,
+      extracted_text: "There are currently no fire restrictions on the Olympic National Forest."
     )
 
     expect(status).to eq("auto_accepted")
@@ -77,6 +105,7 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
     {
       "status" => status,
       "confidence" => confidence,
+      "evidence_quotes" => [],
       "needs_review_reasons" => reasons
     }
   end
