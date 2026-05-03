@@ -1,6 +1,6 @@
 # Big Fluffy Puffy
 
-Big Fluffy Puffy is a Ruby-first nonprofit web and data project for building fireless outdoor culture in the Pacific Northwest.
+Big Fluffy Puffy is a nonprofit web and data project for building fireless outdoor culture in the Pacific Northwest.
 
 The codebase starts small: a mostly static public site, a lean Roda app for dynamic endpoints, Postgres for durable data, and background jobs for future fire-restriction checks.
 
