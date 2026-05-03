@@ -265,7 +265,7 @@ h1 {
   display: grid;
   gap: 18px;
   border-bottom: 1px solid var(--black);
-  padding: clamp(20px, 4vw, 36px) var(--restrictions-map-section-pad-x);
+  padding: clamp(20px, 4vw, 36px) var(--restrictions-map-section-pad-x) 0;
   background: var(--white);
 }
 
@@ -326,17 +326,8 @@ h1 {
   width: calc(100% + (var(--restrictions-map-section-pad-x) * 2));
   height: clamp(340px, 34vw, 420px);
   margin-inline: calc(var(--restrictions-map-section-pad-x) * -1);
-  border-block: 1px solid var(--black);
+  border-top: 1px solid var(--black);
   background: #dfe7df;
-}
-
-.restrictions-map-status {
-  margin: 0;
-  color: var(--mid-gray);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .map-popup {
@@ -641,7 +632,7 @@ h1 {
   .restrictions-map-section {
     --restrictions-map-section-pad-x: 18px;
 
-    padding: 20px var(--restrictions-map-section-pad-x);
+    padding: 20px var(--restrictions-map-section-pad-x) 0;
   }
 
   .restrictions-map-heading {

@@ -301,7 +301,6 @@ class RodaApp < Roda
           role="img"
           aria-label="Map of Pacific Northwest forest fire restriction statuses"
         ></div>
-        <p id="restrictions-map-status" class="restrictions-map-status" aria-live="polite">Loading map.</p>
       </section>
     HTML
   end
