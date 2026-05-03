@@ -22,7 +22,7 @@ services:
       BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
       DATABASE_URL: ${DATABASE_URL:-postgres://bfp:bfp@postgres:5432/bfp_development}
       LLM_PROVIDER: ${LLM_PROVIDER:-bedrock}
-      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-true}
+      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-false}
       AWS_REGION: ${AWS_REGION:-us-west-2}
       BEDROCK_PRIMARY_MODEL_ID: ${BEDROCK_PRIMARY_MODEL_ID:-global.anthropic.claude-haiku-4-5-20251001-v1:0}
       BEDROCK_ESCALATION_MODEL_ID: ${BEDROCK_ESCALATION_MODEL_ID:-global.anthropic.claude-sonnet-4-5-20250929-v1:0}
@@ -45,7 +45,7 @@ services:
       BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
       DATABASE_URL: ${DATABASE_URL:-postgres://bfp:bfp@postgres:5432/bfp_development}
       LLM_PROVIDER: ${LLM_PROVIDER:-bedrock}
-      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-true}
+      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-false}
       AWS_REGION: ${AWS_REGION:-us-west-2}
       BEDROCK_PRIMARY_MODEL_ID: ${BEDROCK_PRIMARY_MODEL_ID:-global.anthropic.claude-haiku-4-5-20251001-v1:0}
       BEDROCK_ESCALATION_MODEL_ID: ${BEDROCK_ESCALATION_MODEL_ID:-global.anthropic.claude-sonnet-4-5-20250929-v1:0}
@@ -66,11 +66,12 @@ services:
       BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
       DATABASE_URL: ${DATABASE_URL:-postgres://bfp:bfp@postgres:5432/bfp_development}
       LLM_PROVIDER: ${LLM_PROVIDER:-bedrock}
-      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-true}
+      LLM_PARSE_ENABLED: ${LLM_PARSE_ENABLED:-false}
       AWS_REGION: ${AWS_REGION:-us-west-2}
       BEDROCK_PRIMARY_MODEL_ID: ${BEDROCK_PRIMARY_MODEL_ID:-global.anthropic.claude-haiku-4-5-20251001-v1:0}
       BEDROCK_ESCALATION_MODEL_ID: ${BEDROCK_ESCALATION_MODEL_ID:-global.anthropic.claude-sonnet-4-5-20250929-v1:0}
       CLOCK_INTERVAL_SECONDS: ${CLOCK_INTERVAL_SECONDS:-300}
+      FIRE_AUTO_POLL_ENABLED: ${FIRE_AUTO_POLL_ENABLED:-false}
       FIRE_POLL_BATCH_SIZE: ${FIRE_POLL_BATCH_SIZE:-25}
     depends_on:
       - postgres

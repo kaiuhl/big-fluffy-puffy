@@ -41,7 +41,7 @@ This is intentionally just the foundation:
 - Infrastructure scaffolding lives in `infra/`.
 - Fire-restriction ingestion jobs live in `jobs/`.
 
-Seed and run the fire-restriction ingestion loop:
+Seed and run fire-restriction ingestion manually:
 
 ```sh
 bundle exec rake db:migrate
@@ -52,6 +52,8 @@ bundle exec rake fire:review:list
 bundle exec rake 'fire:review:accept[123]'
 bundle exec rake fire:status:list
 ```
+
+Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM.
 
 Run background workers explicitly when needed:
 
