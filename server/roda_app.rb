@@ -4,6 +4,7 @@ class RodaApp < Roda
   opts[:root] = BFP.root
 
   plugin :common_logger
+  plugin :head
   plugin :public
 
   route do |r|
@@ -23,7 +24,6 @@ class RodaApp < Roda
 
     r.root do
       response["Content-Type"] = "text/html"
-      r.halt "" if r.head?
 
       <<~HTML
         <!doctype html>
