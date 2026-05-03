@@ -17,6 +17,7 @@ module BFP
         /incident context/i,
         /scan|empty pdf/i,
         /conflict/i,
+        /effective end is in the past|expired/i,
         /multiple overlapping|overlapping orders/i,
         /geographically limited|not forest[- ]wide|partial area|limited to/i
       ].freeze

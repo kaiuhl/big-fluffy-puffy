@@ -56,6 +56,21 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
     expect(status).to eq("needs_review")
   end
 
+  it "holds expired restrictive observations for review" do
+    result = parser_result("stage_2", confidence: 0.95)
+    validation = validation_result(errors: ["Restrictive status effective end is in the past."])
+
+    status = policy.review_status_for_result(
+      source: official_fire_source,
+      result: result,
+      validation: validation,
+      reasons: validation.errors,
+      extracted_text: "Stage 2 public use restrictions are in effect. Campfires are prohibited."
+    )
+
+    expect(status).to eq("needs_review")
+  end
+
   it "keeps explicit metadata auto-publish support for deterministic sources" do
     source = Struct.new(:authority, :source_type, keyword_init: true) do
       def metadata

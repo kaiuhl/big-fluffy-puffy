@@ -1,3 +1,5 @@
+require "date"
+
 module BFP
   module FireRestrictions
     class ObservationValidator
@@ -7,6 +9,10 @@ module BFP
       INCIDENT_CONTEXT_TYPES = %w[inciweb_feed nifc_feature_layer].freeze
 
       Result = Struct.new(:valid?, :errors, keyword_init: true)
+
+      def initialize(today: Date.today)
+        @today = today
+      end
 
       def validate(result, source:, extracted_text:)
         errors = []
@@ -45,9 +51,19 @@ module BFP
           errors << "Restrictive status lacks restriction/prohibition evidence."
         end
 
+        validate_effective_end(result, errors) if RESTRICTIVE_STATUSES.include?(status)
+
         if status == "none" && !evidence_text.match?(NONE_EVIDENCE)
           errors << "None status lacks explicit no-restrictions/lifted/rescinded evidence."
         end
+      end
+
+      def validate_effective_end(result, errors)
+        effective_end = parse_date(result["effective_end"])
+        return unless effective_end
+        return unless effective_end < @today
+
+        errors << "Restrictive status effective end is in the past."
       end
 
       def ignorable_supporting_quote_mismatch?(result, quote, evidence_quotes, text)
@@ -79,6 +95,14 @@ module BFP
 
       def includes_normalized?(haystack, needle)
         normalize(haystack).include?(normalize(needle))
+      end
+
+      def parse_date(value)
+        return if value.to_s.strip.empty?
+
+        Date.parse(value.to_s)
+      rescue ArgumentError
+        nil
       end
 
       def normalize(value)

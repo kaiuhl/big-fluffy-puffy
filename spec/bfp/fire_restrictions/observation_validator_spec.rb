@@ -42,6 +42,23 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result).to be_valid
   end
 
+  it "rejects expired restrictive observations" do
+    text = "Stage 2 public use restrictions are in effect. Campfires are prohibited."
+    result = described_class.new(today: Date.new(2026, 5, 3)).validate(
+      {
+        "status" => "stage_2",
+        "campfire_policy" => "prohibited",
+        "effective_end" => "2025-11-30",
+        "evidence_quotes" => [text]
+      },
+      source: source,
+      extracted_text: text
+    )
+
+    expect(result).not_to be_valid
+    expect(result.errors).to include("Restrictive status effective end is in the past.")
+  end
+
   it "requires explicit evidence for no restrictions" do
     result = validate(
       {"status" => "none", "campfire_policy" => "allowed", "evidence_quotes" => ["Fire danger is low."]},
