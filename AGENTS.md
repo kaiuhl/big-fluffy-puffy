@@ -58,7 +58,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, and `latest_observations`.
+The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, and `llm_costs`.
 
 Production console and shell:
 
@@ -114,6 +114,12 @@ To intentionally run paid parsing:
 
 ```sh
 LLM_PARSE_ENABLED=true mise exec -- bundle exec rake fire:poll_due
+```
+
+After Bedrock-backed parsing, inspect captured token usage and estimated cost with:
+
+```sh
+bin/prod-console -e 'llm_costs'
 ```
 
 ## Production

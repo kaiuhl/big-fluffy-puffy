@@ -96,6 +96,35 @@ module BFPConsoleHelpers
     end
   end
 
+  def llm_costs(limit = 20)
+    ensure_fire_loaded!
+
+    rows = BFP::FireRestrictions::RestrictionObservation.reverse(:id).all.filter_map do |observation|
+      raw_output = observation.raw_output || {}
+      usage = raw_output["llm_usage"]
+      next unless usage
+
+      {
+        id: observation.id,
+        land_unit: observation.land_unit&.slug,
+        source: observation.restriction_source&.slug,
+        model: observation.parser_model_id,
+        input_tokens: usage.fetch("input_tokens", 0),
+        output_tokens: usage.fetch("output_tokens", 0),
+        estimated_cost_usd: raw_output["llm_cost_estimate_usd"].to_f,
+        created_at: observation.created_at
+      }
+    end
+
+    {
+      observations: rows.length,
+      input_tokens: rows.sum { |row| row.fetch(:input_tokens).to_i },
+      output_tokens: rows.sum { |row| row.fetch(:output_tokens).to_i },
+      estimated_cost_usd: rows.sum { |row| row.fetch(:estimated_cost_usd).to_f }.round(6),
+      recent: rows.first(limit)
+    }
+  end
+
   def help!
     puts <<~HELP
       BFP console helpers:
@@ -108,6 +137,7 @@ module BFPConsoleHelpers
         status("deschutes")
         latest_fetches
         latest_observations
+        llm_costs
     HELP
   end
 

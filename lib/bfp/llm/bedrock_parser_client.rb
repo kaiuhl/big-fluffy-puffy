@@ -5,6 +5,22 @@ module BFP
     class BedrockParserClient < ParserClient
       TOOL_NAME = "record_fire_restriction_observation"
       PRIMARY_MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+      PRICING_BY_MODEL_PATTERN = [
+        [
+          /haiku-4-5/,
+          {
+            input_per_million: 1.0,
+            output_per_million: 5.0
+          }
+        ],
+        [
+          /sonnet-4-5/,
+          {
+            input_per_million: 3.0,
+            output_per_million: 15.0
+          }
+        ]
+      ].freeze
 
       SYSTEM_PROMPT = <<~PROMPT.freeze
         You parse official wildfire and public-use restriction source text into structured observations.
@@ -34,9 +50,12 @@ module BFP
 
         parsed = JSON.parse(response.body.read)
         result = tool_result(parsed) || text_result(parsed)
+        usage = usage_from(parsed)
         result.merge(
           "parser_provider" => "bedrock",
-          "parser_model_id" => selected_model
+          "parser_model_id" => selected_model,
+          "llm_usage" => usage,
+          "llm_cost_estimate_usd" => estimate_cost(selected_model, usage)
         )
       end
 
@@ -95,6 +114,35 @@ module BFP
       def text_result(parsed)
         text = parsed.fetch("content", []).filter_map { |content| content["text"] }.join("\n")
         JSON.parse(text[/\{.*\}/m] || "{}")
+      end
+
+      def usage_from(parsed)
+        usage = parsed.fetch("usage", {})
+        {
+          "input_tokens" => usage.fetch("input_tokens", 0).to_i,
+          "output_tokens" => usage.fetch("output_tokens", 0).to_i,
+          "cache_creation_input_tokens" => usage.fetch("cache_creation_input_tokens", 0).to_i,
+          "cache_read_input_tokens" => usage.fetch("cache_read_input_tokens", 0).to_i
+        }
+      end
+
+      def estimate_cost(model_id, usage)
+        pricing = pricing_for(model_id)
+        return unless pricing
+
+        input_tokens = usage.fetch("input_tokens", 0) + usage.fetch("cache_creation_input_tokens", 0)
+        output_tokens = usage.fetch("output_tokens", 0)
+        cost = (input_tokens * pricing.fetch(:input_per_million) / 1_000_000.0) +
+          (output_tokens * pricing.fetch(:output_per_million) / 1_000_000.0)
+        cost.round(8)
+      end
+
+      def pricing_for(model_id)
+        PRICING_BY_MODEL_PATTERN.each do |pattern, pricing|
+          return pricing if model_id.to_s.match?(pattern)
+        end
+
+        nil
       end
     end
   end

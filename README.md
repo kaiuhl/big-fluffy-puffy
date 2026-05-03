@@ -41,6 +41,12 @@ bin/console -e 'latest_fetches'
 
 Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, and `latest_observations`.
 
+After a Bedrock-backed parse run, use `llm_costs` to see captured token usage and an estimated per-run cost:
+
+```sh
+bin/prod-console -e 'llm_costs'
+```
+
 To explore production data on the Lightsail box:
 
 ```sh
