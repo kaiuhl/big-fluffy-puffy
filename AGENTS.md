@@ -19,6 +19,7 @@ Useful docs:
 - `docs/operations.md`: deploy and server operations.
 - `docs/architecture.md`: current production shape.
 - `docs/fire-restrictions-data-inventory.md`: source inventory and ingestion rationale.
+- `docs/fire-restriction-review-playbook.md`: AI-assisted production review workflow and manual approval boundary.
 - `infra/opentofu/README.md`: repo-managed AWS resources, including Bedrock parser IAM.
 - `infra/ansible/README.md`: Lightsail host configuration, including production `.env` management.
 
@@ -99,8 +100,8 @@ The catalog currently seeds:
 
 - 26 land units total.
 - 23 active land units.
-- 111 sources total.
-- 99 active sources.
+- 113 sources total.
+- 101 active sources.
 
 Cost safety matters. Defaults should stay manual and cheap:
 
@@ -265,6 +266,7 @@ Last known production smoke state after deploying fire ingestion:
 - ArcGIS geometry is stored as JSONB. Do not add PostGIS unless the product genuinely needs geometry queries.
 - Keep LLM parsing conservative: unsupported fields should become `unknown`, and non-ArcGIS parsed observations should require human review before public trust.
 - Evidence quotes for HTML/PDF must match extracted text after whitespace normalization. ArcGIS evidence can be concise attribute summaries.
+- For AI-assisted review of production fire-restriction data, follow `docs/fire-restriction-review-playbook.md`. Do not manually accept observations with `accept_observation` unless the user explicitly authorizes manual review or manual approval; otherwise build durable parser/source/policy improvements and report recommendations.
 - Do not commit secrets or production `.env`.
 - Do not stage unrelated local files. In current local worktrees, `public/images/` may be untracked and unrelated.
 
