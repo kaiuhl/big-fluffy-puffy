@@ -1,6 +1,11 @@
 require_relative "../config/boot"
 
 class RodaApp < Roda
+  NAV_LINKS = [
+    {href: "/", label: "Home"},
+    {href: "/fire-restrictions", label: "Fire Restrictions"}
+  ].freeze
+
   opts[:root] = BFP.root
 
   plugin :common_logger
@@ -49,10 +54,7 @@ class RodaApp < Roda
           <body>
             <div class="page">
               <main class="restrictions-page">
-                <header class="restrictions-header">
-                  <a href="/">Big Fluffy Puffy</a>
-                  <p>Fire Restrictions</p>
-                </header>
+                #{site_header(current_path: "/fire-restrictions")}
 
                 <section class="restrictions-intro" aria-labelledby="restrictions-title">
                   <p class="kicker">Official source monitor</p>
@@ -90,10 +92,7 @@ class RodaApp < Roda
           <body>
             <div class="page">
               <main class="landing">
-                <header class="site-header" aria-label="Site">
-                  <p>Big Fluffy Puffy</p>
-                  <p class="brand-code">BFP / PNW / In formation</p>
-                </header>
+                #{site_header(current_path: "/")}
 
                 <section class="hero" aria-labelledby="page-title">
                   <div class="nameplate">
@@ -128,6 +127,33 @@ class RodaApp < Roda
   end
 
   private
+
+  def site_header(current_path:)
+    <<~HTML
+      <header class="site-header" aria-label="Site">
+        <a class="site-brand" href="/">Big Fluffy Puffy</a>
+        <nav class="site-nav" aria-label="Primary">
+          <ul>
+            #{nav_items(current_path)}
+          </ul>
+        </nav>
+      </header>
+    HTML
+  end
+
+  def nav_items(current_path)
+    NAV_LINKS.map do |link|
+      current = link.fetch(:href) == current_path
+      aria_current = current ? %( aria-current="page") : ""
+      class_name = current ? %( class="site-nav-active") : ""
+
+      <<~HTML
+        <li>
+          <a href="#{h(link.fetch(:href))}"#{class_name}#{aria_current}>#{h(link.fetch(:label))}</a>
+        </li>
+      HTML
+    end.join
+  end
 
   def fire_restriction_records
     require "bfp/fire_restrictions"

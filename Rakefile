@@ -61,26 +61,19 @@ namespace :fire do
 
   namespace :review do
     desc "List fire restriction observations awaiting review"
-    task :list do
+    task :list, [:limit] do |_task, args|
       load_fire_restrictions
 
-      observations = BFP::FireRestrictions::RestrictionObservation
-        .where(review_status: "needs_review")
-        .reverse(:created_at)
-        .limit(50)
-        .all
+      puts BFP::FireRestrictions::ReviewPresenter.new.format_queue(limit: args[:limit] || 50)
+    end
 
-      observations.each do |observation|
-        puts [
-          observation.id,
-          observation.land_unit.name,
-          observation.restriction_source.slug,
-          observation.status,
-          "confidence=#{observation.confidence}",
-          Array(observation.needs_review_reasons).join("; ")
-        ].join(" | ")
-      end
-      puts "No observations need review." if observations.empty?
+    desc "Show one parsed fire restriction observation"
+    task :show, [:observation_id] do |_task, args|
+      load_fire_restrictions
+
+      raise "Usage: rake fire:review:show[observation_id]" unless args[:observation_id]
+
+      puts BFP::FireRestrictions::ReviewPresenter.new.format_detail(args[:observation_id])
     end
 
     desc "Accept a parsed fire restriction observation and resolve the public status"
@@ -96,6 +89,25 @@ namespace :fire do
       observation.save
       BFP::FireRestrictions::Resolver.new.resolve(observation.land_unit)
       puts "Accepted observation #{observation.id} for #{observation.land_unit.name}."
+    end
+
+    desc "Reject a parsed fire restriction observation and resolve the public status"
+    task :reject, [:observation_id, :reason] do |_task, args|
+      load_fire_restrictions
+
+      raise "Usage: rake fire:review:reject[observation_id,reason]" unless args[:observation_id]
+
+      observation = BFP::FireRestrictions::RestrictionObservation[Integer(args[:observation_id])]
+      raise "Unknown observation: #{args[:observation_id]}" unless observation
+
+      reasons = Array(observation.needs_review_reasons)
+      reasons << "Reviewer rejected: #{args[:reason]}" if args[:reason].to_s.strip != ""
+      observation.update(
+        review_status: "rejected",
+        needs_review_reasons: BFP::FireRestrictions::Jsonb.wrap(reasons)
+      )
+      BFP::FireRestrictions::Resolver.new.resolve(observation.land_unit)
+      puts "Rejected observation #{observation.id} for #{observation.land_unit.name}."
     end
   end
 

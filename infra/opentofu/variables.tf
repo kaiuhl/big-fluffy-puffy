@@ -36,6 +36,12 @@ variable "bedrock_primary_model_id" {
   default     = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 }
 
+variable "bedrock_primary_marketplace_product_id" {
+  type        = string
+  description = "AWS Marketplace product ID for the primary Bedrock model. Used only for just-in-time first-use model enablement."
+  default     = "prod-xdkflymybwmvi"
+}
+
 variable "bedrock_escalation_model_id" {
   type        = string
   description = "Escalation model ID that this IAM identity explicitly cannot invoke."

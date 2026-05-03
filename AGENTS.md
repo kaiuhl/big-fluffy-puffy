@@ -60,7 +60,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, and `llm_costs`.
+The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `llm_costs`.
 
 Production console and shell:
 
@@ -76,7 +76,7 @@ Both production scripts default to `ubuntu@34.223.75.206`, `~/.ssh/bfp-lightsail
 
 Keep production cheap on Lightsail. The app uses least-privilege AWS access keys in `/srv/bfp/.env` for Bedrock instead of moving to EC2 instance roles.
 
-OpenTofu in `infra/opentofu` owns the Bedrock parser IAM user, access key, Haiku-only allow policy, and explicit deny for other Bedrock model invocations. Its provider is pinned to `aws_account_id`; do not remove that guard. OpenTofu state contains the generated secret access key, so never commit local state files and move state to an encrypted/locked backend before managing more production resources.
+OpenTofu in `infra/opentofu` owns the Bedrock parser IAM user, access key, Haiku-only allow policy, narrowly scoped Haiku Marketplace first-use subscription permission, and explicit deny for other Bedrock model invocations. Its provider is pinned to `aws_account_id`; do not remove that guard. OpenTofu state contains the generated secret access key, so never commit local state files and move state to an encrypted/locked backend before managing more production resources.
 
 Ansible in `infra/ansible` writes those credentials and conservative parser flags into the production `.env`. By default it keeps `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false`.
 
@@ -117,7 +117,9 @@ mise exec -- bundle exec rake fire:sources:seed
 mise exec -- bundle exec rake 'fire:poll[willamette-fire-info]'
 mise exec -- bundle exec rake fire:poll_due
 mise exec -- bundle exec rake fire:review:list
+mise exec -- bundle exec rake 'fire:review:show[123]'
 mise exec -- bundle exec rake 'fire:review:accept[123]'
+mise exec -- bundle exec rake 'fire:review:reject[123,wrong source]'
 mise exec -- bundle exec rake fire:status:list
 ```
 

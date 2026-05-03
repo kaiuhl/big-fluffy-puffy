@@ -48,6 +48,28 @@ RSpec.describe "fire restriction database integration", :db do
     expect(rows.count { |row| row[:status] == "stage_1" }).to eq(land_units.length)
   end
 
+  it "presents observations for human review" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    land_unit = BFP::FireRestrictions::LandUnit.first(slug: "willamette")
+    source = preferred_html_source(land_unit)
+    fetch = create_fixture_fetch(land_unit, source)
+    observation = BFP::FireRestrictions::SourceParser.new.parse_fetch(fetch)
+    presenter = BFP::FireRestrictions::ReviewPresenter.new
+
+    expect(presenter.queue(limit: 5).first).to include(
+      id: observation.id,
+      forest: "Willamette National Forest",
+      status: "stage_1"
+    )
+
+    detail = presenter.detail(observation.id)
+    expect(detail[:commands]).to include("bin/prod-console -e 'accept_observation(#{observation.id})'")
+    expect(detail[:evidence_quotes]).not_to be_empty
+    expect(presenter.format_detail(observation.id)).to include("Observation #{observation.id}")
+  end
+
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"

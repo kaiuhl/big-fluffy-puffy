@@ -93,6 +93,30 @@ data "aws_iam_policy_document" "bedrock_parser" {
   }
 
   statement {
+    sid    = "AllowPrimaryModelMarketplaceSubscriptionViaBedrock"
+    effect = "Allow"
+
+    actions = [
+      "aws-marketplace:Subscribe",
+      "aws-marketplace:ViewSubscriptions"
+    ]
+
+    resources = ["*"]
+
+    condition {
+      test     = "ForAllValues:StringEquals"
+      variable = "aws-marketplace:ProductId"
+      values   = [var.bedrock_primary_marketplace_product_id]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:CalledViaLast"
+      values   = ["bedrock.amazonaws.com"]
+    }
+  }
+
+  statement {
     sid    = "DenyAllOtherBedrockModelInvocations"
     effect = "Deny"
 
@@ -125,8 +149,14 @@ data "aws_iam_policy_document" "bedrock_parser" {
   }
 }
 
-resource "aws_iam_user_policy" "bedrock_parser" {
-  name   = "bfp-bedrock-parser-haiku-only"
-  user   = aws_iam_user.bedrock_parser.name
-  policy = data.aws_iam_policy_document.bedrock_parser.json
+resource "aws_iam_policy" "bedrock_parser" {
+  name        = "bfp-${var.environment}-bedrock-parser-haiku-only"
+  description = "Least-privilege Haiku-only Bedrock parser permissions for BFP ${var.environment}."
+  path        = "/bfp/"
+  policy      = data.aws_iam_policy_document.bedrock_parser.json
+}
+
+resource "aws_iam_user_policy_attachment" "bedrock_parser" {
+  user       = aws_iam_user.bedrock_parser.name
+  policy_arn = aws_iam_policy.bedrock_parser.arn
 }

@@ -96,6 +96,56 @@ module BFPConsoleHelpers
     end
   end
 
+  def review_queue(limit = 20, status: nil, land_unit: nil)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::ReviewPresenter.new.queue(limit: limit, status: status, land_unit: land_unit)
+  end
+
+  def review_observation(id)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::ReviewPresenter.new.detail(id)
+  end
+
+  def accept_observation(id)
+    ensure_fire_loaded!
+
+    observation = BFP::FireRestrictions::RestrictionObservation[Integer(id)]
+    raise "Unknown observation: #{id}" unless observation
+
+    observation.update(review_status: "accepted")
+    BFP::FireRestrictions::Resolver.new.resolve(observation.land_unit)
+
+    {
+      accepted_observation_id: observation.id,
+      forest: observation.land_unit.name,
+      public_status: status(observation.land_unit.slug)&.status,
+      public_campfire_policy: status(observation.land_unit.slug)&.campfire_policy
+    }
+  end
+
+  def reject_observation(id, reason = nil)
+    ensure_fire_loaded!
+
+    observation = BFP::FireRestrictions::RestrictionObservation[Integer(id)]
+    raise "Unknown observation: #{id}" unless observation
+
+    reasons = Array(observation.needs_review_reasons)
+    reasons << "Reviewer rejected: #{reason}" if reason.to_s.strip != ""
+    observation.update(
+      review_status: "rejected",
+      needs_review_reasons: BFP::FireRestrictions::Jsonb.wrap(reasons)
+    )
+    BFP::FireRestrictions::Resolver.new.resolve(observation.land_unit)
+
+    {
+      rejected_observation_id: observation.id,
+      forest: observation.land_unit.name,
+      public_status: status(observation.land_unit.slug)&.status
+    }
+  end
+
   def llm_costs(limit = 20)
     ensure_fire_loaded!
 
@@ -137,6 +187,11 @@ module BFPConsoleHelpers
         status("deschutes")
         latest_fetches
         latest_observations
+        review_queue
+        review_queue(20, status: "partial")
+        review_observation(123)
+        accept_observation(123)
+        reject_observation(123, "reason")
         llm_costs
     HELP
   end

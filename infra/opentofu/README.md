@@ -6,6 +6,7 @@ Current resources:
 
 - IAM user for the production app's Bedrock parser credentials.
 - Haiku-only `bedrock:InvokeModel` policy for the primary parser model.
+- Scoped AWS Marketplace subscribe/view permissions for the Haiku 4.5 Bedrock product, only when called through Bedrock for first-use model enablement.
 - Explicit deny for every other Bedrock model invocation, including the configured Sonnet escalation model.
 
 Planned resources:
@@ -51,4 +52,6 @@ Important: `aws_iam_access_key.bedrock_parser.secret` is stored in OpenTofu stat
 
 ## Bedrock Model Access
 
-IAM permissions are necessary but may not be sufficient on a fresh AWS account. If Bedrock returns a model-access error after these credentials are installed, enable access for the Anthropic Haiku model in the AWS Bedrock console for `us-west-2`.
+IAM permissions are necessary but may not be sufficient on a fresh AWS account. Anthropic models require the first-time use case form, and third-party Bedrock models may create an AWS Marketplace subscription on first invocation.
+
+This configuration allows the production parser identity to subscribe only to the configured Haiku 4.5 product ID through Bedrock. It does not allow Sonnet invocation, and it does not grant broad Marketplace access.

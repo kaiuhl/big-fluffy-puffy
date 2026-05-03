@@ -57,6 +57,7 @@ a {
 .site-header,
 .site-footer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   padding: clamp(16px, 2.5vw, 28px);
@@ -75,12 +76,38 @@ a {
   color: var(--charcoal);
 }
 
-.site-footer p,
-.site-header p {
+.site-footer p {
   margin: 0;
 }
 
-.brand-code {
+.site-brand {
+  flex: 0 0 auto;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.site-nav {
+  min-width: 0;
+}
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.site-nav-active {
   color: var(--signal);
 }
 
@@ -174,24 +201,6 @@ h1 {
   min-height: 100vh;
   border: 1px solid var(--black);
   background: var(--white);
-}
-
-.restrictions-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  border-bottom: 1px solid var(--black);
-  padding: clamp(16px, 2.5vw, 28px);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.restrictions-header a,
-.restrictions-header p {
-  margin: 0;
 }
 
 .restrictions-intro {
@@ -402,14 +411,15 @@ h1 {
   .site-header,
   .site-footer {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-nav ul {
+    justify-content: flex-start;
   }
 
   .mission {
     gap: 16px;
-  }
-
-  .restrictions-header {
-    flex-direction: column;
   }
 
   .restrictions-section-heading {

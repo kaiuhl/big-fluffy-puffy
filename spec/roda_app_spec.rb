@@ -38,6 +38,8 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("National Forest Fire Restrictions")
+    expect(last_response.body).to include('href="/"')
+    expect(last_response.body).to include('aria-current="page">Fire Restrictions')
   end
 
   it "renders grouped fire restriction sections" do
@@ -104,6 +106,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Big Fluffy Puffy")
     expect(last_response.body).to include("Skip the campfire. Pack the warmth.")
     expect(last_response.body).to include("nonprofit building fireless camp culture")
+    expect(last_response.body).to include('href="/fire-restrictions"')
   end
 
   it "responds to head requests for the landing page" do
