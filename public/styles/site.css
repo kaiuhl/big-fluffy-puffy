@@ -14,6 +14,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   min-height: 100%;
   background: var(--off-white);
@@ -255,6 +259,49 @@ h1 {
   font-weight: 750;
 }
 
+.restrictions-filter {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.28fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px 18px;
+  border-bottom: 1px solid var(--black);
+  padding: 18px clamp(20px, 5vw, 44px);
+}
+
+.restrictions-filter label,
+.restrictions-filter p {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.restrictions-filter label {
+  color: var(--black);
+}
+
+.restrictions-filter input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--black);
+  border-radius: 0;
+  padding: 11px 12px;
+  color: var(--black);
+  background: var(--white);
+  font: inherit;
+}
+
+.restrictions-filter input:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.restrictions-filter p {
+  color: var(--mid-gray);
+  white-space: nowrap;
+}
+
 .restrictions-sections {
   display: grid;
 }
@@ -435,5 +482,112 @@ h1 {
 
   .restrictions-table-wrap {
     padding: 0;
+    overflow-x: visible;
+  }
+
+  .restrictions-intro {
+    padding: 28px 18px;
+  }
+
+  .restrictions-intro h1 {
+    font-size: 2.75rem;
+    line-height: 0.92;
+  }
+
+  .restrictions-summary {
+    padding: 22px 18px;
+  }
+
+  .restrictions-filter {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .restrictions-filter p {
+    white-space: normal;
+  }
+
+  .summary-statement {
+    font-size: 1.7rem;
+  }
+
+  .restrictions-section-heading {
+    padding: 22px 18px 0;
+  }
+
+  .restrictions-section-heading h2 {
+    font-size: 2rem;
+  }
+
+  .restrictions-table {
+    display: block;
+    min-width: 0;
+    font-size: 0.95rem;
+  }
+
+  .restrictions-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .restrictions-table tbody,
+  .restrictions-table tr,
+  .restrictions-table th,
+  .restrictions-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .restrictions-table tr {
+    border-bottom: 1px solid var(--rule-gray);
+    padding: 18px;
+  }
+
+  .restrictions-table th,
+  .restrictions-table td {
+    border-bottom: 0;
+    padding: 0;
+  }
+
+  .restrictions-table tbody th {
+    min-width: 0;
+    margin-bottom: 12px;
+  }
+
+  .restrictions-table tbody th span {
+    font-size: 1.08rem;
+    line-height: 1.15;
+  }
+
+  .restrictions-table td {
+    display: grid;
+    grid-template-columns: minmax(86px, 0.34fr) minmax(0, 1fr);
+    gap: 12px;
+    padding: 7px 0;
+  }
+
+  .restrictions-table td::before {
+    content: attr(data-label);
+    color: var(--mid-gray);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .restrictions-table td:nth-child(3),
+  .restrictions-table td:nth-child(4),
+  .restrictions-table td:nth-child(5) {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .restrictions-table td:nth-child(3) a {
+    margin: 0;
+    overflow-wrap: anywhere;
   }
 }

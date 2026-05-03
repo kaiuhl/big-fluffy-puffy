@@ -93,12 +93,13 @@ class RodaApp < Roda
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Fire Restrictions | Big Fluffy Puffy</title>
+            <title>PNW Fire Restrictions | Big Fluffy Puffy</title>
             <meta
               name="description"
-              content="National forest fire restriction status for Big Fluffy Puffy's Pacific Northwest market."
+              content="Pacific Northwest fire restriction status for Big Fluffy Puffy's launch market."
             >
             <link rel="stylesheet" href="/styles/site.css">
+            <script src="/scripts/fire-restrictions.js" defer></script>
           </head>
           <body>
             <div class="page">
@@ -107,7 +108,7 @@ class RodaApp < Roda
 
                 <section class="restrictions-intro" aria-labelledby="restrictions-title">
                   <p class="kicker">Official source monitor</p>
-                  <h1 id="restrictions-title">National Forest Fire Restrictions</h1>
+                  <h1 id="restrictions-title">PNW Fire Restrictions</h1>
                   <p>
                     Published forest-wide fire restriction status for Oregon, Washington, and Northern California.
                     Unknown entries need source review before they become public claims.
@@ -222,6 +223,20 @@ class RodaApp < Roda
         #{restriction_summary(groups)}
       </section>
 
+      <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
+        <label id="restrictions-filter-label" for="restrictions-search">Search Forests</label>
+        <input
+          id="restrictions-search"
+          name="q"
+          type="search"
+          autocomplete="off"
+          placeholder="Forest, state, source, policy"
+        >
+        <p id="restrictions-filter-status" aria-live="polite">
+          Showing #{forest_count(records.length)}.
+        </p>
+      </section>
+
       <div class="restrictions-sections">
         #{fire_restrictions_section(
           id: "active-restrictions",
@@ -295,10 +310,10 @@ class RodaApp < Roda
       <section class="restrictions-section restrictions-section-#{h(tone)}" aria-labelledby="#{h(id)}">
         <div class="restrictions-section-heading">
           <h2 id="#{h(id)}">#{h(title)}</h2>
-          <p>#{records.length} #{noun}</p>
+          <p class="restrictions-section-count" data-total="#{records.length}">#{records.length} #{noun}</p>
         </div>
         <div class="restrictions-table-wrap">
-          #{records.empty? ? section_empty_message(empty_message) : fire_restrictions_table(records)}
+          #{records.empty? ? section_empty_message(empty_message) : "#{fire_restrictions_table(records)}#{filter_empty_message}"}
         </div>
       </section>
     HTML
@@ -334,10 +349,10 @@ class RodaApp < Roda
           <span>#{h(forest[:name])}</span>
           <small>#{h(region_state_label(forest))}</small>
         </th>
-        <td>#{h(labelize(forest[:campfire_policy]))}</td>
-        <td>#{source_link(source)}</td>
-        <td>#{checked_at_cell(forest, source)}</td>
-        <td>#{h(restriction_note(forest))}</td>
+        <td data-label="Campfires">#{h(labelize(forest[:campfire_policy]))}</td>
+        <td data-label="Source">#{source_link(source)}</td>
+        <td data-label="Checked">#{checked_at_cell(forest, source)}</td>
+        <td data-label="Note">#{h(restriction_note(forest))}</td>
       </tr>
     HTML
   end
@@ -374,6 +389,14 @@ class RodaApp < Roda
     <<~HTML
       <div class="empty-state empty-state-section">
         <p>#{h(message)}</p>
+      </div>
+    HTML
+  end
+
+  def filter_empty_message
+    <<~HTML
+      <div class="empty-state empty-state-section restrictions-filter-empty" hidden>
+        <p>No matching forests.</p>
       </div>
     HTML
   end

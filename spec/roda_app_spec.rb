@@ -37,9 +37,10 @@ RSpec.describe RodaApp do
     get "/fire-restrictions"
 
     expect(last_response).to be_ok
-    expect(last_response.body).to include("National Forest Fire Restrictions")
+    expect(last_response.body).to include("PNW Fire Restrictions")
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js"')
   end
 
   it "renders grouped fire restriction sections" do
@@ -63,6 +64,13 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Developed Sites Only")
     expect(last_response.body).to include("Needs Review")
     expect(last_response.body).not_to include("<th scope=\"col\">Status</th>")
+    expect(last_response.body).to include('for="restrictions-search"')
+    expect(last_response.body).to include('id="restrictions-filter-status"')
+    expect(last_response.body).to include('data-label="Campfires"')
+    expect(last_response.body).to include('data-label="Source"')
+    expect(last_response.body).to include('data-label="Checked"')
+    expect(last_response.body).to include('data-label="Note"')
+    expect(last_response.body).to include("restrictions-filter-empty")
   end
 
   it "renders region and state under the forest name and sorts by state then forest" do
@@ -151,6 +159,14 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("--signal: #ff4b1f")
+  end
+
+  it "serves the fire restrictions search script" do
+    get "/scripts/fire-restrictions.js"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("setupFireRestrictionSearch")
+    expect(last_response.body).to include("dataset.filterText")
   end
 
   def stub_fire_restriction_records(records)
