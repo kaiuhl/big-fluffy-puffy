@@ -1,0 +1,9 @@
+url: "https://bigfluffypuffy.org"
+permalink: pretty
+timezone: America/Los_Angeles
+
+template_engine: erb
+
+collections:
+  posts:
+    output: true

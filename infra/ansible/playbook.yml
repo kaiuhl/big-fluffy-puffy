@@ -1,0 +1,8 @@
+---
+- name: Provision BFP host
+  hosts: bfp
+  become: true
+  tasks:
+    - name: Placeholder until host details are available
+      ansible.builtin.debug:
+        msg: "BFP provisioning playbook scaffolded."

@@ -1,0 +1,60 @@
+services:
+  caddy:
+    image: caddy:2
+    depends_on:
+      - web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  web:
+    build: .
+    command: bundle exec puma -C config/puma.rb
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgres://bfp:bfp@postgres:5432/bfp_development
+    depends_on:
+      - postgres
+    ports:
+      - "9292:9292"
+
+  worker:
+    build: .
+    command: ruby jobs/worker.rb
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgres://bfp:bfp@postgres:5432/bfp_development
+    depends_on:
+      - postgres
+
+  clock:
+    build: .
+    command: ruby jobs/clock.rb
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bfp
+      POSTGRES_PASSWORD: bfp
+      POSTGRES_DB: bfp_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  caddy_config:
+  caddy_data:
+  postgres_data:
