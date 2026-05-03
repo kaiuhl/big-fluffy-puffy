@@ -260,10 +260,12 @@ h1 {
 }
 
 .restrictions-map-section {
+  --restrictions-map-section-pad-x: clamp(20px, 5vw, 44px);
+
   display: grid;
   gap: 18px;
   border-bottom: 1px solid var(--black);
-  padding: clamp(20px, 4vw, 36px) clamp(20px, 5vw, 44px);
+  padding: clamp(20px, 4vw, 36px) var(--restrictions-map-section-pad-x);
   background: var(--white);
 }
 
@@ -321,9 +323,10 @@ h1 {
 }
 
 .restrictions-map {
-  width: 100%;
+  width: calc(100% + (var(--restrictions-map-section-pad-x) * 2));
   height: clamp(340px, 34vw, 420px);
-  border: 1px solid var(--black);
+  margin-inline: calc(var(--restrictions-map-section-pad-x) * -1);
+  border-block: 1px solid var(--black);
   background: #dfe7df;
 }
 
@@ -636,7 +639,9 @@ h1 {
   }
 
   .restrictions-map-section {
-    padding: 20px 18px;
+    --restrictions-map-section-pad-x: 18px;
+
+    padding: 20px var(--restrictions-map-section-pad-x);
   }
 
   .restrictions-map-heading {
