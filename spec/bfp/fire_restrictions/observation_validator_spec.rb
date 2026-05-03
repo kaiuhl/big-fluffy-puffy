@@ -89,6 +89,29 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result).to be_valid
   end
 
+  it "accepts structured alerts-page evidence for no active forest fire restriction alerts" do
+    text = "No active forest fire restriction alerts were listed in the Forest Alerts section."
+    result = validate(
+      {"status" => "none", "campfire_policy" => "unknown", "evidence_quotes" => [text]},
+      text
+    )
+
+    expect(result).to be_valid
+  end
+
+  it "normalizes non-breaking spaces when matching evidence quotes" do
+    result = validate(
+      {
+        "status" => "unknown",
+        "campfire_policy" => "unknown",
+        "evidence_quotes" => ["Fireworks and explosives are always prohibited on national forest lands."]
+      },
+      "Fireworks and explosives are always prohibited\u00a0on national forest lands."
+    )
+
+    expect(result.errors).to be_empty
+  end
+
   it "prevents incident context sources from setting campfire policy" do
     inciweb_source = source_class.new("inciweb_feed")
     result = described_class.new.validate(

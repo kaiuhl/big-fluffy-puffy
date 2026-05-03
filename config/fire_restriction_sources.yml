@@ -72,6 +72,16 @@ land_units:
     market_bucket: core_pnw
     official_url: https://www.fs.usda.gov/r06/fremont-winema
     active: true
+    sources:
+      - slug: fremont-winema-scofmp-fire-restrictions
+        name: SCOFMP Fire Restrictions
+        source_type: fs_fire_info_page
+        authority: official_usfs
+        url: https://www.scofmp.org/files/FS-PUR.pdf
+        parser_key: usfs_pdf
+        poll_interval_minutes: 360
+        metadata_json:
+          source_note: South Central Oregon Fire Management Partnership public-use restriction PDF for Fremont-Winema National Forest.
 
   - slug: gifford-pinchot
     name: Gifford Pinchot National Forest

@@ -10,6 +10,13 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       end
     end.new(authority: "official_usfs", source_type: "fs_fire_page")
   end
+  let(:official_alerts_source) do
+    Struct.new(:authority, :source_type, keyword_init: true) do
+      def metadata
+        {}
+      end
+    end.new(authority: "official_usfs", source_type: "fs_alerts_page")
+  end
 
   it "auto-accepts validated high-confidence no-restriction observations from official fire pages" do
     result = parser_result("none", confidence: 0.95, reasons: ["Campfire policy not explicitly stated."])
@@ -90,6 +97,66 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
     )
 
     expect(status).to eq("auto_accepted")
+  end
+
+  it "auto-accepts high-confidence advisories from official sources" do
+    result = parser_result(
+      "advisory",
+      confidence: 0.9
+    ).merge(
+      "evidence_quotes" => ["PUR: Seasonal Restrictions"]
+    )
+    validation = validation_result(errors: [])
+
+    status = policy.review_status_for_result(
+      source: official_fire_source,
+      result: result,
+      validation: validation,
+      reasons: [],
+      extracted_text: "PUR: Seasonal Restrictions"
+    )
+
+    expect(status).to eq("auto_accepted")
+  end
+
+  it "auto-accepts official alerts pages when structured extraction shows no active forest fire restriction alerts" do
+    result = parser_result(
+      "none",
+      confidence: 0.9
+    ).merge(
+      "evidence_quotes" => ["No active forest fire restriction alerts were listed in the Forest Alerts section."]
+    )
+    validation = validation_result(errors: [])
+
+    status = policy.review_status_for_result(
+      source: official_alerts_source,
+      result: result,
+      validation: validation,
+      reasons: [],
+      extracted_text: "No active forest fire restriction alerts were listed in the Forest Alerts section."
+    )
+
+    expect(status).to eq("auto_accepted")
+  end
+
+  it "holds official alerts-page none observations when the page points to a separate current restrictions source" do
+    result = parser_result(
+      "none",
+      confidence: 0.9
+    ).merge(
+      "evidence_quotes" => ["No active forest fire restriction alerts were listed in the Forest Alerts section."]
+    )
+    validation = validation_result(errors: [])
+
+    status = policy.review_status_for_result(
+      source: official_alerts_source,
+      result: result,
+      validation: validation,
+      reasons: [],
+      extracted_text: "No active forest fire restriction alerts were listed in the Forest Alerts section. IFPLs and Restrictions"
+    )
+
+    expect(status).to eq("needs_review")
   end
 
   it "auto-accepts clear none observations with stale supporting quote mismatch errors" do

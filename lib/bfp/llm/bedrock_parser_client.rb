@@ -31,6 +31,11 @@ module BFP
         - Evidence quotes must be exact short spans from the supplied text.
         - Restrictive statuses require prohibition, restriction, order, closure, or Stage 1/Stage 2 evidence.
         - A "none" status requires explicit "no restrictions", "lifted", "rescinded", or equivalent evidence.
+        - Low fire danger, no featured alerts, or absence of a restriction is not enough by itself for "none".
+        - A generated Forest Alert Summary line saying no active forest fire restriction alerts were listed can support "none" for seasonal forest-wide public-use restrictions.
+        - Ignore Alerts Key labels, Region Alerts, fireworks/explosives boilerplate, fire danger definitions, and unrelated road/camping/occupancy closures when deciding seasonal fire restriction status.
+        - If a fire restriction is geographically limited, wilderness-only, corridor-only, incident-area-only, or future/seasonal but not currently effective, mark it partial and include a review reason.
+        - Current "PUR: Seasonal Restrictions" or Phase A public-use restrictions should be advisory unless the current phase explicitly prohibits campfires.
         - InciWeb, NIFC, and active incident context cannot determine campfire policy.
         - Prefer needs_review_reasons over guessing.
       PROMPT

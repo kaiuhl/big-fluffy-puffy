@@ -5,11 +5,12 @@ module BFP
     class AutoReviewPolicy
       OFFICIAL_AUTO_SOURCE_TYPES = %w[
         arcgis_feature_layer
+        fs_alerts_page
         fs_alert_detail
         fs_fire_info_page
         fs_fire_page
       ].freeze
-      ACTIVE_AUTO_STATUSES = %w[closure full stage_1 stage_2 year_round].freeze
+      ACTIVE_AUTO_STATUSES = %w[advisory closure full stage_1 stage_2 year_round].freeze
       HARD_REVIEW_REASON_PATTERNS = [
         /LLM parsing (failed|is disabled)/i,
         /evidence quote does not match/i,
@@ -66,6 +67,8 @@ module BFP
         return false unless context.fetch(:hard_review_reasons).empty?
 
         if context.fetch(:status).to_s == "none"
+          return false if source.source_type == "fs_alerts_page" && !alerts_page_none_publishable?(context)
+
           return context.fetch(:confidence).to_f >= 0.85 && none_evidence_clear?(context)
         end
 
@@ -117,6 +120,14 @@ module BFP
           context.fetch(:extracted_text).to_s
         ].join("\n")
         evidence_text.match?(ObservationValidator::NONE_EVIDENCE)
+      end
+
+      def alerts_page_none_publishable?(context)
+        text = context.fetch(:extracted_text).to_s
+        return false unless text.match?(/No active forest fire restriction alerts were listed/i)
+        return false if text.match?(/IFPLs and Restrictions|Current Fire Restrictions & Updates|Current IFPL & Restrictions|Fire Restrictions and Danger Levels|South[- ]Central Oregon Fire Management Partnership/i)
+
+        true
       end
 
       def json_array(value)

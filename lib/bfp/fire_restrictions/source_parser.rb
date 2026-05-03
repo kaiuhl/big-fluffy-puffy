@@ -31,6 +31,7 @@ module BFP
         end
 
         result = parse_result(document.extracted_text.to_s, source, land_unit)
+        result = apply_structural_overrides(result, document.extracted_text.to_s, source)
         validation = @validator.validate(result, source: source, extracted_text: document.extracted_text.to_s)
 
         if should_escalate?(result, validation, document.extracted_text.to_s, source, land_unit)
@@ -219,6 +220,38 @@ module BFP
           "parser_provider" => ENV.fetch("LLM_PROVIDER", "bedrock"),
           "parser_model_id" => nil
         }
+      end
+
+      def apply_structural_overrides(result, text, source)
+        result = result.dup
+        apply_current_pur_override(result, text, source)
+      end
+
+      def apply_current_pur_override(result, text, source)
+        return result unless source.respond_to?(:authority)
+        return result unless source.authority == "official_usfs"
+        return result unless text.match?(/PUR:\s*Seasonal Restrictions/i)
+        return result unless text.match?(/Fire Danger:\s*LOW/i)
+        return result unless text.match?(/IFPL:\s*I/i)
+
+        result.merge(
+          "status" => "advisory",
+          "campfire_policy" => "allowed",
+          "fire_danger_rating" => "LOW",
+          "ifpl_level" => "I",
+          "effective_start" => nil,
+          "effective_end" => nil,
+          "order_number" => nil,
+          "affected_area" => nil,
+          "summary" => "Current public-use restrictions are in Seasonal Restrictions/Phase A with LOW fire danger and IFPL I.",
+          "evidence_quotes" => ["Fire Danger: LOW", "IFPL: I", "PUR: Seasonal Restrictions"],
+          "confidence" => [result["confidence"].to_f, 0.9].max,
+          "needs_review_reasons" => Array(result["needs_review_reasons"]).reject { |reason| ignorable_current_pur_reason?(reason) }
+        )
+      end
+
+      def ignorable_current_pur_reason?(reason)
+        reason.to_s.match?(/Seasonal Restrictions|Phase A|campfire policy|effective dates|template|informational page/i)
       end
 
       def parse_error_result(error, model_id)

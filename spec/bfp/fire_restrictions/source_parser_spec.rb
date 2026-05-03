@@ -16,7 +16,7 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
   end
 
   let(:parser) { described_class.new(parser_client: Object.new, validator: Object.new) }
-  let(:source) { Struct.new(:source_type, :id, keyword_init: true).new(source_type: "fs_fire_info_page", id: 1) }
+  let(:source) { Struct.new(:source_type, :id, :authority, keyword_init: true).new(source_type: "fs_fire_info_page", id: 1, authority: "official_usfs") }
   let(:land_unit) { Struct.new(:id, keyword_init: true).new(id: 1) }
 
   it "keeps escalation disabled by default even when the primary result is uncertain" do
@@ -65,6 +65,29 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
 
     expect(status).to eq("auto_accepted")
     expect(captured_text).to eq("No fire restrictions are in effect.")
+  end
+
+  it "normalizes current Seasonal Restrictions/Phase A public-use rows to an advisory" do
+    result = parser_result("unknown", confidence: 0.3, reasons: ["Current PUR phase not explicitly stated as Phase A"])
+    text = <<~TEXT
+      Industrial Fire Precaution Levels (IFPL) and current public use restrictions at Malheur National Forest.
+      Fire Danger: LOW
+      IFPL: I
+      PUR: Seasonal Restrictions
+      Phase A
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "advisory",
+      "campfire_policy" => "allowed",
+      "fire_danger_rating" => "LOW",
+      "ifpl_level" => "I"
+    )
+    expect(normalized["confidence"]).to eq(0.9)
+    expect(normalized["evidence_quotes"]).to eq(["Fire Danger: LOW", "IFPL: I", "PUR: Seasonal Restrictions"])
+    expect(normalized["needs_review_reasons"]).to be_empty
   end
 
   def should_escalate?(result, validation, text)
