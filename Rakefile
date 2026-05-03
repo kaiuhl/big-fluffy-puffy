@@ -126,6 +126,38 @@ namespace :fire do
       BFP::FireRestrictions::Resolver.new.resolve(observation.land_unit)
       puts "Rejected observation #{observation.id} for #{observation.land_unit.name}."
     end
+
+    desc "Auto-accept validated official observations that satisfy publication rules"
+    task :auto_accept do
+      load_fire_restrictions
+
+      policy = BFP::FireRestrictions::AutoReviewPolicy.new
+      resolver = BFP::FireRestrictions::Resolver.new
+      accepted = []
+
+      BFP::FireRestrictions::RestrictionObservation
+        .where(review_status: "needs_review")
+        .all
+        .each do |observation|
+          next unless policy.review_status_for_observation(observation) == "auto_accepted"
+
+          observation.update(review_status: "auto_accepted")
+          accepted << observation
+        end
+
+      accepted.map(&:land_unit).uniq.each { |land_unit| resolver.resolve(land_unit) }
+
+      puts "Auto-accepted #{accepted.length} observations."
+      accepted.each do |observation|
+        puts [
+          observation.id,
+          observation.land_unit.name,
+          observation.restriction_source.slug,
+          observation.status,
+          "confidence=#{observation.confidence}"
+        ].join(" | ")
+      end
+    end
   end
 
   namespace :status do

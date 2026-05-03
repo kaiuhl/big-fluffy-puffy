@@ -1,4 +1,5 @@
 require "date"
+require_relative "auto_review_policy"
 
 module BFP
   module FireRestrictions
@@ -6,9 +7,10 @@ module BFP
       PRIMARY_MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
       ESCALATION_MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
-      def initialize(parser_client: BFP::LLM::ParserClient.build, validator: ObservationValidator.new)
+      def initialize(parser_client: BFP::LLM::ParserClient.build, validator: ObservationValidator.new, auto_review_policy: AutoReviewPolicy.new)
         @parser_client = parser_client
         @validator = validator
+        @auto_review_policy = auto_review_policy
       end
 
       def parse_fetch(fetch)
@@ -173,10 +175,12 @@ module BFP
       end
 
       def review_status_for(source, result, validation, reasons)
-        auto_publish = source.metadata["auto_publish"] == true
-        return "auto_accepted" if auto_publish && validation.valid? && result["confidence"].to_f >= 0.8 && reasons.empty?
-
-        "needs_review"
+        @auto_review_policy.review_status_for_result(
+          source: source,
+          result: result,
+          validation: validation,
+          reasons: reasons
+        )
       end
 
       def parse_date(value)

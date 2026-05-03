@@ -163,6 +163,36 @@ module BFPConsoleHelpers
     }
   end
 
+  def auto_accept_observations
+    ensure_fire_loaded!
+
+    policy = BFP::FireRestrictions::AutoReviewPolicy.new
+    resolver = BFP::FireRestrictions::Resolver.new
+    accepted = []
+
+    BFP::FireRestrictions::RestrictionObservation.where(review_status: "needs_review").all.each do |observation|
+      next unless policy.review_status_for_observation(observation) == "auto_accepted"
+
+      observation.update(review_status: "auto_accepted")
+      accepted << observation
+    end
+
+    accepted.map(&:land_unit).uniq.each { |land_unit| resolver.resolve(land_unit) }
+
+    {
+      accepted: accepted.length,
+      observations: accepted.map do |observation|
+        {
+          id: observation.id,
+          forest: observation.land_unit.name,
+          source: observation.restriction_source.slug,
+          status: observation.status,
+          confidence: observation.confidence
+        }
+      end
+    }
+  end
+
   def llm_costs(limit = 20)
     ensure_fire_loaded!
 
@@ -212,6 +242,7 @@ module BFPConsoleHelpers
         review_observation(123)
         accept_observation(123)
         reject_observation(123, "reason")
+        auto_accept_observations
         llm_costs
     HELP
   end
