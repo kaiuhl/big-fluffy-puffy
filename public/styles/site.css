@@ -499,14 +499,15 @@ h1 {
 }
 
 .restrictions-table-wrap {
-  overflow-x: auto;
+  overflow-x: visible;
   padding: clamp(20px, 4vw, 44px);
 }
 
 .restrictions-table {
   width: 100%;
   min-width: 920px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.92rem;
 }
 
@@ -519,11 +520,20 @@ h1 {
 }
 
 .restrictions-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   border-bottom-color: var(--black);
+  background: var(--white);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.restrictions-section-none .restrictions-table thead th,
+.restrictions-section-unknown .restrictions-table thead th {
+  background: #f1f0ec;
 }
 
 .restrictions-table tbody th {
