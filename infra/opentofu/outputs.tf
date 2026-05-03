@@ -21,7 +21,7 @@ output "bedrock_parser_secret_access_key" {
 
 output "bedrock_parser_env" {
   description = "Environment lines for the production app .env. This contains secrets and is also stored in OpenTofu state."
-  value = <<-ENV
+  value       = <<-ENV
 AWS_ACCESS_KEY_ID=${aws_iam_access_key.bedrock_parser.id}
 AWS_SECRET_ACCESS_KEY=${aws_iam_access_key.bedrock_parser.secret}
 AWS_REGION=${var.aws_region}
@@ -31,5 +31,5 @@ LLM_ESCALATION_ENABLED=false
 BEDROCK_PRIMARY_MODEL_ID=${var.bedrock_primary_model_id}
 BEDROCK_ESCALATION_MODEL_ID=${var.bedrock_escalation_model_id}
 ENV
-  sensitive = true
+  sensitive   = true
 }
