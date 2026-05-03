@@ -209,7 +209,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("dataset.filterText")
     expect(last_response.body).to include("timeZone: \"UTC\"")
     expect(last_response.body).to include("last_checked_label")
-    expect(last_response.body).to include("climate_low_context")
+    expect(last_response.body).not_to include("climate_low_context")
   end
 
   def stub_fire_restriction_records(records)

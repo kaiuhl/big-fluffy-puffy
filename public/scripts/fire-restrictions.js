@@ -45,29 +45,6 @@
     });
   }
 
-  function temperatureLabel(value) {
-    var number = Number(value);
-    if (!Number.isFinite(number)) return "";
-
-    return Math.round(number) + "&deg;F";
-  }
-
-  function climateLowPopup(context) {
-    var bands = context && Array.isArray(context.bands) ? context.bands : [];
-    if (bands.length === 0) return "";
-
-    var labels = bands.map(function (band) {
-      return escapeHtml(band.label) + ": " + temperatureLabel(band.mean_low_f);
-    }).join(" &middot; ");
-
-    return [
-      '<p class="map-popup-climate">',
-      '<span>Typical ' + escapeHtml(context.month_name || "monthly") + " lows</span>",
-      "<strong>" + labels + "</strong>",
-      "</p>"
-    ].join("");
-  }
-
   function setSectionCount(section, visibleCount, totalCount, hasQuery) {
     var counter = section.querySelector(".restrictions-section-count");
     if (!counter) return;
@@ -160,7 +137,6 @@
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
       "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",
-      climateLowPopup(properties.climate_low_context),
       sourceLink,
       "</div>"
     ].join("");

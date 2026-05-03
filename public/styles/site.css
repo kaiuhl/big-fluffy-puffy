@@ -376,25 +376,6 @@ h1 {
   margin: 10px 0 0;
 }
 
-.map-popup-climate {
-  margin: 10px 0 0;
-}
-
-.map-popup-climate span {
-  display: block;
-  color: var(--mid-gray);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.map-popup-climate strong {
-  margin: 3px 0 0;
-  font-size: 0.78rem;
-  line-height: 1.3;
-}
-
 .map-popup-source a {
   color: var(--signal);
   font-weight: 850;
