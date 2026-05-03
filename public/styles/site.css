@@ -169,7 +169,10 @@ h1 {
 }
 
 .restrictions-page {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
   min-height: 100vh;
+  border: 1px solid var(--black);
   background: var(--white);
 }
 
@@ -198,10 +201,104 @@ h1 {
   border-bottom: 1px solid var(--black);
 }
 
+.restrictions-intro p:not(.kicker) {
+  max-width: 720px;
+  margin: 0;
+  color: var(--charcoal);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+}
+
 .restrictions-intro h1 {
   max-width: 980px;
   font-size: clamp(3rem, 8vw, 7rem);
   line-height: 0.9;
+}
+
+.restrictions-summary {
+  display: grid;
+  gap: 8px;
+  border-bottom: 1px solid var(--black);
+  padding: clamp(22px, 4vw, 40px) clamp(20px, 5vw, 64px);
+  background: var(--off-white);
+}
+
+.restrictions-summary p {
+  margin: 0;
+}
+
+.summary-kicker {
+  color: var(--signal);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.summary-statement {
+  max-width: 760px;
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.summary-detail {
+  color: var(--charcoal);
+  font-weight: 750;
+}
+
+.restrictions-sections {
+  display: grid;
+}
+
+.restrictions-section {
+  border-bottom: 1px solid var(--black);
+}
+
+.restrictions-section:last-child {
+  border-bottom: 0;
+}
+
+.restrictions-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: clamp(20px, 4vw, 36px) clamp(20px, 5vw, 44px) 0;
+}
+
+.restrictions-section-heading h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.restrictions-section-heading p {
+  margin: 0;
+  color: var(--mid-gray);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.restrictions-section-none,
+.restrictions-section-unknown {
+  background: #f1f0ec;
+  color: var(--charcoal);
+}
+
+.restrictions-section-none .restrictions-table,
+.restrictions-section-unknown .restrictions-table {
+  color: var(--charcoal);
+}
+
+.restrictions-section-none .restrictions-table tbody,
+.restrictions-section-unknown .restrictions-table tbody {
+  opacity: 0.72;
 }
 
 .restrictions-table-wrap {
@@ -211,7 +308,7 @@ h1 {
 
 .restrictions-table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 900px;
   border-collapse: collapse;
   font-size: 0.92rem;
 }
@@ -233,7 +330,7 @@ h1 {
 }
 
 .restrictions-table tbody th {
-  min-width: 230px;
+  min-width: 260px;
 }
 
 .restrictions-table tbody th span,
@@ -250,21 +347,30 @@ h1 {
   text-transform: uppercase;
 }
 
-.restrictions-table td:nth-child(7) {
-  min-width: 210px;
+.restrictions-table td:nth-child(4) {
+  min-width: 180px;
 }
 
-.restrictions-table td:nth-child(7) a {
+.restrictions-table td:nth-child(4) a {
   display: inline-block;
   margin: 0 8px 6px 0;
   color: var(--signal);
   font-weight: 800;
 }
 
+.restrictions-table td:nth-child(6) {
+  max-width: 420px;
+  color: var(--charcoal);
+}
+
 .empty-state {
   border: 1px solid var(--black);
   padding: 20px;
   font-weight: 800;
+}
+
+.empty-state-section {
+  background: var(--white);
 }
 
 .empty-state p {
@@ -278,6 +384,11 @@ h1 {
 
   .landing {
     min-height: 100vh;
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .restrictions-page {
     border-right: 0;
     border-left: 0;
   }
@@ -298,6 +409,11 @@ h1 {
   }
 
   .restrictions-header {
+    flex-direction: column;
+  }
+
+  .restrictions-section-heading {
+    align-items: start;
     flex-direction: column;
   }
 

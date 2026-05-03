@@ -40,6 +40,63 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("National Forest Fire Restrictions")
   end
 
+  it "renders grouped fire restriction sections" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
+        restriction_record(name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
+        restriction_record(name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
+      ]
+    )
+
+    get "/fire-restrictions"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Active Restrictions")
+    expect(last_response.body).to include("No Published Restrictions")
+    expect(last_response.body).to include("Needs Review / Unknown")
+    expect(last_response.body).to include("Restriction Forest")
+    expect(last_response.body).to include("Clear Forest")
+    expect(last_response.body).to include("Review Forest")
+    expect(last_response.body).to include("Stage 1")
+    expect(last_response.body).to include("Needs Review")
+  end
+
+  it "renders source links and updated timestamps on the fire restrictions page" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(
+          name: "Source Forest",
+          status: "none",
+          source_url: "https://example.test/current-order",
+          source_title: "Current fire order",
+          last_checked_at: "2026-05-03T05:25:08Z"
+        )
+      ]
+    )
+
+    get "/fire-restrictions"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("https://example.test/current-order")
+    expect(last_response.body).to include("Current fire order")
+    expect(last_response.body).to include("2026-05-03T05:25:08Z")
+  end
+
+  it "renders a celebratory message when no forests have active published restrictions" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(name: "Clear Forest", status: "none", review_status: "auto_accepted"),
+        restriction_record(name: "Review Forest", status: "unknown", review_status: "needs_review")
+      ]
+    )
+
+    get "/fire-restrictions"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("No published forest-wide restrictions right now.")
+  end
+
   it "serves the initial landing page" do
     get "/"
 
@@ -61,5 +118,44 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("--signal: #ff4b1f")
+  end
+
+  def stub_fire_restriction_records(records)
+    allow_any_instance_of(described_class).to receive(:fire_restriction_records).and_return(records)
+  end
+
+  def restriction_record(overrides = {})
+    {
+      slug: "example",
+      name: "Example Forest",
+      unit_type: "national_forest",
+      market_bucket: "oregon",
+      region_code: "R6",
+      status: "none",
+      campfire_policy: "allowed",
+      fire_danger_rating: nil,
+      ifpl_level: nil,
+      confidence: 0.9,
+      review_status: "auto_accepted",
+      effective_start: nil,
+      effective_end: nil,
+      order_number: nil,
+      affected_area: nil,
+      summary: "No restrictions are published.",
+      evidence_quotes: [],
+      last_checked_at: "2026-05-03T05:00:00Z",
+      source_url: nil,
+      source_title: nil,
+      sources: [
+        {
+          slug: "example-fire-info",
+          name: "Fire Information",
+          source_type: "fs_fire_info_page",
+          authority: "usfs",
+          url: "https://example.test/fire/info",
+          last_checked_at: "2026-05-03T04:00:00Z"
+        }
+      ]
+    }.merge(overrides)
   end
 end

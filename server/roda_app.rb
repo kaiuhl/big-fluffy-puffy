@@ -47,21 +47,25 @@ class RodaApp < Roda
             <link rel="stylesheet" href="/styles/site.css">
           </head>
           <body>
-            <main class="restrictions-page">
-              <header class="restrictions-header">
-                <a href="/">Big Fluffy Puffy</a>
-                <p>Fire Restrictions</p>
-              </header>
+            <div class="page">
+              <main class="restrictions-page">
+                <header class="restrictions-header">
+                  <a href="/">Big Fluffy Puffy</a>
+                  <p>Fire Restrictions</p>
+                </header>
 
-              <section class="restrictions-intro" aria-labelledby="restrictions-title">
-                <p class="kicker">Official source monitor</p>
-                <h1 id="restrictions-title">National Forest Fire Restrictions</h1>
-              </section>
+                <section class="restrictions-intro" aria-labelledby="restrictions-title">
+                  <p class="kicker">Official source monitor</p>
+                  <h1 id="restrictions-title">National Forest Fire Restrictions</h1>
+                  <p>
+                    Published forest-wide fire restriction status for Oregon, Washington, and Northern California.
+                    Unknown entries need source review before they become public claims.
+                  </p>
+                </section>
 
-              <section class="restrictions-table-wrap" aria-label="National forest fire restrictions">
-                #{fire_restrictions_table(records)}
-              </section>
-            </main>
+                #{fire_restrictions_page(records)}
+              </main>
+            </div>
           </body>
         </html>
       HTML
@@ -133,33 +137,100 @@ class RodaApp < Roda
     []
   end
 
-  def fire_restrictions_table(records)
+  def fire_restrictions_page(records)
     return empty_fire_restrictions_message if records.empty?
 
-    rows = records.map do |forest|
-      source_links = forest[:sources].first(4).map do |source|
-        %(<a href="#{h(source[:url])}" rel="noreferrer">#{h(source[:name])}</a>)
-      end.join(" ")
+    groups = partition_fire_restrictions(records)
 
+    <<~HTML
+      <section class="restrictions-summary" aria-label="Restriction summary">
+        #{restriction_summary(groups)}
+      </section>
+
+      <div class="restrictions-sections">
+        #{fire_restrictions_section(
+          id: "active-restrictions",
+          title: "Active Restrictions",
+          records: groups.fetch(:active),
+          tone: "active",
+          empty_message: "No published active forest-wide restrictions."
+        )}
+        #{fire_restrictions_section(
+          id: "no-restrictions",
+          title: "No Published Restrictions",
+          records: groups.fetch(:none),
+          tone: "none",
+          empty_message: "No forests have a published no-restrictions status yet."
+        )}
+        #{fire_restrictions_section(
+          id: "needs-review",
+          title: "Needs Review / Unknown",
+          records: groups.fetch(:unknown),
+          tone: "unknown",
+          empty_message: "All active forests have a published status."
+        )}
+      </div>
+    HTML
+  end
+
+  def partition_fire_restrictions(records)
+    records.each_with_object({active: [], none: [], unknown: []}) do |forest, groups|
+      if published_status?(forest) && forest[:status].to_s == "none"
+        groups[:none] << forest
+      elsif published_status?(forest) && forest[:status].to_s != "unknown"
+        groups[:active] << forest
+      else
+        groups[:unknown] << forest
+      end
+    end
+  end
+
+  def published_status?(forest)
+    %w[accepted auto_accepted].include?(forest[:review_status].to_s)
+  end
+
+  def restriction_summary(groups)
+    active_count = groups.fetch(:active).length
+    none_count = groups.fetch(:none).length
+    unknown_count = groups.fetch(:unknown).length
+
+    if active_count.zero?
       <<~HTML
-        <tr>
-          <th scope="row">
-            <span>#{h(forest[:name])}</span>
-            <small>#{h(forest[:region_code])} / #{h(forest[:market_bucket].to_s.tr("_", " "))}</small>
-          </th>
-          <td><strong>#{h(labelize(forest[:status]))}</strong></td>
-          <td>#{h(labelize(forest[:campfire_policy]))}</td>
-          <td>#{h(confidence_label(forest[:confidence]))}</td>
-          <td>#{h(labelize(forest[:review_status]))}</td>
-          <td>#{h(forest[:last_checked_at] || "Never")}</td>
-          <td>
-            #{source_links}
-            #{primary_source_link(forest)}
-          </td>
-          <td>#{h(forest[:summary] || forest[:evidence_quotes].first || "")}</td>
-        </tr>
+        <p class="summary-kicker">Clear for now</p>
+        <p class="summary-statement">No published forest-wide restrictions right now.</p>
+        <p class="summary-detail">
+          #{forest_count(none_count)} have published no-restriction status; #{forest_count(unknown_count)} still need review.
+        </p>
       HTML
-    end.join
+    else
+      <<~HTML
+        <p class="summary-kicker">Restriction watch</p>
+        <p class="summary-statement">#{forest_count(active_count)} have published active restrictions.</p>
+        <p class="summary-detail">
+          #{forest_count(none_count)} show no published restrictions; #{forest_count(unknown_count)} still need review.
+        </p>
+      HTML
+    end
+  end
+
+  def fire_restrictions_section(id:, title:, records:, tone:, empty_message:)
+    noun = (records.length == 1) ? "forest" : "forests"
+
+    <<~HTML
+      <section class="restrictions-section restrictions-section-#{h(tone)}" aria-labelledby="#{h(id)}">
+        <div class="restrictions-section-heading">
+          <h2 id="#{h(id)}">#{h(title)}</h2>
+          <p>#{records.length} #{noun}</p>
+        </div>
+        <div class="restrictions-table-wrap">
+          #{records.empty? ? section_empty_message(empty_message) : fire_restrictions_table(records)}
+        </div>
+      </section>
+    HTML
+  end
+
+  def fire_restrictions_table(records)
+    rows = records.map { |forest| fire_restrictions_row(forest) }.join
 
     <<~HTML
       <table class="restrictions-table">
@@ -168,10 +239,8 @@ class RodaApp < Roda
             <th scope="col">Forest</th>
             <th scope="col">Status</th>
             <th scope="col">Campfires</th>
-            <th scope="col">Confidence</th>
-            <th scope="col">Review</th>
-            <th scope="col">Last Checked</th>
-            <th scope="col">Sources</th>
+            <th scope="col">Source</th>
+            <th scope="col">Updated</th>
             <th scope="col">Evidence</th>
           </tr>
         </thead>
@@ -179,6 +248,24 @@ class RodaApp < Roda
           #{rows}
         </tbody>
       </table>
+    HTML
+  end
+
+  def fire_restrictions_row(forest)
+    source = preferred_source(forest)
+
+    <<~HTML
+      <tr>
+        <th scope="row">
+          <span>#{h(forest[:name])}</span>
+          <small>#{h(forest[:region_code])} / #{h(forest[:market_bucket].to_s.tr("_", " "))}</small>
+        </th>
+        <td><strong>#{h(status_label(forest))}</strong></td>
+        <td>#{h(labelize(forest[:campfire_policy]))}</td>
+        <td>#{source_link(source)}</td>
+        <td>#{h(timestamp_for(forest, source))}</td>
+        <td>#{h(evidence_summary(forest))}</td>
+      </tr>
     HTML
   end
 
@@ -190,20 +277,62 @@ class RodaApp < Roda
     HTML
   end
 
-  def primary_source_link(forest)
-    return "" unless forest[:source_url]
+  def section_empty_message(message)
+    <<~HTML
+      <div class="empty-state empty-state-section">
+        <p>#{h(message)}</p>
+      </div>
+    HTML
+  end
 
-    %(<a href="#{h(forest[:source_url])}" rel="noreferrer">Current evidence</a>)
+  def preferred_source(forest)
+    return {url: forest[:source_url], name: forest[:source_title] || "Current evidence", last_checked_at: forest[:last_checked_at]} if forest[:source_url]
+
+    sources = Array(forest[:sources])
+    sources.min_by { |source| [source_rank(source), source[:name].to_s] }
+  end
+
+  def source_rank(source)
+    {
+      "fs_fire_info_page" => 0,
+      "fs_fire_page" => 1,
+      "fs_alerts_page" => 2,
+      "fs_release_page" => 3
+    }.fetch(source[:source_type].to_s, 9)
+  end
+
+  def source_link(source)
+    return "Not checked yet" unless source && source[:url]
+
+    %(<a href="#{h(source[:url])}" rel="noreferrer">#{h(source[:name])}</a>)
+  end
+
+  def timestamp_for(forest, source)
+    forest[:last_checked_at] || source&.fetch(:last_checked_at, nil) || "Never"
+  end
+
+  def evidence_summary(forest)
+    forest[:summary] || Array(forest[:evidence_quotes]).first || review_label(forest)
+  end
+
+  def status_label(forest)
+    return "Needs Review" unless published_status?(forest)
+
+    labelize(forest[:status])
+  end
+
+  def review_label(forest)
+    return "Published" if published_status?(forest)
+
+    labelize(forest[:review_status])
   end
 
   def labelize(value)
     value.to_s.tr("_", " ").split.map(&:capitalize).join(" ")
   end
 
-  def confidence_label(value)
-    return "Unknown" unless value
-
-    "#{(value.to_f * 100).round}%"
+  def forest_count(count)
+    "#{count} #{(count == 1) ? "forest" : "forests"}"
   end
 
   def h(value)
