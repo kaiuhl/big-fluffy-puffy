@@ -141,6 +141,62 @@
     ].join("");
   }
 
+  function afterLayout(callback) {
+    if (typeof requestAnimationFrame !== "function") {
+      setTimeout(callback, 0);
+      return;
+    }
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(callback);
+    });
+  }
+
+  function fitMapToLayer(map, layer) {
+    var bounds = layer.getBounds();
+    var fitQueued = false;
+    var attempts = 0;
+
+    if (!bounds.isValid()) return;
+
+    function fit() {
+      fitQueued = false;
+
+      map.invalidateSize({
+        pan: false
+      });
+
+      var size = map.getSize();
+      if (size.x === 0 || size.y === 0) {
+        if (attempts < 5) {
+          attempts += 1;
+          setTimeout(queueFit, 60);
+        }
+        return;
+      }
+
+      attempts = 0;
+      map.fitBounds(bounds, {
+        maxZoom: 7,
+        padding: [18, 18]
+      });
+    }
+
+    function queueFit() {
+      if (fitQueued) return;
+
+      fitQueued = true;
+      afterLayout(fit);
+    }
+
+    queueFit();
+    window.addEventListener("load", queueFit, {
+      once: true
+    });
+    window.addEventListener("pageshow", queueFit);
+    window.addEventListener("resize", queueFit);
+  }
+
   function setupFireRestrictionMap() {
     var container = document.getElementById("restrictions-map");
     var status = document.getElementById("restrictions-map-status");
@@ -207,12 +263,7 @@
           }
         }).addTo(map);
 
-        var bounds = layer.getBounds();
-        if (bounds.isValid()) {
-          map.fitBounds(bounds, {
-            padding: [18, 18]
-          });
-        }
+        fitMapToLayer(map, layer);
 
         setStatus("Map showing " + forestCount(features.length) + ".");
       })
