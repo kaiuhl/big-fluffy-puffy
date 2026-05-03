@@ -80,6 +80,11 @@ class RodaApp < Roda
           response["Content-Type"] = "application/json"
           JSON.generate(forests: fire_restriction_records)
         end
+
+        r.get "map" do
+          response["Content-Type"] = "application/geo+json"
+          JSON.generate(fire_restriction_map)
+        end
       end
     end
 
@@ -98,7 +103,9 @@ class RodaApp < Roda
               name="description"
               content="Pacific Northwest fire restriction status for Big Fluffy Puffy's launch market."
             >
+            <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
             <link rel="stylesheet" href="/styles/site.css">
+            <script src="/vendor/leaflet/leaflet.js" defer></script>
             <script src="/scripts/fire-restrictions.js" defer></script>
           </head>
           <body>
@@ -213,6 +220,14 @@ class RodaApp < Roda
     []
   end
 
+  def fire_restriction_map
+    require "bfp/fire_restrictions/map_presenter"
+
+    BFP::FireRestrictions::MapPresenter.new(records: fire_restriction_records).geojson
+  rescue Sequel::DatabaseError, LoadError
+    {type: "FeatureCollection", features: []}
+  end
+
   def fire_restrictions_page(records)
     return empty_fire_restrictions_message if records.empty?
 
@@ -222,6 +237,8 @@ class RodaApp < Roda
       <section class="restrictions-summary" aria-label="Restriction summary">
         #{restriction_summary(groups)}
       </section>
+
+      #{fire_restrictions_map_section}
 
       <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
         <label id="restrictions-filter-label" for="restrictions-search">Search Forests</label>
@@ -260,6 +277,32 @@ class RodaApp < Roda
           empty_message: "All active forests have a published status."
         )}
       </div>
+    HTML
+  end
+
+  def fire_restrictions_map_section
+    <<~HTML
+      <section class="restrictions-map-section" aria-labelledby="restrictions-map-title">
+        <div class="restrictions-map-heading">
+          <div>
+            <p class="summary-kicker">Map overview</p>
+            <h2 id="restrictions-map-title">Forest Status Map</h2>
+          </div>
+          <ul class="restrictions-map-legend" aria-label="Map legend">
+            <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Active restrictions</li>
+            <li><span class="map-legend-swatch map-legend-none" aria-hidden="true"></span>No published restrictions</li>
+            <li><span class="map-legend-swatch map-legend-unknown" aria-hidden="true"></span>Needs review / unknown</li>
+          </ul>
+        </div>
+        <div
+          id="restrictions-map"
+          class="restrictions-map"
+          data-map-endpoint="/api/fire-restrictions/map"
+          role="img"
+          aria-label="Map of Pacific Northwest forest fire restriction statuses"
+        ></div>
+        <p id="restrictions-map-status" class="restrictions-map-status" aria-live="polite">Loading map.</p>
+      </section>
     HTML
   end
 

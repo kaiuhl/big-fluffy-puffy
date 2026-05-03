@@ -40,7 +40,34 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("PNW Fire Restrictions")
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
+    expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
+    expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js"')
+  end
+
+  it "exposes a GeoJSON fire restriction map endpoint" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
+        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
+        restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
+      ]
+    )
+
+    get "/api/fire-restrictions/map"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/geo+json")
+
+    data = JSON.parse(last_response.body)
+    features_by_slug = data.fetch("features").to_h { |feature| [feature.dig("properties", "slug"), feature] }
+
+    expect(data.fetch("type")).to eq("FeatureCollection")
+    expect(features_by_slug.keys).to match_array(%w[colville deschutes modoc])
+    expect(features_by_slug.fetch("deschutes").dig("properties", "map_status")).to eq("active")
+    expect(features_by_slug.fetch("colville").dig("properties", "map_status")).to eq("none")
+    expect(features_by_slug.fetch("modoc").dig("properties", "map_status")).to eq("unknown")
+    expect(features_by_slug.fetch("deschutes").fetch("geometry")).to include("type", "coordinates")
   end
 
   it "renders grouped fire restriction sections" do
@@ -63,6 +90,9 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Review Forest")
     expect(last_response.body).to include("Developed Sites Only")
     expect(last_response.body).to include("Needs Review")
+    expect(last_response.body).to include('id="restrictions-map"')
+    expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/map"')
+    expect(last_response.body).to include("Forest Status Map")
     expect(last_response.body).not_to include("<th scope=\"col\">Status</th>")
     expect(last_response.body).to include('for="restrictions-search"')
     expect(last_response.body).to include('id="restrictions-filter-status"')

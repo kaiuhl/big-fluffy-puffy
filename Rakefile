@@ -176,4 +176,15 @@ namespace :fire do
       end
     end
   end
+
+  namespace :map do
+    desc "Refresh curated USFS forest boundary GeoJSON for the fire restrictions map"
+    task :refresh_boundaries do
+      require_relative "config/boot"
+      require "bfp/fire_restrictions/boundary_refresher"
+
+      count = BFP::FireRestrictions::BoundaryRefresher.new.refresh
+      puts "Refreshed #{count} fire restriction map boundaries."
+    end
+  end
 end
