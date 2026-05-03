@@ -32,7 +32,6 @@ module BFP
         attributes = feature.fetch("attributes", {})
         raw_status = status_value(attributes)
         status, campfire_policy, label = mapped_status(raw_status)
-        feature_text = JSON.generate(feature)
 
         {
           "status" => status,
@@ -44,7 +43,7 @@ module BFP
           "order_number" => nil,
           "affected_area" => attributes.fetch("Comments", nil),
           "summary" => arcgis_summary(label, attributes),
-          "evidence_quotes" => [feature_text],
+          "evidence_quotes" => [arcgis_evidence(raw_status, attributes)],
           "confidence" => (status == "unknown") ? 0.35 : 0.95,
           "needs_review_reasons" => (status == "unknown") ? ["Unexpected ArcGIS restriction status: #{raw_status.inspect}"] : [],
           "parser_provider" => "deterministic",
@@ -79,6 +78,14 @@ module BFP
       def arcgis_summary(label, attributes)
         comments = attributes["Comments"].to_s.strip
         comments.empty? ? label : "#{label}. #{comments}"
+      end
+
+      def arcgis_evidence(raw_status, attributes)
+        [
+          "Status: #{raw_status}",
+          ("Comments: #{attributes["Comments"]}" if attributes["Comments"].to_s.strip != ""),
+          ("DataSource: #{attributes["DataSource"]}" if attributes["DataSource"].to_s.strip != "")
+        ].compact.join("; ")
       end
 
       def unknown(reason)
