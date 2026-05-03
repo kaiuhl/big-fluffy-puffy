@@ -1,4 +1,4 @@
-FROM ruby:3.4-slim
+FROM ruby:4.0.3-slim
 
 ENV APP_HOME=/app \
     BUNDLE_WITHOUT="" \

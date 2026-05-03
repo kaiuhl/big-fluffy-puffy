@@ -6,7 +6,7 @@ The codebase starts small: a mostly static public site, a lean Roda app for dyna
 
 ## Stack
 
-- Ruby 3.4+
+- Ruby 4.0+
 - Bridgetown for static/content pages
 - Roda for dynamic routes
 - Sequel for database access and migrations

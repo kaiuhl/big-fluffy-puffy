@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "~> 3.4"
+ruby "~> 4.0"
 
 gem "bridgetown", "~> 2.1"
 gem "puma", "~> 6.6"
