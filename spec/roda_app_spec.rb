@@ -25,4 +25,20 @@ RSpec.describe RodaApp do
       "env" => "test"
     )
   end
+
+  it "serves the initial landing page" do
+    get "/"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Big Fluffy Puffy")
+    expect(last_response.body).to include("Skip the campfire. Pack the warmth.")
+    expect(last_response.body).to include("nonprofit building fireless camp culture")
+  end
+
+  it "serves public stylesheets" do
+    get "/styles/site.css"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("--signal: #ff4b1f")
+  end
 end

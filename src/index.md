@@ -5,4 +5,6 @@ title: Big Fluffy Puffy
 
 # Big Fluffy Puffy
 
-Fireless camp culture for the Pacific Northwest.
+Skip the campfire. Pack the warmth.
+
+Big Fluffy Puffy is a nonprofit building fireless camp culture for the Pacific Northwest.
