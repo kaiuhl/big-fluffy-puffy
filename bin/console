@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if command -v mise >/dev/null 2>&1 && [[ -z "${BFP_SKIP_MISE:-}" ]]; then
+  exec mise exec -- bundle exec ruby "$root/script/console.rb" "$@"
+fi
+
+exec bundle exec ruby "$root/script/console.rb" "$@"

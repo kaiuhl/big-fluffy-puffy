@@ -29,6 +29,28 @@ bundle exec puma -C config/puma.rb
 
 Then open `http://localhost:9292`.
 
+## Exploring Data
+
+Use the console for local data exploration:
+
+```sh
+bin/console
+bin/console -e 'fire_counts'
+bin/console -e 'latest_fetches'
+```
+
+Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, and `latest_observations`.
+
+To explore production data on the Lightsail box:
+
+```sh
+bin/prod-console
+bin/prod-console -e 'fire_counts'
+bin/prod-shell
+```
+
+Both production scripts default to `ubuntu@34.223.75.206` with `~/.ssh/bfp-lightsail.pem`; override with `BFP_HOST`, `BFP_USER`, `BFP_KEY`, or `BFP_PATH` if needed.
+
 ## Current Shape
 
 This is intentionally just the foundation:

@@ -1,0 +1,141 @@
+# frozen_string_literal: true
+
+ENV["APP_ENV"] ||= ENV.fetch("RACK_ENV", "development")
+ENV["BRIDGETOWN_ENV"] ||= ENV["APP_ENV"]
+
+require "irb"
+require "pp"
+require_relative "../config/boot"
+
+begin
+  require "bfp/fire_restrictions"
+rescue Sequel::DatabaseConnectionError => error
+  warn "Fire restriction models were not loaded because the database is unavailable:"
+  warn "#{error.class}: #{error.message.lines.first&.strip}"
+end
+
+module BFPConsoleHelpers
+  def app_env
+    BFP.env
+  end
+
+  def database_url
+    BFP.database_url
+  end
+
+  def fire_loaded?
+    !!defined?(BFP::FireRestrictions::LandUnit)
+  end
+
+  def fire_counts
+    ensure_fire_loaded!
+
+    {
+      land_units: BFP::FireRestrictions::LandUnit.count,
+      active_land_units: BFP::FireRestrictions::LandUnit.where(active: true).count,
+      sources: BFP::FireRestrictions::RestrictionSource.count,
+      active_sources: BFP::FireRestrictions::RestrictionSource.where(active: true).count,
+      fetches: BFP::FireRestrictions::SourceFetch.count,
+      documents: BFP::FireRestrictions::SourceDocument.count,
+      observations: BFP::FireRestrictions::RestrictionObservation.count,
+      statuses: BFP::FireRestrictions::RestrictionStatus.count
+    }
+  end
+
+  def forests
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::StatusPresenter.new.forests
+  end
+
+  def forest(slug)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::LandUnit.first(slug: slug.to_s)
+  end
+
+  def source(slug)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::RestrictionSource.first(slug: slug.to_s)
+  end
+
+  def status(slug)
+    forest(slug)&.restriction_status
+  end
+
+  def latest_fetches(limit = 10)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::SourceFetch.reverse(:id).limit(limit).all.map do |fetch|
+      {
+        id: fetch.id,
+        source: fetch.restriction_source&.slug,
+        http_status: fetch.http_status,
+        changed: fetch.content_changed,
+        error_class: fetch.error_class,
+        fetched_at: fetch.fetched_at
+      }
+    end
+  end
+
+  def latest_observations(limit = 10)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::RestrictionObservation.reverse(:id).limit(limit).all.map do |observation|
+      {
+        id: observation.id,
+        land_unit: observation.land_unit&.slug,
+        source: observation.restriction_source&.slug,
+        status: observation.status,
+        campfire_policy: observation.campfire_policy,
+        review_status: observation.review_status,
+        confidence: observation.confidence,
+        created_at: observation.created_at
+      }
+    end
+  end
+
+  def help!
+    puts <<~HELP
+      BFP console helpers:
+        app_env
+        database_url
+        fire_counts
+        forests
+        forest("deschutes")
+        source("willamette-fire-info")
+        status("deschutes")
+        latest_fetches
+        latest_observations
+    HELP
+  end
+
+  private
+
+  def ensure_fire_loaded!
+    return if fire_loaded?
+
+    raise "Fire restriction models are not loaded. Start Postgres or check DATABASE_URL."
+  end
+end
+
+TOPLEVEL_BINDING.receiver.extend(BFPConsoleHelpers)
+
+if ARGV.first == "-e" || ARGV.first == "--eval"
+  expression = ARGV[1]
+  abort "Usage: bin/console -e 'fire_counts'" unless expression
+
+  pp TOPLEVEL_BINDING.eval(expression)
+  exit
+end
+
+puts "BFP console (#{BFP.env})"
+if TOPLEVEL_BINDING.receiver.fire_loaded?
+  puts "Fire restriction models loaded."
+else
+  puts "Fire restriction models not loaded."
+end
+puts "Run help! for helpers."
+
+IRB.start(__FILE__)

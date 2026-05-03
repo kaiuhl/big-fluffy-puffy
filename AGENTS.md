@@ -48,6 +48,28 @@ RUN_DB_SPECS=true mise exec -- bundle exec rspec spec/bfp/fire_restrictions/data
 
 Normal specs intentionally skip those DB integration examples unless `RUN_DB_SPECS=true`.
 
+## Console And Shell Helpers
+
+Local app console:
+
+```sh
+bin/console
+bin/console -e 'fire_counts'
+bin/console -e 'latest_fetches'
+```
+
+The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, and `latest_observations`.
+
+Production console and shell:
+
+```sh
+bin/prod-console
+bin/prod-console -e 'fire_counts'
+bin/prod-shell
+```
+
+Both production scripts default to `ubuntu@34.223.75.206`, `~/.ssh/bfp-lightsail.pem`, and `/srv/bfp`. Override with `BFP_HOST`, `BFP_USER`, `BFP_KEY`, or `BFP_PATH` if needed.
+
 ## Fire Restrictions
 
 Current public endpoints:

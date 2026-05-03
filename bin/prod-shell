@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BFP_HOST="${BFP_HOST:-34.223.75.206}"
+BFP_USER="${BFP_USER:-ubuntu}"
+BFP_KEY="${BFP_KEY:-$HOME/.ssh/bfp-lightsail.pem}"
+BFP_PATH="${BFP_PATH:-/srv/bfp}"
+
+ssh_args=()
+if [[ -f "$BFP_KEY" ]]; then
+  ssh_args+=("-i" "$BFP_KEY")
+fi
+
+exec ssh -t "${ssh_args[@]}" "${BFP_USER}@${BFP_HOST}" "cd '${BFP_PATH}' && exec bash"
