@@ -146,7 +146,21 @@ SSH:
 ssh -i ~/.ssh/bfp-lightsail.pem ubuntu@34.223.75.206
 ```
 
-Before deploying, check the production checkout:
+Preferred manual deploy helper from the local checkout:
+
+```sh
+bin/prod-deploy
+bin/prod-deploy --migrate
+bin/prod-deploy --migrate --seed
+```
+
+The helper SSHes to production with the defaults above, aborts if the production
+checkout has local changes, uses `git pull --ff-only`, rebuilds only `web` and
+`caddy`, and runs public smoke checks. It does not start `worker` or `clock`.
+Use `--migrate` for `db:migrate` and `que:migrate`; add `--seed` only when the
+fire source catalog should be reseeded.
+
+Underlying manual deploy checks:
 
 ```sh
 cd /srv/bfp
@@ -156,7 +170,7 @@ git rev-parse --short HEAD
 
 Use fast-forward pulls only. If production has local changes, stop and inspect.
 
-Deploy web/Caddy:
+Deploy web/Caddy manually:
 
 ```sh
 cd /srv/bfp

@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/prod-deploy [options]
+
+Deploy the current production checkout by fast-forwarding git and rebuilding
+only the web and caddy services.
+
+Options:
+  --migrate      Run db:migrate and que:migrate after rebuilding web/caddy.
+  --seed         Run fire:sources:seed after rebuilding web/caddy.
+  --skip-smoke   Skip public production smoke checks.
+  -h, --help     Show this help text.
+
+Environment overrides:
+  BFP_HOST       Production host. Default: 34.223.75.206
+  BFP_USER       SSH user. Default: ubuntu
+  BFP_KEY        SSH key path. Default: ~/.ssh/bfp-lightsail.pem
+  BFP_PATH       App path on the server. Default: /srv/bfp
+USAGE
+}
+
+run_migrations=false
+run_seed=false
+run_smoke=true
+
+while (($#)); do
+  case "$1" in
+    --migrate)
+      run_migrations=true
+      ;;
+    --seed)
+      run_seed=true
+      ;;
+    --skip-smoke)
+      run_smoke=false
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+
+  shift
+done
+
+BFP_HOST="${BFP_HOST:-34.223.75.206}"
+BFP_USER="${BFP_USER:-ubuntu}"
+BFP_KEY="${BFP_KEY:-$HOME/.ssh/bfp-lightsail.pem}"
+BFP_PATH="${BFP_PATH:-/srv/bfp}"
+
+ssh_args=()
+if [[ -f "$BFP_KEY" ]]; then
+  ssh_args+=("-i" "$BFP_KEY")
+fi
+
+echo "Deploying ${BFP_USER}@${BFP_HOST}:${BFP_PATH}"
+
+remote_command="bash -s -- $(printf "%q" "$BFP_PATH") $(printf "%q" "$run_migrations") $(printf "%q" "$run_seed")"
+ssh "${ssh_args[@]}" "${BFP_USER}@${BFP_HOST}" "$remote_command" <<'REMOTE'
+set -euo pipefail
+
+app_path="$1"
+run_migrations="$2"
+run_seed="$3"
+
+compose=(docker compose -f compose.yaml -f compose.production.yaml)
+
+cd "$app_path"
+
+echo "Checking production checkout..."
+git status --short
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Production checkout has local changes; aborting deploy." >&2
+  exit 1
+fi
+
+before_sha="$(git rev-parse --short HEAD)"
+echo "Current production HEAD: ${before_sha}"
+
+git pull --ff-only
+
+after_sha="$(git rev-parse --short HEAD)"
+echo "Deploying production HEAD: ${after_sha}"
+
+"${compose[@]}" up -d --build web caddy
+
+if [[ "$run_migrations" == "true" ]]; then
+  "${compose[@]}" run --rm web bundle exec rake db:migrate
+  "${compose[@]}" run --rm web bundle exec rake que:migrate
+fi
+
+if [[ "$run_seed" == "true" ]]; then
+  "${compose[@]}" run --rm web bundle exec rake fire:sources:seed
+fi
+
+"${compose[@]}" ps
+REMOTE
+
+if [[ "$run_smoke" == "true" ]]; then
+  echo "Running public smoke checks..."
+  curl -fsS https://bigfluffypuffy.org/health
+  echo
+  curl -fsSI https://bigfluffypuffy.org/fire-restrictions >/dev/null
+  curl -fsS https://bigfluffypuffy.org/api/fire-restrictions/forests >/dev/null
+fi
+
+echo "Production deploy finished."

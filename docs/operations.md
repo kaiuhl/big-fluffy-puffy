@@ -13,7 +13,24 @@ BFP currently runs on one Lightsail instance with Docker Compose. Keep this bori
 
 ## Deploy
 
-Deploys are manual for now:
+Deploys are manual for now. Use the guarded helper from your local checkout:
+
+```sh
+bin/prod-deploy
+```
+
+Run migrations or reseed fire restriction sources only when needed:
+
+```sh
+bin/prod-deploy --migrate
+bin/prod-deploy --migrate --seed
+```
+
+The helper aborts if the production checkout has local changes, fast-forwards
+git, rebuilds only the `web` and `caddy` services, and runs public smoke checks.
+It does not start the `worker` or `clock` services.
+
+The underlying manual steps are:
 
 ```sh
 ssh ubuntu@<lightsail-ip>
