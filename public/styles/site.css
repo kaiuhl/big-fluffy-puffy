@@ -7,6 +7,7 @@
   --off-white: #f7f6f2;
   --white: #ffffff;
   --signal: #ff4b1f;
+  --shell-max-width: 1280px;
 }
 
 * {
@@ -39,7 +40,9 @@ a {
 
 .page {
   display: grid;
+  width: min(100%, var(--shell-max-width));
   min-height: 100vh;
+  margin-inline: auto;
   padding: clamp(20px, 4vw, 48px);
 }
 
@@ -105,7 +108,7 @@ a {
 h1 {
   max-width: 10ch;
   margin: 0;
-  font-size: clamp(4.2rem, 15vw, 13rem);
+  font-size: clamp(4rem, 11vw, 10rem);
   font-weight: 950;
   letter-spacing: 0;
   line-height: 0.82;
@@ -140,7 +143,7 @@ h1 {
 }
 
 .mission-statement {
-  font-size: clamp(1.8rem, 4vw, 4rem);
+  font-size: clamp(1.8rem, 3.4vw, 3.2rem);
   font-weight: 850;
   line-height: 0.98;
   letter-spacing: 0;
