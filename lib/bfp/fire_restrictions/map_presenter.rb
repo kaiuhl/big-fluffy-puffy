@@ -1,4 +1,5 @@
 require "json"
+require_relative "status_display"
 
 module BFP
   module FireRestrictions
@@ -40,6 +41,8 @@ module BFP
       def map_feature(feature, record)
         source = preferred_source(record)
 
+        checked_at = checked_at_for(record, source)
+
         {
           type: "Feature",
           geometry: feature.fetch("geometry"),
@@ -48,9 +51,13 @@ module BFP
             name: record[:name],
             region_code: record[:region_code],
             status: record[:status],
-            campfire_policy: record[:campfire_policy],
+            campfire_policy: StatusDisplay.campfire_policy(
+              status: record[:status],
+              campfire_policy: record[:campfire_policy]
+            ),
             review_status: record[:review_status],
-            last_checked_at: checked_at_for(record, source),
+            last_checked_at: checked_at,
+            last_checked_label: checked_at ? StatusDisplay.checked_date_label(checked_at) : "not checked",
             source_url: record[:source_url] || source&.fetch(:url, nil),
             source_title: record[:source_title] || source&.fetch(:name, nil),
             map_status: map_status(record)

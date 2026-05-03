@@ -49,7 +49,7 @@ RSpec.describe RodaApp do
     stub_fire_restriction_records(
       [
         restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
-        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
+        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "unknown", review_status: "auto_accepted", last_checked_at: "2026-05-03T06:00:05Z"),
         restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
       ]
     )
@@ -66,6 +66,8 @@ RSpec.describe RodaApp do
     expect(features_by_slug.keys).to match_array(%w[colville deschutes modoc])
     expect(features_by_slug.fetch("deschutes").dig("properties", "map_status")).to eq("active")
     expect(features_by_slug.fetch("colville").dig("properties", "map_status")).to eq("none")
+    expect(features_by_slug.fetch("colville").dig("properties", "campfire_policy")).to eq("allowed")
+    expect(features_by_slug.fetch("colville").dig("properties", "last_checked_label")).to eq("May 3, 2026")
     expect(features_by_slug.fetch("modoc").dig("properties", "map_status")).to eq("unknown")
     expect(features_by_slug.fetch("deschutes").fetch("geometry")).to include("type", "coordinates")
   end
@@ -74,7 +76,7 @@ RSpec.describe RodaApp do
     stub_fire_restriction_records(
       [
         restriction_record(slug: "deschutes", name: "Restriction Forest", status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted"),
-        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "allowed", review_status: "auto_accepted"),
+        restriction_record(slug: "colville", name: "Clear Forest", status: "none", campfire_policy: "unknown", review_status: "auto_accepted"),
         restriction_record(slug: "modoc", name: "Review Forest", status: "unknown", campfire_policy: "unknown", review_status: "needs_review")
       ]
     )
@@ -89,6 +91,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Clear Forest")
     expect(last_response.body).to include("Review Forest")
     expect(last_response.body).to include("Developed Sites Only")
+    expect(last_response.body).to include("Allowed")
     expect(last_response.body).to include("Needs Review")
     expect(last_response.body).to include('id="restrictions-map"')
     expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/map"')
@@ -197,6 +200,8 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("setupFireRestrictionSearch")
     expect(last_response.body).to include("dataset.filterText")
+    expect(last_response.body).to include("timeZone: \"UTC\"")
+    expect(last_response.body).to include("last_checked_label")
   end
 
   def stub_fire_restriction_records(records)

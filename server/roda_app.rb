@@ -1,4 +1,5 @@
 require_relative "../config/boot"
+require "bfp/fire_restrictions/status_display"
 require "time"
 
 class RodaApp < Roda
@@ -391,7 +392,7 @@ class RodaApp < Roda
           <span>#{h(forest[:name])}</span>
           <small>#{h(region_state_label(forest))}</small>
         </th>
-        <td data-label="Campfires">#{h(labelize(forest[:campfire_policy]))}</td>
+        <td data-label="Campfires">#{h(labelize(campfire_policy_for(forest)))}</td>
         <td data-label="Source">#{source_link(source)}</td>
         <td data-label="Checked">#{checked_at_cell(forest, source)}</td>
         <td data-label="Note">#{h(restriction_note(forest))}</td>
@@ -477,11 +478,14 @@ class RodaApp < Roda
   end
 
   def date_label(value)
-    timestamp = Time.iso8601(value.to_s)
+    BFP::FireRestrictions::StatusDisplay.checked_date_label(value)
+  end
 
-    timestamp.strftime("%b %-d, %Y")
-  rescue ArgumentError
-    "checked"
+  def campfire_policy_for(forest)
+    BFP::FireRestrictions::StatusDisplay.campfire_policy(
+      status: forest[:status],
+      campfire_policy: forest[:campfire_policy]
+    )
   end
 
   def restriction_note(forest)

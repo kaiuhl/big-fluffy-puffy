@@ -40,6 +40,7 @@
     return date.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
+      timeZone: "UTC",
       year: "numeric"
     });
   }
@@ -134,7 +135,7 @@
       "<dl>",
       "<dt>Status</dt><dd>" + escapeHtml(labelize(properties.map_status)) + "</dd>",
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
-      "<dt>Checked</dt><dd>" + escapeHtml(formattedDate(properties.last_checked_at)) + "</dd>",
+      "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",
       sourceLink,
       "</div>"

@@ -246,6 +246,15 @@ Last known production smoke state after deploying fire ingestion:
 - Willamette HTML source persisted with `unknown / needs_review` while `LLM_PARSE_ENABLED=false`.
 - Production `.env` had `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false`.
 
+## Patterns
+
+- Favor long-term, maintainable patterns over tactical hacks.
+- When establishing a new implementation pattern, add a concise note here so future work can follow it intentionally.
+- Keep `server/roda_app.rb` focused on routing and page composition.
+- Put page-specific display policy in presenter, view-model, or helper classes.
+- Render substantial public UI markup from templates or partials, not large inline HTML helpers.
+- When changing existing inline markup, consider whether the work should include extracting it behind a tested presentation boundary.
+
 ## Coding Notes
 
 - Prefer existing Roda, Sequel, Que, and plain Ruby patterns.

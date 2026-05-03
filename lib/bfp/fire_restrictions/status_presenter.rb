@@ -1,3 +1,5 @@
+require_relative "status_display"
+
 module BFP
   module FireRestrictions
     class StatusPresenter
@@ -23,7 +25,10 @@ module BFP
           market_bucket: land_unit.market_bucket,
           region_code: land_unit.region_code,
           status: status&.status || "unknown",
-          campfire_policy: status&.campfire_policy || "unknown",
+          campfire_policy: StatusDisplay.campfire_policy(
+            status: status&.status,
+            campfire_policy: status&.campfire_policy
+          ),
           fire_danger_rating: status&.fire_danger_rating,
           ifpl_level: status&.ifpl_level,
           confidence: status&.confidence || 0.0,
