@@ -17,7 +17,10 @@ services:
       - path: .env
         required: false
     environment:
-      DATABASE_URL: postgres://bfp:bfp@postgres:5432/bfp_development
+      APP_ENV: ${APP_ENV:-development}
+      RACK_ENV: ${RACK_ENV:-development}
+      BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
+      DATABASE_URL: ${DATABASE_URL:-postgres://bfp:bfp@postgres:5432/bfp_development}
     depends_on:
       - postgres
     ports:
@@ -26,29 +29,40 @@ services:
   worker:
     build: .
     command: ruby jobs/worker.rb
+    profiles:
+      - jobs
     env_file:
       - path: .env
         required: false
     environment:
-      DATABASE_URL: postgres://bfp:bfp@postgres:5432/bfp_development
+      APP_ENV: ${APP_ENV:-development}
+      RACK_ENV: ${RACK_ENV:-development}
+      BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
+      DATABASE_URL: ${DATABASE_URL:-postgres://bfp:bfp@postgres:5432/bfp_development}
     depends_on:
       - postgres
 
   clock:
     build: .
     command: ruby jobs/clock.rb
+    profiles:
+      - jobs
     env_file:
       - path: .env
         required: false
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      RACK_ENV: ${RACK_ENV:-development}
+      BRIDGETOWN_ENV: ${BRIDGETOWN_ENV:-development}
     depends_on:
       - postgres
 
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: bfp
-      POSTGRES_PASSWORD: bfp
-      POSTGRES_DB: bfp_development
+      POSTGRES_USER: ${POSTGRES_USER:-bfp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bfp}
+      POSTGRES_DB: ${POSTGRES_DB:-bfp_development}
     ports:
       - "5432:5432"
     volumes:

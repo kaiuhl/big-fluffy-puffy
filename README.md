@@ -39,4 +39,10 @@ This is intentionally just the foundation:
 - Infrastructure scaffolding lives in `infra/`.
 - Background job placeholders live in `jobs/`.
 
+Run background placeholders explicitly when needed:
+
+```sh
+docker compose --profile jobs up worker clock
+```
+
 Secrets belong in environment variables, GitHub Actions secrets, or AWS secret stores. Never commit them.

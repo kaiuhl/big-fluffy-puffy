@@ -1,0 +1,28 @@
+services:
+  caddy:
+    restart: unless-stopped
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile.production:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  web:
+    restart: unless-stopped
+    ports: !override []
+    environment:
+      APP_ENV: production
+      RACK_ENV: production
+      BRIDGETOWN_ENV: production
+
+  postgres:
+    restart: unless-stopped
+    ports: !override []
+
+  worker:
+    restart: unless-stopped
+
+  clock:
+    restart: unless-stopped

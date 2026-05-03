@@ -1,0 +1,11 @@
+bigfluffypuffy.org, www.bigfluffypuffy.org {
+  reverse_proxy web:9292
+}
+
+bigfuckingpuffy.org, www.bigfuckingpuffy.org {
+  redir https://bigfluffypuffy.org{uri} permanent
+}
+
+:80 {
+  reverse_proxy web:9292
+}
