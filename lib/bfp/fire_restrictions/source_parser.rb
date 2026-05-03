@@ -32,8 +32,11 @@ module BFP
         validation = @validator.validate(result, source: source, extracted_text: document.extracted_text.to_s)
 
         if should_escalate?(result, validation, document.extracted_text.to_s, source, land_unit)
-          result = parse_result(document.extracted_text.to_s, source, land_unit, escalation: true)
-          validation = @validator.validate(result, source: source, extracted_text: document.extracted_text.to_s)
+          escalation_result = parse_result(document.extracted_text.to_s, source, land_unit, escalation: true)
+          unless parser_failure?(escalation_result)
+            result = escalation_result
+            validation = @validator.validate(result, source: source, extracted_text: document.extracted_text.to_s)
+          end
         end
 
         observation = create_observation(fetch, source, land_unit, result, validation)
@@ -77,7 +80,7 @@ module BFP
         model_id = escalation ? escalation_model_id : primary_model_id
         @parser_client.parse(text: text, source: source, land_unit: land_unit, model_id: model_id)
       rescue => error
-        parse_error_result(error)
+        parse_error_result(error, model_id)
       end
 
       def llm_parse_enabled?
@@ -94,6 +97,7 @@ module BFP
 
       def should_escalate?(result, validation, text, source, land_unit)
         return false if source.source_type == "arcgis_feature_layer"
+        return false if parser_failure?(result)
 
         result["confidence"].to_f < 0.7 ||
           !validation.valid? ||
@@ -201,10 +205,15 @@ module BFP
         }
       end
 
-      def parse_error_result(error)
+      def parse_error_result(error, model_id)
         parse_disabled_result.merge(
-          "needs_review_reasons" => ["LLM parsing failed: #{error.class}: #{error.message}"]
+          "needs_review_reasons" => ["LLM parsing failed: #{error.class}: #{error.message}"],
+          "parser_model_id" => model_id
         )
+      end
+
+      def parser_failure?(result)
+        Array(result["needs_review_reasons"]).any? { |reason| reason.to_s.start_with?("LLM parsing failed:") }
       end
 
       class JsonExtractor
