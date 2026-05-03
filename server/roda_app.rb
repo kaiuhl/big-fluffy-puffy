@@ -469,34 +469,17 @@ class RodaApp < Roda
     checked_at = checked_at_for(forest, source)
     return "not checked" unless checked_at
 
-    %(<time datetime="#{h(checked_at)}">#{h(relative_time_label(checked_at))}</time>)
+    %(<time datetime="#{h(checked_at)}">#{h(date_label(checked_at))}</time>)
   end
 
   def checked_at_for(forest, source)
     forest[:last_checked_at] || source&.fetch(:last_checked_at, nil)
   end
 
-  def relative_time_label(value)
+  def date_label(value)
     timestamp = Time.iso8601(value.to_s)
-    days = ((Time.now - timestamp) / 86_400).floor
-    days = 0 if days.negative?
 
-    return "today" if days.zero?
-    return "yesterday" if days == 1
-    return "#{days} days ago" if days < 7
-
-    weeks = (days / 7.0).round
-    return "1 week ago" if weeks == 1
-    return "#{weeks} weeks ago" if days < 60
-
-    months = (days / 30.0).round
-    return "1 month ago" if months == 1
-    return "#{months} months ago" if days < 365
-
-    years = (days / 365.0).round
-    return "1 year ago" if years == 1
-
-    "#{years} years ago"
+    timestamp.strftime("%b %-d, %Y")
   rescue ArgumentError
     "checked"
   end

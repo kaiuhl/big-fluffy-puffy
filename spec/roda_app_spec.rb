@@ -149,8 +149,8 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("https://example.test/current-order")
     expect(last_response.body).to include("Current fire order")
-    expect(last_response.body).to include(">today</time>")
-    expect(last_response.body).to include(">1 week ago</time>")
+    expect(last_response.body).to include(">May 3, 2026</time>")
+    expect(last_response.body).to include(">Apr 26, 2026</time>")
   end
 
   it "renders a celebratory message when no forests have active published restrictions" do
