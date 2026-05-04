@@ -10,6 +10,12 @@ Primary public line:
 
 > Skip the campfire. Pack the warmth.
 
+Secondary brand lines:
+
+> We bring the warmth.
+
+> Warmth without fire.
+
 Mission language:
 
 > Big Fluffy Puffy advocates for a simple shift in outdoor culture: skip the campfire and carry enough warmth to enjoy the night without one.
@@ -77,6 +83,8 @@ Avoid:
 
 Short lines:
 
+- We bring the warmth.
+- Warmth without fire.
 - The forest does not need your fire.
 - You probably do not either.
 - Bring the puffy. Leave the matches.
