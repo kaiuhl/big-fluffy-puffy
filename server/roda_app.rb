@@ -10,6 +10,7 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260504-gutters".freeze
 
   STATE_LABELS = {
     "or" => "OR",
@@ -107,7 +108,7 @@ class RodaApp < Roda
               content="Pacific Northwest fire restriction status for Big Fluffy Puffy's launch market."
             >
             <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
-            <link rel="stylesheet" href="/styles/site.css">
+            <link rel="stylesheet" href="#{SITE_CSS_PATH}">
             <script src="/vendor/leaflet/leaflet.js" defer></script>
             <script src="/scripts/fire-restrictions.js" defer></script>
           </head>
@@ -211,7 +212,7 @@ class RodaApp < Roda
               name="description"
               content="Big Fluffy Puffy is a nonprofit building fireless camp culture in the Pacific Northwest."
             >
-            <link rel="stylesheet" href="/styles/site.css">
+            <link rel="stylesheet" href="#{SITE_CSS_PATH}">
           </head>
           <body>
             <div class="page">
@@ -384,7 +385,7 @@ class RodaApp < Roda
           <meta property="og:title" content="#{h(title)}">
           <meta property="og:description" content="#{h(description)}">
           <meta property="og:type" content="website">
-          <link rel="stylesheet" href="/styles/site.css">
+          <link rel="stylesheet" href="#{SITE_CSS_PATH}">
         </head>
         <body>
           <div class="page">
