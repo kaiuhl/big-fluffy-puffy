@@ -308,8 +308,6 @@ class RodaApp < Roda
         #{restriction_summary(groups)}
       </section>
 
-      #{fire_restrictions_trust_section}
-
       #{fire_restrictions_map_section}
 
       <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
@@ -349,6 +347,8 @@ class RodaApp < Roda
           empty_message: "All active forests have a published status."
         )}
       </div>
+
+      #{fire_restrictions_trust_section}
     HTML
   end
 
