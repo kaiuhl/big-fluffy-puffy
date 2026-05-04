@@ -1,23 +1,27 @@
 {
-  auto_https disable_redirects
+	auto_https disable_redirects
+
+	servers :443 {
+		protocols h1 h2
+	}
 }
 
 http://bigfluffypuffy.org, http://www.bigfluffypuffy.org {
-  redir https://bigfluffypuffy.org{uri} permanent
+	redir https://bigfluffypuffy.org{uri} permanent
 }
 
 https://bigfluffypuffy.org, https://www.bigfluffypuffy.org {
-  reverse_proxy web:9292
+	reverse_proxy web:9292
 }
 
 http://bigfuckingpuffy.org, http://www.bigfuckingpuffy.org {
-  redir https://bigfluffypuffy.org{uri} permanent
+	redir https://bigfluffypuffy.org{uri} permanent
 }
 
 https://bigfuckingpuffy.org, https://www.bigfuckingpuffy.org {
-  redir https://bigfluffypuffy.org{uri} permanent
+	redir https://bigfluffypuffy.org{uri} permanent
 }
 
 :80 {
-  reverse_proxy web:9292
+	reverse_proxy web:9292
 }

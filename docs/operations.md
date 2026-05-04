@@ -11,6 +11,11 @@ BFP currently runs on one Lightsail instance with Docker Compose. Keep this bori
 - Database: local Postgres container
 - Future jobs: Que worker and clock containers behind the `jobs` Compose profile
 
+Caddy intentionally serves HTTPS over HTTP/1.1 and HTTP/2 only. The production
+host publishes TCP 443, but not UDP 443; disabling HTTP/3 keeps Caddy from
+advertising an unavailable `h3` path to clients behind networks that block UDP
+443.
+
 ## Deploy
 
 Deploys are manual for now. Use the guarded helper from your local checkout:
