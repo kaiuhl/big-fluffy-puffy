@@ -11,6 +11,7 @@ http://bigfluffypuffy.org, http://www.bigfluffypuffy.org {
 }
 
 https://bigfluffypuffy.org, https://www.bigfluffypuffy.org {
+	header Alt-Svc "clear"
 	reverse_proxy web:9292
 }
 
@@ -19,6 +20,7 @@ http://bigfuckingpuffy.org, http://www.bigfuckingpuffy.org {
 }
 
 https://bigfuckingpuffy.org, https://www.bigfuckingpuffy.org {
+	header Alt-Svc "clear"
 	redir https://bigfluffypuffy.org{uri} permanent
 }
 

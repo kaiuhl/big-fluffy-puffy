@@ -14,7 +14,8 @@ BFP currently runs on one Lightsail instance with Docker Compose. Keep this bori
 Caddy intentionally serves HTTPS over HTTP/1.1 and HTTP/2 only. The production
 host publishes TCP 443, but not UDP 443; disabling HTTP/3 keeps Caddy from
 advertising an unavailable `h3` path to clients behind networks that block UDP
-443.
+443. HTTPS responses also send `Alt-Svc: clear` so browsers with a previously
+cached HTTP/3 alternative service entry can discard it.
 
 ## Deploy
 
