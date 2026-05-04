@@ -12,6 +12,9 @@
   --spark-shadow: rgba(170, 165, 154, 0.1);
   --spark-label: #8f897d;
   --shell-max-width: 1280px;
+  --shell-gutter: clamp(20px, 4vw, 48px);
+  --content-gutter: clamp(20px, 5vw, 64px);
+  --content-gutter-wide: clamp(20px, 6vw, 76px);
 }
 
 * {
@@ -51,10 +54,12 @@ a {
   width: min(100%, var(--shell-max-width));
   min-height: 100vh;
   margin-inline: auto;
-  padding: clamp(20px, 4vw, 48px);
+  padding: var(--shell-gutter);
 }
 
 .landing {
+  --page-content-gutter: var(--content-gutter-wide);
+
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: calc(100vh - clamp(40px, 8vw, 96px));
@@ -68,7 +73,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: clamp(16px, 2.5vw, 28px);
+  padding: clamp(16px, 2.5vw, 28px) var(--page-content-gutter, var(--content-gutter));
   border-bottom: 1px solid var(--black);
   font-size: 0.78rem;
   font-weight: 800;
@@ -129,7 +134,7 @@ a {
   display: grid;
   align-content: end;
   gap: clamp(28px, 5vw, 64px);
-  padding: clamp(32px, 7vw, 92px) clamp(20px, 6vw, 76px);
+  padding: clamp(32px, 7vw, 92px) var(--page-content-gutter);
 }
 
 .nameplate {
@@ -210,7 +215,8 @@ h1 {
 }
 
 .restrictions-page {
-  --restrictions-content-gutter: clamp(20px, 5vw, 64px);
+  --page-content-gutter: var(--content-gutter);
+  --restrictions-content-gutter: var(--page-content-gutter);
 
   display: grid;
   grid-template-rows: auto auto auto 1fr;
@@ -673,6 +679,8 @@ h1 {
 }
 
 .identity-page {
+  --page-content-gutter: var(--content-gutter-wide);
+
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   min-height: 100vh;
@@ -684,7 +692,7 @@ h1 {
   display: grid;
   gap: 18px;
   border-bottom: 1px solid var(--black);
-  padding: clamp(36px, 8vw, 96px) clamp(20px, 6vw, 76px);
+  padding: clamp(36px, 8vw, 96px) var(--page-content-gutter);
 }
 
 .identity-intro h1 {
@@ -710,7 +718,7 @@ h1 {
   grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1fr);
   gap: clamp(18px, 4vw, 56px);
   border-bottom: 1px solid var(--black);
-  padding: clamp(22px, 4vw, 42px) clamp(20px, 6vw, 76px);
+  padding: clamp(22px, 4vw, 42px) var(--page-content-gutter);
 }
 
 .identity-row p {
@@ -742,7 +750,7 @@ h1 {
 }
 
 .identity-action {
-  padding: clamp(24px, 4vw, 38px) clamp(20px, 6vw, 76px);
+  padding: clamp(24px, 4vw, 38px) var(--page-content-gutter);
 }
 
 .identity-action a {
@@ -767,6 +775,11 @@ h1 {
 @media (max-width: 720px) {
   .page {
     padding: 0;
+  }
+
+  .restrictions-page,
+  .identity-page {
+    --page-content-gutter: 18px;
   }
 
   .landing {
@@ -817,7 +830,7 @@ h1 {
   }
 
   .restrictions-intro {
-    padding: 28px 18px;
+    padding: 28px var(--page-content-gutter);
   }
 
   .restrictions-intro h1 {
@@ -826,11 +839,11 @@ h1 {
   }
 
   .restrictions-summary {
-    padding: 22px 18px;
+    padding: 22px var(--page-content-gutter);
   }
 
   .restrictions-trust {
-    padding: 22px 18px;
+    padding: 22px var(--page-content-gutter);
   }
 
   .restrictions-trust-grid {
@@ -839,7 +852,7 @@ h1 {
 
   .restrictions-filter {
     grid-template-columns: 1fr;
-    padding: 18px;
+    padding: 18px var(--page-content-gutter);
   }
 
   .restrictions-filter p {
@@ -851,8 +864,6 @@ h1 {
   }
 
   .restrictions-map-section {
-    --restrictions-map-section-pad-x: 18px;
-
     padding: 20px var(--restrictions-map-section-pad-x) 0;
   }
 
@@ -869,7 +880,7 @@ h1 {
   }
 
   .restrictions-section-heading {
-    padding: 22px 18px 0;
+    padding: 22px var(--page-content-gutter) 0;
   }
 
   .restrictions-section-heading h2 {
@@ -950,7 +961,7 @@ h1 {
   }
 
   .identity-intro {
-    padding: 30px 18px;
+    padding: 30px var(--page-content-gutter);
   }
 
   .identity-intro h1 {
@@ -960,8 +971,8 @@ h1 {
 
   .identity-row,
   .identity-action {
-    padding-right: 18px;
-    padding-left: 18px;
+    padding-right: var(--page-content-gutter);
+    padding-left: var(--page-content-gutter);
   }
 
   .identity-row {
