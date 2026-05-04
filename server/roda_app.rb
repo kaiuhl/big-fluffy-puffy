@@ -5,8 +5,10 @@ require "time"
 
 class RodaApp < Roda
   NAV_LINKS = [
-    {href: "/", label: "Home"},
-    {href: "/fire-restrictions", label: "Fire Restrictions"}
+    {href: "/fire-restrictions", label: "Fire Restrictions"},
+    {href: "/why-fireless", label: "Why Fireless"},
+    {href: "/about", label: "About"},
+    {href: "/contact", label: "Contact"}
   ].freeze
 
   STATE_LABELS = {
@@ -115,11 +117,11 @@ class RodaApp < Roda
                 #{site_header(current_path: "/fire-restrictions")}
 
                 <section class="restrictions-intro" aria-labelledby="restrictions-title">
-                  <p class="kicker">Official source monitor</p>
+                  <p class="kicker">Source monitor</p>
                   <h1 id="restrictions-title">PNW Fire Restrictions</h1>
                   <p>
-                    Published forest-wide fire restriction status for Oregon, Washington, and Northern California.
-                    Unknown entries need source review before they become public claims.
+                    Source-linked fire restriction status for Oregon, Washington, and Northern California.
+                    Big Fluffy Puffy is not a government agency; check the linked official source before you go.
                   </p>
                 </section>
 
@@ -129,6 +131,70 @@ class RodaApp < Roda
           </body>
         </html>
       HTML
+    end
+
+    r.get "about" do
+      response["Content-Type"] = "text/html"
+
+      identity_page(
+        title: "About | Big Fluffy Puffy",
+        description: "Big Fluffy Puffy is a nonprofit for fireless camp culture in the Pacific Northwest.",
+        current_path: "/about",
+        kicker: "About",
+        heading: "Started by people who still love campfires",
+        lead: "Big Fluffy Puffy began as a nudge to friends on long trips: bring enough warmth to stay comfortable when the fire can't happen.",
+        rows: [
+          ["Origin", "BFP grew out of watching friends be colder than they needed to be on long nights outside. A better puffy, a warmer bag, and a few good habits can change the whole trip."],
+          ["The Honest Part", "We love a campfire with whiskey, laughs, and sore legs. The point is not pretending fire is bad. The point is admitting it is increasingly less dependable."],
+          ["Why Now", "Climate change is making summers hotter and drier, and long-term forest management has left a lot of dry fuel on the ground. Fire bans are becoming a normal part of camping in the West."],
+          ["The Shift", "So we started a thing: a different camping culture where fire bans do not ruin the fun, and where even when fires are allowed but questionable, going without is still fun and comfortable."],
+          ["What We Are Building", "BFP tracks fire restrictions and closures so they are easier to know about, pairs them with typical overnight lows, and helps campers understand their no-fire options."],
+          ["The Ask", "Join us in protecting what remains of our unburned forests by spreading the message: pack the warmth, skip the fire when you can, and keep the fun intact."]
+        ],
+        action_href: "/fire-restrictions",
+        action_label: "Check Current Restrictions"
+      )
+    end
+
+    r.get "why-fireless" do
+      response["Content-Type"] = "text/html"
+
+      identity_page(
+        title: "Why Fireless | Big Fluffy Puffy",
+        description: "Why fireless camping can be prepared, social, warm, and normal.",
+        current_path: "/why-fireless",
+        kicker: "Why fireless",
+        heading: "The fire can't be the plan",
+        lead: "Campfires are wonderful when they are legal, safe, and sensible. But more often, they aren't. Big Fluffy Puffy is about bringing enough warmth, light, and atmosphere to keep the night good anyway.",
+        rows: [
+          ["Risk", "Humans cause most wildfires in the United States, and unattended or poorly managed campfires remain a preventable ignition source."],
+          ["Restrictions", "Across the West, hotter summers, dry fuels, smoke, and public land restrictions mean the fire often cannot happen, or probably should not."],
+          ["Comfort", "A proper puffy, warm sleep system, hot drink, and good light solve most of what people ask a campfire to do."],
+          ["Ritual", "The point is not a colder, quieter camp. Sit closer, pass snacks, tell the long story, and keep the night alive."]
+        ],
+        action_href: "/fire-restrictions",
+        action_label: "See The Monitor"
+      )
+    end
+
+    r.get "contact" do
+      response["Content-Type"] = "text/html"
+
+      identity_page(
+        title: "Contact | Big Fluffy Puffy",
+        description: "Contact information for Big Fluffy Puffy.",
+        current_path: "/contact",
+        kicker: "Contact",
+        heading: "Say hello",
+        lead: "Email hello@puffy.camp for board, partner, press, and source-correction notes.",
+        rows: [
+          ["Inbox", "hello@puffy.camp", "mailto:hello@puffy.camp"],
+          ["Useful Notes", "Corrections are most helpful when they include the forest, the official source URL, and the line that changed."],
+          ["Source Monitor", "Review the current fire restriction monitor.", "/fire-restrictions"]
+        ],
+        action_href: "mailto:hello@puffy.camp",
+        action_label: "Email BFP"
+      )
     end
 
     r.root do
@@ -187,9 +253,12 @@ class RodaApp < Roda
   private
 
   def site_header(current_path:)
+    brand_class = (current_path == "/") ? %( class="site-brand site-brand-active") : %( class="site-brand")
+    brand_current = (current_path == "/") ? %( aria-current="page") : ""
+
     <<~HTML
       <header class="site-header" aria-label="Site">
-        <a class="site-brand" href="/">Big Fluffy Puffy</a>
+        <a#{brand_class} href="/"#{brand_current}>Big Fluffy Puffy</a>
         <nav class="site-nav" aria-label="Primary">
           <ul>
             #{nav_items(current_path)}
@@ -239,6 +308,8 @@ class RodaApp < Roda
         #{restriction_summary(groups)}
       </section>
 
+      #{fire_restrictions_trust_section}
+
       #{fire_restrictions_map_section}
 
       <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
@@ -279,6 +350,82 @@ class RodaApp < Roda
         )}
       </div>
     HTML
+  end
+
+  def fire_restrictions_trust_section
+    <<~HTML
+      <section class="restrictions-trust" aria-labelledby="restrictions-trust-title">
+        <p class="summary-kicker">How to read this</p>
+        <h2 id="restrictions-trust-title">Source-linked, not official</h2>
+        <div class="restrictions-trust-grid">
+          <p>
+            Each row points to the source BFP checked. Use this as a monitor, then confirm with the official agency before a trip.
+          </p>
+          <p>
+            The table emphasizes forest-wide public-use fire restrictions. Local wilderness, campground, river corridor, incident, or permit-area rules may still apply.
+          </p>
+          <p>
+            Unknown means BFP has not published a claim yet. It does not mean campfires are allowed.
+          </p>
+        </div>
+      </section>
+    HTML
+  end
+
+  def identity_page(title:, description:, current_path:, kicker:, heading:, lead:, rows:, action_href:, action_label:)
+    <<~HTML
+      <!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>#{h(title)}</title>
+          <meta name="description" content="#{h(description)}">
+          <meta property="og:title" content="#{h(title)}">
+          <meta property="og:description" content="#{h(description)}">
+          <meta property="og:type" content="website">
+          <link rel="stylesheet" href="/styles/site.css">
+        </head>
+        <body>
+          <div class="page">
+            <main class="identity-page">
+              #{site_header(current_path: current_path)}
+
+              <section class="identity-intro" aria-labelledby="identity-title">
+                <p class="kicker">#{h(kicker)}</p>
+                <h1 id="identity-title">#{h(heading)}</h1>
+                <p>#{h(lead)}</p>
+              </section>
+
+              <section class="identity-list" aria-label="#{h(kicker)} details">
+                #{identity_rows(rows)}
+              </section>
+
+              <section class="identity-action" aria-label="Next step">
+                <a href="#{h(action_href)}">#{h(action_label)}</a>
+              </section>
+            </main>
+          </div>
+        </body>
+      </html>
+    HTML
+  end
+
+  def identity_rows(rows)
+    rows.map do |label, text, href|
+      <<~HTML
+        <article class="identity-row">
+          <p>#{h(label)}</p>
+          <div>#{identity_row_content(text, href)}</div>
+        </article>
+      HTML
+    end.join
+  end
+
+  def identity_row_content(text, href)
+    return h(text) unless href
+
+    %(<a href="#{h(href)}">#{h(text)}</a>)
   end
 
   def fire_restrictions_map_section

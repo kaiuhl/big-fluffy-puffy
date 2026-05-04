@@ -43,6 +43,9 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js"')
+    expect(last_response.body).to include("Source-linked, not official")
+    expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
+    expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
   end
 
   it "exposes a GeoJSON fire restriction map endpoint" do
@@ -185,6 +188,40 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Skip the campfire. Pack the warmth.")
     expect(last_response.body).to include("nonprofit building fireless camp culture")
     expect(last_response.body).to include('href="/fire-restrictions"')
+    expect(last_response.body).to include('href="/why-fireless"')
+    expect(last_response.body).to include('href="/about"')
+    expect(last_response.body).to include('href="/contact"')
+    expect(last_response.body).to include('class="site-brand site-brand-active" href="/" aria-current="page"')
+    expect(last_response.body).not_to include(">Home</a>")
+  end
+
+  it "serves simple public identity pages" do
+    pages = {
+      "/about" => ["Started by people who still love campfires", "aria-current=\"page\">About"],
+      "/why-fireless" => ["The fire can&#39;t be the plan", "aria-current=\"page\">Why Fireless"],
+      "/contact" => ["Say hello", "aria-current=\"page\">Contact"]
+    }
+
+    pages.each do |path, expected_text|
+      get path
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include(*expected_text)
+      expect(last_response.body).to include('href="/fire-restrictions"')
+      expect(last_response.body).to include("<meta property=\"og:title\"")
+    end
+
+    get "/about"
+
+    expect(last_response.body).to include("What We Are Building")
+    expect(last_response.body).to include("Join us in protecting what remains of our unburned forests")
+    expect(last_response.body).to include("Big Fluffy Puffy began as a nudge to friends")
+
+    get "/contact"
+
+    expect(last_response.body).to include('<a href="mailto:hello@puffy.camp">hello@puffy.camp</a>')
+    expect(last_response.body).to include('href="mailto:hello@puffy.camp"')
+    expect(last_response.body).to include('<a href="/fire-restrictions">Review the current fire restriction monitor.</a>')
   end
 
   it "responds to head requests for the landing page" do
