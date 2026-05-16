@@ -108,15 +108,16 @@ module BFP
         rule = existing || LocalizedFireUseRule.new(land_unit_id: land_unit.id, slug: config.fetch("slug"), created_at: now)
         changed = existing && existing.content_fingerprint.to_s != "" && existing.content_fingerprint != fingerprint
         review_affecting_changed = review_affecting_changed?(existing, config, changed)
-        review_status = review_status_for(config, existing, changed, review_affecting_changed)
+        review_required = review_affecting_changed && !seed_review_override?(config)
+        review_status = review_status_for(config, existing, changed, review_required)
 
-        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_affecting_changed, existing, now))
+        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_required, existing, now))
         rule.save
 
-        review_affecting_changed ? :review_changed : :seeded
+        review_required ? :review_changed : :seeded
       end
 
-      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_affecting_changed, existing, now)
+      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_required, existing, now)
         attributes = {
           land_unit_id: land_unit.id,
           restriction_area_id: area&.id,
@@ -155,7 +156,7 @@ module BFP
           confidence: Float(config.fetch("confidence", 0.0)),
           review_status: review_status,
           next_review_due_on: parse_date(config["next_review_due_on"]),
-          review_notes: review_notes_for(config, review_affecting_changed: review_affecting_changed),
+          review_notes: review_notes_for(config, review_required: review_required),
           published_at: published_at_for(config, review_status, existing),
           content_fingerprint: fingerprint,
           supersedes_rule_id: nil,
@@ -168,16 +169,16 @@ module BFP
         attributes
       end
 
-      def review_status_for(config, existing, changed, review_affecting_changed)
-        return "needs_review" if review_affecting_changed
+      def review_status_for(config, existing, changed, review_required)
+        return "needs_review" if review_required
         return config.fetch("review_status", "needs_review") if changed && seed_review_override?(config)
         return existing.review_status if existing && existing.review_status.to_s != ""
 
         config.fetch("review_status", "needs_review")
       end
 
-      def review_notes_for(config, review_affecting_changed:)
-        return "Curated rule content changed during seed; review before publishing." if review_affecting_changed
+      def review_notes_for(config, review_required:)
+        return "Curated rule content changed during seed; review before publishing." if review_required
 
         config["review_notes"]
       end

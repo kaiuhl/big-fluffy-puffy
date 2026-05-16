@@ -248,6 +248,36 @@ RSpec.describe "fire restriction database integration", :db do
     expect(rule.review_notes).to be_nil
   end
 
+  it "preserves accepted review state for explicit reviewed seed overrides" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    base_config = localized_rule_config(
+      area_description: "Approximate buffer around the NHD lake polygon.",
+      geometry_source_type: "derived_nhd_waterbody_buffer",
+      metadata_json: {"geometry_strategy" => "derived_nhd_waterbody_buffer"}
+    )
+    reviewed_config = localized_rule_config(
+      area_description: "Approximate buffer around the NHD lake polygon.",
+      geometry_source_type: "derived_nhd_waterbody_buffer",
+      metadata_json: {"geometry_strategy" => "derived_nhd_waterbody_buffer"},
+      seed_review_override: "reviewed_seed_correction_2026_05_16",
+      summary: "Campfires and stove fires are prohibited within the reviewed test lake buffer."
+    )
+
+    seed_curated_config(base_config)
+    rule = BFP::FireRestrictions::LocalizedFireUseRule.first(slug: "mt-hood-test-lake-buffer")
+    expect(rule.review_status).to eq("accepted")
+
+    counts = seed_curated_config(reviewed_config)
+    rule.refresh
+
+    expect(counts[:changed_rules]).to eq(0)
+    expect(rule.review_status).to eq("accepted")
+    expect(rule.summary).to eq("Campfires and stove fires are prohibited within the reviewed test lake buffer.")
+    expect(rule.review_notes).to be_nil
+  end
+
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"
@@ -306,7 +336,7 @@ RSpec.describe "fire restriction database integration", :db do
     end
   end
 
-  def localized_rule_config(area_description:, geometry_source_type:, metadata_json:, seed_review_override: nil, include_area: true)
+  def localized_rule_config(area_description:, geometry_source_type:, metadata_json:, seed_review_override: nil, include_area: true, summary: "Campfires are prohibited within the test lake buffer.")
     config = {
       "slug" => "mt-hood-test-lake-buffer",
       "land_unit_slug" => "mt-hood",
@@ -316,7 +346,7 @@ RSpec.describe "fire restriction database integration", :db do
       "campfire_policy" => "prohibited",
       "duration_type" => "permanent",
       "affected_area" => "Test Lake",
-      "summary" => "Campfires are prohibited within the test lake buffer.",
+      "summary" => summary,
       "evidence_quotes" => ["Campfires are prohibited within the test lake buffer."],
       "source_url" => "https://www.fs.usda.gov/r06/mthood/fire",
       "source_title" => "Mt. Hood fire information",
