@@ -132,8 +132,13 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Seasonal / Current Orders")
     expect(last_response.body).to include("Permanent / Standing Rules")
     expect(last_response.body).to include("Jefferson Park")
+    expect(last_response.body).to include("<th scope=\"col\">Fire Use</th>")
+    expect(last_response.body).to include('data-label="Fire Use"')
+    expect(last_response.body).to include('class="fire-use-sparkline"')
+    expect(last_response.body).to include("Campfires prohibited. Gas stoves allowed with shutoff valve.")
     expect(last_response.body).to include("Gas")
-    expect(last_response.body).to include("Allowed with shutoff valve")
+    expect(last_response.body).to include("allowed with shutoff valve")
+    expect(last_response.body).not_to include("Stoves / Charcoal")
     expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/forests/deschutes/map"')
   end
 

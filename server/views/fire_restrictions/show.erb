@@ -135,8 +135,7 @@
                       <thead>
                         <tr>
                           <th scope="col">Area</th>
-                          <th scope="col">Campfires</th>
-                          <th scope="col">Stoves / Charcoal</th>
+                          <th scope="col">Fire Use</th>
                           <th scope="col">Duration</th>
                           <th scope="col">Source</th>
                           <th scope="col">Map</th>
@@ -146,27 +145,17 @@
                         <% section_rules.each do |rule| %>
                           <% rule_source_url = rule[:source_url] %>
                           <% rule_source_title = rule[:source_title] || "Source" %>
+                          <% fire_use = fire_use_profile(rule) %>
                           <tr data-restriction-id="<%= h(rule[:id]) %>">
                             <th scope="row">
                               <span><%= h(rule[:title]) %></span>
                               <small><%= h(rule[:affected_area] || rule.dig(:area, :name) || "Localized area") %></small>
                             </th>
-                            <td data-label="Campfires"><%= h(policy_label(rule[:campfire_policy])) %></td>
-                            <td data-label="Stoves / Charcoal">
-                              <dl class="stove-policy-list">
-                                <% [
-                                  ["Charcoal", rule[:charcoal_policy]],
-                                  ["Gas", rule[:gas_stove_policy]],
-                                  ["Alcohol", rule[:alcohol_stove_policy]],
-                                  ["Solid fuel", rule[:solid_fuel_stove_policy]],
-                                  ["Wood stove", rule[:wood_stove_policy]]
-                                ].each do |label, policy| %>
-                                  <div>
-                                    <dt><%= h(label) %></dt>
-                                    <dd><%= h(stove_policy_label(policy, shutoff_required: rule[:stove_shutoff_valve_required])) %></dd>
-                                  </div>
-                                <% end %>
-                              </dl>
+                            <td data-label="Fire Use">
+                              <div class="fire-use-profile">
+                                <p class="fire-use-summary"><%= h(fire_use.summary) %></p>
+                                <span class="fire-use-chart"><%= fire_use.render %></span>
+                              </div>
                             </td>
                             <td data-label="Duration"><%= h(duration_label(rule)) %></td>
                             <td data-label="Source">

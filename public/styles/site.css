@@ -699,29 +699,103 @@ h1 {
   text-transform: uppercase;
 }
 
-.stove-policy-list {
-  display: grid;
-  gap: 6px;
-  margin: 0;
+.localized-restrictions-table {
+  min-width: 980px;
 }
 
-.stove-policy-list div {
+.localized-restrictions-table td:nth-child(2) {
+  min-width: 310px;
+}
+
+.localized-restrictions-table td:nth-child(5) {
+  color: var(--charcoal);
+  font-weight: 700;
+  white-space: normal;
+}
+
+.fire-use-profile {
   display: grid;
-  grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
   gap: 10px;
+  max-width: 330px;
 }
 
-.stove-policy-list dt {
-  color: var(--mid-gray);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.stove-policy-list dd {
+.fire-use-summary {
   margin: 0;
-  font-weight: 750;
+  color: var(--near-black);
+  font-size: 0.86rem;
+  font-weight: 780;
+  line-height: 1.32;
+}
+
+.fire-use-chart {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.fire-use-sparkline {
+  display: block;
+  width: 246px;
+  height: 62px;
+  max-width: 100%;
+  overflow: visible;
+  font-family: inherit;
+}
+
+.fire-use-guide {
+  stroke: var(--spark-guide);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.fire-use-dot {
+  stroke: var(--white);
+  stroke-width: 1.2;
+}
+
+.fire-use-point-allowed .fire-use-dot {
+  fill: #4f8f66;
+}
+
+.fire-use-point-limited .fire-use-dot {
+  fill: #b8782f;
+}
+
+.fire-use-point-prohibited .fire-use-dot {
+  fill: var(--signal);
+}
+
+.fire-use-point-unknown .fire-use-dot {
+  fill: var(--white);
+  stroke: var(--mid-gray);
+}
+
+.fire-use-mark {
+  fill: none;
+  stroke: var(--white);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.fire-use-mark-text {
+  dominant-baseline: central;
+  fill: var(--white);
+  font-size: 8px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.fire-use-point-unknown .fire-use-mark-text {
+  fill: var(--mid-gray);
+}
+
+.fire-use-label {
+  fill: var(--spark-label);
+  font-size: 8px;
+  font-weight: 900;
+  text-anchor: middle;
 }
 
 .restriction-map-note {
@@ -1119,6 +1193,18 @@ h1 {
   .restrictions-table td:nth-child(6) {
     min-width: 0;
     max-width: none;
+  }
+
+  .localized-restrictions-table td:nth-child(2) {
+    min-width: 0;
+  }
+
+  .fire-use-profile {
+    max-width: none;
+  }
+
+  .fire-use-sparkline {
+    width: min(246px, 100%);
   }
 
   .restrictions-table td:nth-child(4) a {

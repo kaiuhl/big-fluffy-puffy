@@ -144,6 +144,10 @@ module FireRestrictionsHelper
     BFP::Climate::LowSparkline.render(forest[:climate_low_context])
   end
 
+  def fire_use_profile(rule)
+    BFP::FireRestrictions::FireUseSparkline.new(rule)
+  end
+
   def policy_label(value)
     BFP::FireRestrictions::StatusDisplay.policy_label(value)
   end

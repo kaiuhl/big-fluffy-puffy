@@ -1,0 +1,35 @@
+require_relative "../../spec_helper"
+require "bfp/fire_restrictions/fire_use_sparkline"
+
+RSpec.describe BFP::FireRestrictions::FireUseSparkline do
+  let(:rule) do
+    {
+      campfire_policy: "prohibited",
+      gas_stove_policy: "allowed_with_shutoff_valve",
+      alcohol_stove_policy: "unknown",
+      charcoal_policy: "prohibited",
+      solid_fuel_stove_policy: "prohibited",
+      wood_stove_policy: "prohibited",
+      stove_shutoff_valve_required: true
+    }
+  end
+
+  it "renders a compact categorical fire-use SVG with accessible policy detail" do
+    html = described_class.render(rule)
+
+    expect(html).to include('class="fire-use-sparkline"')
+    expect(html).to include("fire-use-point-prohibited")
+    expect(html).to include("fire-use-point-allowed")
+    expect(html).to include("fire-use-point-unknown")
+    expect(html).to include(">Camp</text>")
+    expect(html).to include(">Gas</text>")
+    expect(html).to include(">Alc</text>")
+    expect(html).to include("aria-label=\"Fire use: campfires prohibited, gas stoves allowed with shutoff valve, alcohol stoves unknown, charcoal prohibited, solid fuel stoves prohibited, wood stoves prohibited\"")
+  end
+
+  it "summarizes the user-facing takeaway without appending shutoff rules to prohibited fuels" do
+    expect(described_class.summary(rule)).to eq(
+      "Campfires prohibited. Gas stoves allowed with shutoff valve. Alcohol stoves unknown. Charcoal, solid fuel stoves, and wood stoves prohibited."
+    )
+  end
+end

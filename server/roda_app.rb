@@ -5,6 +5,7 @@ require_relative "routes/api"
 require_relative "routes/fire_restrictions"
 require_relative "routes/pages"
 require "bfp/climate/low_sparkline"
+require "bfp/fire_restrictions/fire_use_sparkline"
 require "bfp/fire_restrictions/status_display"
 require "time"
 
@@ -15,7 +16,7 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
-  SITE_CSS_PATH = "/styles/site.css?v=20260504-gutters".freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260516-fire-use".freeze
   FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260516-map-topo".freeze
 
   STATE_NAMES = {
