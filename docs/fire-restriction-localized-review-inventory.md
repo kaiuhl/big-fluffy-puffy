@@ -10,10 +10,10 @@ The seed uses static generated geometry only where the rule shape can be represe
 
 ## Seed Summary
 
-- Rules in seed file: 21
-- High-confidence accepted rules: 18
+- Rules in seed file: 22
+- High-confidence accepted rules: 19
 - Needs-review rules: 3
-- Official source URLs used as primary `source_url` values: 10
+- Official source URLs used as primary `source_url` values: 11
 - Generated localized GeoJSON files: 6
 - Approximate NHD centroid-buffer polygons generated: 58
 - Checked date embedded in metadata: 2026-05-16
@@ -44,7 +44,7 @@ Generated coverage:
 
 ### P0 Central Cascades, Deschutes and Willamette
 
-Seeded six accepted rules from the joint Deschutes and Willamette order:
+Seeded seven accepted rules from the joint Deschutes and Willamette order and the Willamette Jefferson Park recreation page:
 
 - `deschutes-central-cascades-5700-ft-fire-prohibition`
 - `willamette-central-cascades-5700-ft-fire-prohibition`
@@ -52,12 +52,14 @@ Seeded six accepted rules from the joint Deschutes and Willamette order:
 - `willamette-diamond-peak-6000-ft-fire-prohibition`
 - `deschutes-mt-jefferson-washington-lake-basins-fire-prohibition`
 - `willamette-mt-jefferson-washington-lake-basins-fire-prohibition`
+- `willamette-jefferson-park-campfire-prohibition`
 
 Official sources:
 
 - https://www.fs.usda.gov/media/144510
 - https://www.fs.usda.gov/r06/deschutes/wilderness
 - https://www.fs.usda.gov/r06/willamette/wilderness
+- https://www.fs.usda.gov/r06/willamette/recreation/jefferson-park-area-mt-jefferson-wilderness
 
 Decision notes:
 
@@ -66,6 +68,7 @@ Decision notes:
 - `status` is `year_round` because the restrictions apply as standing non-seasonal localized rules while the order is active.
 - Gas and liquid-fuel stoves are accepted as allowed because the order excepts stoves fueled with liquid or compressed gas.
 - Alcohol stove policy is `unknown` because the order does not specifically name alcohol stoves or a shutoff-valve requirement.
+- The Jefferson Park page is seeded as a separate permanent campfire prohibition because it explicitly states that campfires are not permitted inside Jefferson Park. Its stove and charcoal fields remain `unknown` because that page does not describe them.
 
 ### P0 Okanogan-Wenatchee Always-In-Effect Rules
 

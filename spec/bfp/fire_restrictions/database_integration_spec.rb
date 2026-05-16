@@ -83,8 +83,8 @@ RSpec.describe "fire restriction database integration", :db do
 
     counts = BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
 
-    expect(counts[:rules]).to eq(21)
-    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(18)
+    expect(counts[:rules]).to eq(22)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(19)
     expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(3)
 
     detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("wallowa-whitman")
@@ -97,6 +97,16 @@ RSpec.describe "fire restriction database integration", :db do
       geometry_source_type: "derived_nhd_centroid_buffer"
     )
     expect(eagle_cap.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
+
+    willamette_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("willamette")
+    jefferson_park = willamette_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "willamette-jefferson-park-campfire-prohibition" }
+
+    expect(jefferson_park).to include(
+      status: "year_round",
+      campfire_policy: "prohibited",
+      affected_area: "Jefferson Park area within Mt. Jefferson Wilderness on the Willamette National Forest",
+      mapped: false
+    )
 
     map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "wallowa-whitman").geojson
     localized_feature = map.fetch(:features).find { |feature| feature.dig(:properties, :kind) == "localized_restriction" }

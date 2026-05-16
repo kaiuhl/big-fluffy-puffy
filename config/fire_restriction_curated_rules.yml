@@ -177,6 +177,37 @@ localized_rules:
       geometry_strategy: official_lake_basin_pending
       geometry_review_note: Official text uses lake basins, not simple lake buffers.
 
+  - slug: willamette-jefferson-park-campfire-prohibition
+    land_unit_slug: willamette
+    title: Jefferson Park campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: unknown
+    gas_stove_policy: unknown
+    liquid_fuel_stove_policy: unknown
+    solid_fuel_stove_policy: unknown
+    wood_stove_policy: unknown
+    duration_type: permanent
+    affected_area: Jefferson Park area within Mt. Jefferson Wilderness on the Willamette National Forest
+    summary: Campfires are not permitted within the boundaries of Jefferson Park.
+    evidence_quotes:
+      - Campfires are not permitted within the boundaries of Jefferson Park.
+    source_url: https://www.fs.usda.gov/r06/willamette/recreation/jefferson-park-area-mt-jefferson-wilderness
+    source_title: Willamette National Forest Jefferson Park area
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_jefferson_park_boundary_pending
+      geometry_review_note: Official page does not publish a machine-readable Jefferson Park boundary. Keep unmapped until an official GIS layer or repeatable exhibit-derived shape is available.
+      related_backpacking_rules:
+        - No camping within 100 feet of the high-water mark of a lake, creek, spring, or any other water source.
+        - No camping on vegetation.
+
   - slug: okanogan-wenatchee-alpine-lakes-5000-ft-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
     title: Alpine Lakes Wilderness campfire prohibition above 5000 feet
