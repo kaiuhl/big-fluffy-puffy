@@ -80,6 +80,12 @@ namespace :fire do
     end
   end
 
+  desc "Seed fire restriction sources and curated localized fire-use rules"
+  task :seed do
+    Rake::Task["fire:sources:seed"].invoke
+    Rake::Task["fire:localized:seed"].invoke
+  end
+
   desc "Poll all due fire restriction sources synchronously"
   task :poll_due do
     load_fire_restrictions

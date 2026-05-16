@@ -64,7 +64,9 @@ This is intentionally just the foundation:
 - `/health` returns a JSON health check.
 - `/api/version` returns a minimal API identity payload.
 - `/api/fire-restrictions/forests` returns the public fire-restriction status list.
+- `/api/fire-restrictions/forests/:slug` returns a per-forest fire-restriction detail payload.
 - `/fire-restrictions` renders the public forest status table.
+- `/fire-restrictions/:slug` renders forest-wide and localized camping fire-use restrictions.
 - Bridgetown content lives in `src/`.
 - Infrastructure scaffolding lives in `infra/`.
 - Fire-restriction ingestion jobs live in `jobs/`.
@@ -74,7 +76,7 @@ Seed and run fire-restriction ingestion manually:
 ```sh
 bundle exec rake db:migrate
 bundle exec rake que:migrate
-bundle exec rake fire:sources:seed
+bundle exec rake fire:seed
 bundle exec rake fire:poll_due
 bundle exec rake fire:review:candidates
 bundle exec rake 'fire:review:forest[willamette]'
@@ -103,5 +105,6 @@ Bedrock parser AWS credentials are managed in `infra/opentofu` as a least-privil
 - [Architecture](docs/architecture.md)
 - [Brand language](docs/brand-language.md)
 - [Fire restrictions data inventory](docs/fire-restrictions-data-inventory.md)
+- [Localized fire restriction review inventory](docs/fire-restriction-localized-review-inventory.md)
 - [Operations](docs/operations.md)
 - [Site roadmap](docs/site-roadmap.md)

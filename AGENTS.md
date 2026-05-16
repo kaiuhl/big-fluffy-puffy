@@ -86,11 +86,15 @@ Ansible in `infra/ansible` writes those credentials and conservative parser flag
 Current public endpoints:
 
 - `GET /api/fire-restrictions/forests`
+- `GET /api/fire-restrictions/forests/:slug`
+- `GET /api/fire-restrictions/forests/:slug/map`
 - `GET /fire-restrictions`
+- `GET /fire-restrictions/:slug`
 
 Core fire-restriction files:
 
 - `config/fire_restriction_sources.yml`: source catalog.
+- `config/fire_restriction_curated_rules.yml`: curated localized camping/backpacking fire-use rules.
 - `db/migrations/001_fire_restrictions.rb`: fire data schema.
 - `lib/bfp/fire_restrictions/`: fetch, extract, parse, validate, resolve, present.
 - `lib/bfp/llm/`: parser interface, fake parser, Bedrock parser.
@@ -115,6 +119,8 @@ Manual commands:
 
 ```sh
 mise exec -- bundle exec rake fire:sources:seed
+mise exec -- bundle exec rake fire:localized:seed
+mise exec -- bundle exec rake fire:seed
 mise exec -- bundle exec rake 'fire:poll[willamette-fire-info]'
 mise exec -- bundle exec rake fire:poll_due
 mise exec -- bundle exec rake fire:review:candidates
@@ -255,6 +261,7 @@ Last known production smoke state after deploying fire ingestion:
 - Put page-specific display policy in presenter, view-model, or helper classes.
 - Render substantial public UI markup from templates or partials, not large inline HTML helpers.
 - When changing existing inline markup, consider whether the work should include extracting it behind a tested presentation boundary.
+- Keep curated localized fire-use rules in `config/fire_restriction_curated_rules.yml`; generate static approximate geometries with `scripts/fire_restrictions/generate_localized_geometries.rb` and label derived shapes with provenance instead of treating them as legal boundaries.
 
 ## Coding Notes
 

@@ -10,7 +10,7 @@ only the web and caddy services.
 
 Options:
   --migrate      Run db:migrate and que:migrate after rebuilding web/caddy.
-  --seed         Run fire:sources:seed after rebuilding web/caddy.
+  --seed         Run fire:seed after rebuilding web/caddy.
   --skip-smoke   Skip public production smoke checks.
   -h, --help     Show this help text.
 
@@ -98,7 +98,7 @@ if [[ "$run_migrations" == "true" ]]; then
 fi
 
 if [[ "$run_seed" == "true" ]]; then
-  "${compose[@]}" run --rm web bundle exec rake fire:sources:seed
+  "${compose[@]}" run --rm web bundle exec rake fire:seed
 fi
 
 "${compose[@]}" ps

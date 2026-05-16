@@ -26,7 +26,7 @@ Deploys are manual for now. Use the guarded helper from your local checkout:
 bin/prod-deploy
 ```
 
-Run migrations or reseed fire restriction sources only when needed:
+Run migrations or reseed fire restriction sources and curated localized rules only when needed:
 
 ```sh
 bin/prod-deploy --migrate
@@ -36,6 +36,9 @@ bin/prod-deploy --migrate --seed
 The helper aborts if the production checkout has local changes, fast-forwards
 git, rebuilds only the `web` and `caddy` services, and runs public smoke checks.
 It does not start the `worker` or `clock` services.
+
+`--seed` runs `fire:seed`, which seeds both the monitored source catalog and
+curated localized camping/backpacking fire-use rules.
 
 The underlying manual steps are:
 
