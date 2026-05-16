@@ -9,6 +9,10 @@
     return count + " " + (count === 1 ? "forest" : "forests");
   }
 
+  function localizedRestrictionCount(count) {
+    return count + " localized " + (count === 1 ? "restriction" : "restrictions");
+  }
+
   function labelize(value) {
     return (value || "unknown").toString().replace(/_/g, " ").replace(/\b\w/g, function (character) {
       return character.toUpperCase();
@@ -156,6 +160,31 @@
     return feature.properties && feature.properties.map_status === "boundary";
   }
 
+  function visibleMapFeatures(features) {
+    return features.filter(function (feature) {
+      return !isBoundaryFeature(feature);
+    });
+  }
+
+  function mapStatusMessage(container, features) {
+    var visibleCount = visibleMapFeatures(features).length;
+    var totalRestrictions = parseInt(container.dataset.mapTotalRestrictions || "", 10);
+
+    if (container.dataset.mapStatusMode === "localized-restrictions") {
+      if (Number.isNaN(totalRestrictions)) {
+        return "Map showing " + localizedRestrictionCount(visibleCount) + ".";
+      }
+
+      if (totalRestrictions === 0) {
+        return "No localized restrictions mapped.";
+      }
+
+      return localizedRestrictionCount(visibleCount) + " mapped of " + totalRestrictions + " total.";
+    }
+
+    return "Map showing " + forestCount(visibleCount) + ".";
+  }
+
   function boundaryMaskHoles(features) {
     return features.reduce(function (holes, feature) {
       var geometry = feature.geometry || {};
@@ -224,6 +253,71 @@
     map.setZoomAround(latlng, nextZoom);
   }
 
+  function mapResizeIcon(expanded) {
+    var paths = expanded
+      ? '<path d="M4 14h6v6"></path><path d="M10 14l-7 7"></path><path d="M20 10h-6V4"></path><path d="M14 10l7-7"></path>'
+      : '<path d="M15 3h6v6"></path><path d="M21 3l-7 7"></path><path d="M9 21H3v-6"></path><path d="M3 21l7-7"></path>';
+
+    return [
+      '<svg class="restrictions-map-size-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
+      paths,
+      "</svg>"
+    ].join("");
+  }
+
+  function refreshMapSize(map) {
+    var ticks = 0;
+
+    function refresh() {
+      map.invalidateSize({
+        pan: false
+      });
+
+      ticks += 1;
+      if (ticks < 4) setTimeout(refresh, 55);
+    }
+
+    afterLayout(refresh);
+  }
+
+  function addMapResizeControl(map, container) {
+    var ResizeControl = L.Control.extend({
+      options: {
+        position: "bottomright"
+      },
+
+      onAdd: function () {
+        var control = L.DomUtil.create("div", "leaflet-bar restrictions-map-size-control");
+        var button = L.DomUtil.create("button", "restrictions-map-size-button", control);
+
+        button.type = "button";
+        button.innerHTML = '<span class="restrictions-map-size-icon" aria-hidden="true"></span>';
+
+        function setExpanded(expanded) {
+          container.classList.toggle("restrictions-map-expanded", expanded);
+          button.innerHTML = mapResizeIcon(expanded);
+          button.setAttribute("aria-label", expanded ? "Collapse map" : "Expand map");
+          button.setAttribute("aria-pressed", expanded ? "true" : "false");
+          button.title = expanded ? "Collapse map" : "Expand map";
+          refreshMapSize(map);
+        }
+
+        setExpanded(false);
+
+        L.DomEvent.disableClickPropagation(control);
+        L.DomEvent.disableScrollPropagation(control);
+        L.DomEvent.on(button, "click", function (event) {
+          L.DomEvent.stop(event);
+          setExpanded(!container.classList.contains("restrictions-map-expanded"));
+        });
+
+        return control;
+      }
+    });
+
+    new ResizeControl().addTo(map);
+  }
+
   function shapeRepeatedClickZoomHandler(map) {
     var lastClick = null;
 
@@ -274,6 +368,7 @@
 
     enableShapeDoubleClickZoom(map, container);
     addBaseMap(map, container.dataset.mapBasemap);
+    addMapResizeControl(map, container);
 
     fetch(container.dataset.mapEndpoint || "/api/fire-restrictions/map")
       .then(function (response) {
@@ -332,7 +427,7 @@
 
         fitMapToLayer(map, boundsLayer, zoomOffset);
 
-        setStatus("Map showing " + forestCount(features.length) + ".");
+        setStatus(mapStatusMessage(container, features));
       })
       .catch(function () {
         setStatus("Map unavailable; forest list remains below.");

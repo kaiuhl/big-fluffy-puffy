@@ -16,8 +16,8 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
-  SITE_CSS_PATH = "/styles/site.css?v=20260516-summary-clean".freeze
-  FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260516-map-fill-rule".freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260516-map-status".freeze
+  FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260516-map-status".freeze
 
   STATE_NAMES = {
     "or" => "Oregon",

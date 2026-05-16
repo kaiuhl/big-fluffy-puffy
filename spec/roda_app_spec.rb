@@ -41,9 +41,9 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260516-summary-clean"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260516-map-status"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260516-map-fill-rule"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260516-map-status"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -146,6 +146,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).not_to include("Stoves / Charcoal")
     expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/forests/deschutes/map"')
     expect(last_response.body).to include('data-map-fit-zoom-offset="1"')
+    expect(last_response.body).to include('data-map-status-mode="localized-restrictions"')
+    expect(last_response.body).to include('data-map-total-restrictions="2"')
   end
 
   it "returns 404 for unknown per-forest pages" do
@@ -313,6 +315,10 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("--signal: #ff4b1f")
+    expect(last_response.body).to include(".restrictions-map-expanded")
+    expect(last_response.body).to include(".restrictions-map-size-button")
+    expect(last_response.body).to include("transition: height 160ms ease")
+    expect(last_response.body).to include("stroke-width: 2.5")
   end
 
   it "serves the fire restrictions search script" do
@@ -342,6 +348,15 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("fillRule: \"evenodd\"")
     expect(last_response.body).to include("fillOpacity: 0.66")
     expect(last_response.body).to include("enableShapeDoubleClickZoom")
+    expect(last_response.body).to include("addMapResizeControl")
+    expect(last_response.body).to include("mapResizeIcon")
+    expect(last_response.body).to include("mapStatusMessage")
+    expect(last_response.body).to include("localizedRestrictionCount")
+    expect(last_response.body).to include("container.dataset.mapTotalRestrictions")
+    expect(last_response.body).to include("restrictions-map-expanded")
+    expect(last_response.body).to include("Expand map")
+    expect(last_response.body).to include("Collapse map")
+    expect(last_response.body).to include("refreshMapSize")
     expect(last_response.body).to include('container.addEventListener("dblclick"')
     expect(last_response.body).to include("zoomMapAround(map, map.mouseEventToLatLng(event), event)")
     expect(last_response.body).to include("shapeRepeatedClickZoomHandler")

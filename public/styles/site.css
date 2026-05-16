@@ -435,6 +435,59 @@ h1 {
   margin-inline: calc(var(--restrictions-content-gutter) * -1);
   border-top: 1px solid var(--black);
   background: #dfe7df;
+  overflow: hidden;
+  transition: height 160ms ease;
+}
+
+.restrictions-map-expanded {
+  height: min(72vh, 680px);
+}
+
+.restrictions-map-size-control {
+  margin-right: 10px;
+  margin-bottom: 24px;
+}
+
+.restrictions-map-size-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--black);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--black);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease;
+}
+
+.restrictions-map-size-button:hover,
+.restrictions-map-size-button:focus-visible {
+  background: var(--white);
+  transform: translateY(-1px);
+}
+
+.restrictions-map-size-button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.restrictions-map-size-button:active .restrictions-map-size-icon {
+  transform: scale(0.92);
+}
+
+.restrictions-map-size-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 2.5;
+  transition: transform 160ms ease;
 }
 
 .map-popup {
@@ -1116,6 +1169,10 @@ h1 {
 
   .restrictions-map {
     height: 340px;
+  }
+
+  .restrictions-map-expanded {
+    height: min(72vh, 560px);
   }
 
   .restrictions-section-heading {
