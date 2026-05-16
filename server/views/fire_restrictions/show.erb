@@ -31,42 +31,52 @@
         </section>
 
         <section class="restrictions-summary forest-fire-use-summary" aria-label="Forest-wide fire use summary">
-          <p class="summary-kicker">Forest-wide status</p>
-          <p class="summary-statement">Campfires: <%= h(labelize(campfire_policy_for(forest))) %></p>
-          <div class="forest-summary-grid">
-            <p><strong>Status</strong><span><%= h(labelize(forest[:status])) %></span></p>
-            <p>
-              <strong><%= h(climate_label) %></strong>
-              <span>
-                <% if climate_low_available?(forest) %>
-                  <span class="climate-low-context"><%= climate_low_sparkline(forest) %></span>
-                <% else %>
-                  not available
-                <% end %>
-              </span>
-            </p>
-            <p>
-              <strong>Source</strong>
-              <span>
-                <% if source && source[:url] %>
-                  <a href="<%= h(source[:url]) %>" rel="noreferrer"><%= h(source[:name]) %></a>
-                <% else %>
-                  Not checked yet
-                <% end %>
-              </span>
-            </p>
-            <p>
-              <strong>Checked</strong>
-              <span>
-                <% if checked_at %>
-                  <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
-                <% else %>
-                  not checked
-                <% end %>
-              </span>
-            </p>
+          <div class="forest-summary-layout">
+            <div class="forest-summary-primary">
+              <p class="summary-kicker">Forest-wide status</p>
+              <p class="summary-statement">
+                <span>Campfires</span>
+                <strong><%= h(labelize(campfire_policy_for(forest))) %></strong>
+              </p>
+            </div>
+            <dl class="forest-summary-grid">
+              <div class="forest-summary-item">
+                <dt>Status</dt>
+                <dd><%= h(labelize(forest[:status])) %></dd>
+              </div>
+              <div class="forest-summary-item">
+                <dt>Checked</dt>
+                <dd>
+                  <% if checked_at %>
+                    <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
+                  <% else %>
+                    not checked
+                  <% end %>
+                </dd>
+              </div>
+              <div class="forest-summary-item forest-summary-item-source">
+                <dt>Source</dt>
+                <dd>
+                  <% if source && source[:url] %>
+                    <a href="<%= h(source[:url]) %>" rel="noreferrer"><%= h(source[:name]) %></a>
+                  <% else %>
+                    Not checked yet
+                  <% end %>
+                </dd>
+              </div>
+              <div class="forest-summary-item forest-summary-item-climate">
+                <dt><%= h(climate_label) %></dt>
+                <dd>
+                  <% if climate_low_available?(forest) %>
+                    <span class="climate-low-context"><%= climate_low_sparkline(forest) %></span>
+                  <% else %>
+                    not available
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
           </div>
-          <p class="summary-detail"><%= h(restriction_note(forest)) %></p>
+          <p class="summary-detail forest-summary-note"><%= h(restriction_note(forest)) %></p>
         </section>
 
         <section class="restrictions-map-section" aria-labelledby="forest-map-title">

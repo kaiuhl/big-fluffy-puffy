@@ -310,6 +310,53 @@ h1 {
   font-weight: 750;
 }
 
+.forest-fire-use-summary {
+  gap: clamp(16px, 2vw, 22px);
+}
+
+.forest-summary-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr);
+  gap: clamp(18px, 4vw, 52px);
+  align-items: start;
+  max-width: 1180px;
+}
+
+.forest-summary-primary {
+  display: grid;
+  gap: 8px;
+}
+
+.forest-fire-use-summary .summary-statement {
+  display: grid;
+  gap: 4px;
+  max-width: none;
+}
+
+.forest-fire-use-summary .summary-statement span {
+  color: var(--mid-gray);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.forest-fire-use-summary .summary-statement strong {
+  display: block;
+  font-size: clamp(2.25rem, 5vw, 4.6rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 0.86;
+}
+
+.forest-summary-note {
+  max-width: 1020px;
+  border-top: 1px solid var(--black);
+  padding-top: 14px;
+  line-height: 1.35;
+}
+
 .restrictions-map-section {
   display: grid;
   gap: 18px;
@@ -594,31 +641,53 @@ h1 {
 
 .forest-summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  max-width: 1180px;
-}
-
-.forest-summary-grid p {
-  display: grid;
-  gap: 7px;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(124px, 0.8fr) minmax(220px, 1.6fr);
+  gap: 0;
   min-width: 0;
   margin: 0;
   border-top: 1px solid var(--black);
-  padding-top: 12px;
+  border-left: 1px solid var(--black);
 }
 
-.forest-summary-grid strong {
+.forest-summary-item {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  border-right: 1px solid var(--black);
+  border-bottom: 1px solid var(--black);
+  padding: 12px 14px;
+}
+
+.forest-summary-item dt {
   color: var(--mid-gray);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  line-height: 1.15;
   text-transform: uppercase;
 }
 
-.forest-summary-grid span {
+.forest-summary-item dd {
   min-width: 0;
+  margin: 0;
+  color: var(--black);
   font-weight: 800;
+  line-height: 1.2;
+}
+
+.forest-summary-item a {
+  color: inherit;
+  overflow-wrap: anywhere;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.forest-summary-item-climate {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(124px, 0.28fr) minmax(0, 1fr);
+  align-items: center;
 }
 
 .map-status {
@@ -946,7 +1015,17 @@ h1 {
     font-size: 1.7rem;
   }
 
+  .forest-summary-layout,
   .forest-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .forest-fire-use-summary .summary-statement strong {
+    font-size: 2.65rem;
+  }
+
+  .forest-summary-item-climate {
+    grid-column: auto;
     grid-template-columns: 1fr;
   }
 

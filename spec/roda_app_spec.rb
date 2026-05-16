@@ -125,6 +125,10 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("Deschutes National Forest")
     expect(last_response.body).to include("Forest-wide status")
+    expect(last_response.body).to include('class="forest-summary-layout"')
+    expect(last_response.body).to include('class="forest-summary-item forest-summary-item-climate"')
+    expect(last_response.body).to include("<span>Campfires</span>")
+    expect(last_response.body).to include("<strong>Developed Sites Only</strong>")
     expect(last_response.body).to include("Seasonal / Current Orders")
     expect(last_response.body).to include("Permanent / Standing Rules")
     expect(last_response.body).to include("Jefferson Park")
