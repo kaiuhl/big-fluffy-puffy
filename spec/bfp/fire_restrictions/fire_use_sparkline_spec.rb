@@ -18,14 +18,16 @@ RSpec.describe BFP::FireRestrictions::FireUseSparkline do
     html = described_class.render(rule)
 
     expect(html).to include('class="fire-use-sparkline"')
-    expect(html).to include('viewBox="0 0 246 40"')
+    expect(html).to include("--fire-use-count: 5")
+    expect(html).to include("--fire-use-width: 258px")
     expect(html).to include("fire-use-point-prohibited")
     expect(html).to include("fire-use-point-allowed")
     expect(html).not_to include("fire-use-point-unknown")
     expect(html).not_to include("fire-use-guide")
-    expect(html).to include(">Camp</text>")
-    expect(html).to include(">Gas</text>")
-    expect(html).not_to include(">Alc</text>")
+    expect(html).to include(">Campfires</span>")
+    expect(html).to include(">Gas stoves</span>")
+    expect(html).to include(">Solid fuel stoves</span>")
+    expect(html).not_to include(">Alcohol stoves</span>")
     expect(html).to include("aria-label=\"Fire use: campfires prohibited, gas stoves allowed with shutoff valve, charcoal prohibited, solid fuel stoves prohibited, wood stoves prohibited\"")
   end
 

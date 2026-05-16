@@ -3,54 +3,48 @@ require "rack/utils"
 module BFP
   module FireRestrictions
     class FireUseSparkline
-      WIDTH = 246.0
-      HEIGHT = 40.0
-      PAD = {
-        left: 12.0,
-        right: 12.0
-      }.freeze
-      ICON_Y = 13.0
-      LABEL_Y = 36.0
+      POINT_WIDTH = 46
+      POINT_GAP = 7
 
       ITEMS = [
         {
           key: :campfire_policy,
-          short_label: "Camp",
+          chart_label: "Campfires",
           aria_label: "campfires",
           summary_label: "campfires",
           kind: :campfire
         },
         {
           key: :gas_stove_policy,
-          short_label: "Gas",
+          chart_label: "Gas stoves",
           aria_label: "gas stoves",
           summary_label: "gas stoves",
           kind: :stove
         },
         {
           key: :alcohol_stove_policy,
-          short_label: "Alc",
+          chart_label: "Alcohol stoves",
           aria_label: "alcohol stoves",
           summary_label: "alcohol stoves",
           kind: :stove
         },
         {
           key: :charcoal_policy,
-          short_label: "Char",
+          chart_label: "Charcoal",
           aria_label: "charcoal",
           summary_label: "charcoal",
           kind: :stove
         },
         {
           key: :solid_fuel_stove_policy,
-          short_label: "Solid",
+          chart_label: "Solid fuel stoves",
           aria_label: "solid fuel stoves",
           summary_label: "solid fuel stoves",
           kind: :stove
         },
         {
           key: :wood_stove_policy,
-          short_label: "Wood",
+          chart_label: "Wood stoves",
           aria_label: "wood stoves",
           summary_label: "wood stoves",
           kind: :stove
@@ -70,17 +64,17 @@ module BFP
       end
 
       def render
-        points = policy_points
-        return "" if points.empty?
+        items = visible_items
+        return "" if items.empty?
 
         <<~HTML
-          <svg
+          <span
             class="fire-use-sparkline"
-            viewBox="0 0 #{svg_number(WIDTH)} #{svg_number(HEIGHT)}"
+            style="--fire-use-count: #{items.length}; --fire-use-width: #{chart_width(items.length)}px;"
             role="img"
             aria-label="#{h(aria_label)}">
-            #{points.map { |point| point_markup(point) }.join}
-          </svg>
+            #{items.map { |item| point_markup(item) }.join}
+          </span>
         HTML
       end
 
@@ -94,57 +88,39 @@ module BFP
 
       private
 
-      def policy_points
-        items = visible_items
-        return [] if items.empty?
-
-        usable_width = WIDTH - PAD.fetch(:left) - PAD.fetch(:right)
-        x_step = (items.length > 1) ? usable_width / (items.length - 1) : 0
-
-        items.each_with_index.map do |item, index|
-          policy = policy_for(item)
-          state = policy_state(policy)
-
-          {
-            item: item,
-            policy: policy,
-            state: state,
-            x: (items.length == 1) ? (WIDTH / 2.0) : PAD.fetch(:left) + (x_step * index),
-            y: ICON_Y
-          }
-        end
-      end
-
       def visible_items
         ITEMS.reject do |item|
           policy_state(policy_for(item)) == "unknown"
         end
       end
 
-      def point_markup(point)
-        item = point.fetch(:item)
-        state = point.fetch(:state)
-        x = point.fetch(:x)
-        y = point.fetch(:y)
+      def point_markup(item)
+        state = policy_state(policy_for(item))
 
         <<~HTML
-          <g class="fire-use-point fire-use-point-#{h(state)}" transform="translate(#{svg_number(x)} #{svg_number(y)})">
-            <circle class="fire-use-ring" cx="0" cy="0" r="8.2"></circle>
-            #{state_mark(state)}
-          </g>
-          <text class="fire-use-label" x="#{svg_number(x)}" y="#{svg_number(LABEL_Y)}">#{h(item.fetch(:short_label))}</text>
+          <span class="fire-use-point fire-use-point-#{h(state)}">
+            <svg class="fire-use-symbol" viewBox="-12 -12 24 24" aria-hidden="true" focusable="false">
+              <circle class="fire-use-ring" cx="0" cy="0" r="9"></circle>
+              #{state_mark(state)}
+            </svg>
+            <span class="fire-use-label">#{h(item.fetch(:chart_label))}</span>
+          </span>
         HTML
       end
 
       def state_mark(state)
         case state
         when "allowed"
-          %(<path class="fire-use-mark" d="M -4.4 0.2 L -1.4 3.5 L 5 -4"></path>)
+          %(<path class="fire-use-mark" d="M -5 0.2 L -1.6 4 L 5.6 -4.8"></path>)
         when "limited"
           %(<text class="fire-use-mark-text" x="0" y="0.6">!</text>)
         when "prohibited"
-          %(<path class="fire-use-mark" d="M -4.8 4.8 L 4.8 -4.8"></path>)
+          %(<path class="fire-use-mark" d="M -5.3 5.3 L 5.3 -5.3"></path>)
         end
+      end
+
+      def chart_width(item_count)
+        (item_count * POINT_WIDTH) + ([item_count - 1, 0].max * POINT_GAP)
       end
 
       def grouped_stove_clauses
@@ -225,10 +201,6 @@ module BFP
 
       def capitalize_sentence(value)
         value.to_s.sub(/\A[a-z]/) { |character| character.upcase }
-      end
-
-      def svg_number(value)
-        format("%.1f", value).sub(/\.0\z/, "")
       end
 
       def h(value)

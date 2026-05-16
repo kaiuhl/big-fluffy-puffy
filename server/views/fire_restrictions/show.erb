@@ -146,6 +146,7 @@
                           <% rule_source_url = rule[:source_url] %>
                           <% rule_source_title = rule[:source_title] || "Source" %>
                           <% fire_use = fire_use_profile(rule) %>
+                          <% fire_use_chart = fire_use.render %>
                           <tr data-restriction-id="<%= h(rule[:id]) %>">
                             <th scope="row">
                               <span><%= h(rule[:title]) %></span>
@@ -153,8 +154,10 @@
                             </th>
                             <td data-label="Fire Use">
                               <div class="fire-use-profile">
+                                <% unless fire_use_chart.empty? %>
+                                  <span class="fire-use-chart"><%= fire_use_chart %></span>
+                                <% end %>
                                 <p class="fire-use-summary"><%= h(fire_use.summary) %></p>
-                                <span class="fire-use-chart"><%= fire_use.render %></span>
                               </div>
                             </td>
                             <td data-label="Duration"><%= h(duration_label(rule)) %></td>

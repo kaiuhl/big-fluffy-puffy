@@ -715,7 +715,7 @@ h1 {
 
 .fire-use-profile {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   max-width: 330px;
 }
 
@@ -734,12 +734,11 @@ h1 {
 }
 
 .fire-use-sparkline {
-  display: block;
-  width: 246px;
-  height: 40px;
+  display: grid;
+  grid-template-columns: repeat(var(--fire-use-count), minmax(0, 1fr));
+  gap: 7px;
+  width: min(100%, var(--fire-use-width));
   max-width: 100%;
-  overflow: visible;
-  font-family: inherit;
 }
 
 .fire-use-point-allowed {
@@ -754,15 +753,32 @@ h1 {
   --fire-use-color: var(--signal);
 }
 
+.fire-use-point {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  justify-items: center;
+  gap: 4px;
+  color: var(--fire-use-color);
+}
+
+.fire-use-symbol {
+  display: block;
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
 .fire-use-ring {
+  color: var(--fire-use-color);
   fill: var(--white);
-  stroke: var(--fire-use-color);
+  stroke: currentColor;
   stroke-width: 1.6;
 }
 
 .fire-use-mark {
   fill: none;
-  stroke: var(--fire-use-color);
+  stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2.1;
@@ -771,17 +787,19 @@ h1 {
 
 .fire-use-mark-text {
   dominant-baseline: central;
-  fill: var(--fire-use-color);
-  font-size: 13px;
+  fill: currentColor;
+  font-size: 14px;
   font-weight: 900;
   text-anchor: middle;
 }
 
 .fire-use-label {
-  fill: var(--spark-label);
-  font-size: 8px;
+  color: var(--spark-label);
+  font-size: 0.5rem;
   font-weight: 900;
-  text-anchor: middle;
+  line-height: 1.05;
+  overflow-wrap: normal;
+  text-align: center;
 }
 
 .restriction-map-note {
@@ -1190,7 +1208,11 @@ h1 {
   }
 
   .fire-use-sparkline {
-    width: min(246px, 100%);
+    width: min(100%, var(--fire-use-width));
+  }
+
+  .fire-use-label {
+    font-size: 7px;
   }
 
   .restrictions-table td:nth-child(4) a {
