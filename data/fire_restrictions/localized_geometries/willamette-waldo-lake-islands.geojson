@@ -1,0 +1,179 @@
+{
+  "type": "Feature",
+  "properties": {
+    "slug": "willamette-waldo-lake-islands",
+    "title": "Waldo Lake mapped islands",
+    "land_unit_slug": "willamette",
+    "generated_at": "2026-05-16T22:58:00Z",
+    "geometry_source_type": "source_pdf_map",
+    "geometry_accuracy": "approximate",
+    "source_urls": [
+      "https://prd-tnm.s3.amazonaws.com/StagedProducts/Maps/HistoricalTopo/PDF/OR/24000/OR_Waldo%20Lake_281984_1997_24000_geo.pdf",
+      "https://prd-tnm.s3.amazonaws.com/StagedProducts/Maps/HistoricalTopo/PDF/OR/24000/OR_Waldo%20Mountain_281986_1997_24000_geo.pdf"
+    ],
+    "official_rule_source_url": "https://www.fs.usda.gov/r06/willamette/recreation/waldo-lake-area",
+    "selected_islands": [
+      "North Waldo islet cluster",
+      "Rhododendron Island",
+      "South Waldo islet"
+    ],
+    "notes": "Hand-digitized from island landforms visible on the official USGS 1997 Waldo Lake and Waldo Mountain 7.5-minute GeoPDF quadrangles. This is a planning polygon for the mapped island campfire restriction, not a surveyed legal boundary. Very small rocks or islets may not be represented."
+  },
+  "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+      [
+        [
+          [
+            -122.008431,
+            43.760887
+          ],
+          [
+            -122.007799,
+            43.760734
+          ],
+          [
+            -122.007378,
+            43.7602
+          ],
+          [
+            -122.007483,
+            43.759513
+          ],
+          [
+            -122.00801,
+            43.759054
+          ],
+          [
+            -122.008747,
+            43.759283
+          ],
+          [
+            -122.008958,
+            43.759818
+          ],
+          [
+            -122.008853,
+            43.760429
+          ],
+          [
+            -122.008431,
+            43.760887
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            -122.01591,
+            43.759894
+          ],
+          [
+            -122.015068,
+            43.759818
+          ],
+          [
+            -122.014752,
+            43.759513
+          ],
+          [
+            -122.015068,
+            43.759207
+          ],
+          [
+            -122.01591,
+            43.759207
+          ],
+          [
+            -122.016437,
+            43.759513
+          ],
+          [
+            -122.01591,
+            43.759894
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            -122.055959,
+            43.719271
+          ],
+          [
+            -122.055013,
+            43.719271
+          ],
+          [
+            -122.054277,
+            43.718736
+          ],
+          [
+            -122.054277,
+            43.718202
+          ],
+          [
+            -122.054803,
+            43.717667
+          ],
+          [
+            -122.056064,
+            43.717591
+          ],
+          [
+            -122.057011,
+            43.717973
+          ],
+          [
+            -122.057116,
+            43.71866
+          ],
+          [
+            -122.056485,
+            43.719118
+          ],
+          [
+            -122.055959,
+            43.719271
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            -122.051754,
+            43.682918
+          ],
+          [
+            -122.050702,
+            43.682766
+          ],
+          [
+            -122.050702,
+            43.682384
+          ],
+          [
+            -122.051123,
+            43.682002
+          ],
+          [
+            -122.051964,
+            43.682002
+          ],
+          [
+            -122.05249,
+            43.682307
+          ],
+          [
+            -122.052384,
+            43.682689
+          ],
+          [
+            -122.051754,
+            43.682918
+          ]
+        ]
+      ]
+    ]
+  }
+}

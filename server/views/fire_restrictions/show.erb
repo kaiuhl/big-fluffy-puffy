@@ -38,6 +38,7 @@
                 <span>Campfires</span>
                 <strong><%= h(labelize(campfire_policy_for(forest))) %></strong>
               </p>
+              <p class="summary-detail forest-summary-note"><%= h(restriction_note(forest)) %></p>
             </div>
             <dl class="forest-summary-grid">
               <div class="forest-summary-item">
@@ -76,7 +77,6 @@
               </div>
             </dl>
           </div>
-          <p class="summary-detail forest-summary-note"><%= h(restriction_note(forest)) %></p>
         </section>
 
         <section class="restrictions-map-section" aria-labelledby="forest-map-title">

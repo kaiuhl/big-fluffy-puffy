@@ -107,8 +107,18 @@ RSpec.describe "fire restriction database integration", :db do
       status: "year_round",
       campfire_policy: "prohibited",
       affected_area: "Jefferson Park area within Mt. Jefferson Wilderness on the Willamette National Forest",
-      mapped: false
+      mapped: true,
+      geometry_source_type: "source_pdf_map"
     )
+    expect(jefferson_park.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
+
+    waldo_islands = willamette_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "willamette-waldo-lake-islands-campfire-prohibition" }
+    expect(waldo_islands).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "source_pdf_map"
+    )
+    expect(waldo_islands.dig(:geometry_provenance, "geometry_coverage")).to eq("primary_mapped_islands")
 
     mt_hood_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("mt-hood")
     mt_hood_slugs = mt_hood_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }

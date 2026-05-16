@@ -6,7 +6,7 @@ Checked date: 2026-05-16.
 
 This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Official Forest Service sources were used for accepted Forest Service orders and recreation pages. Mt. Hood wilderness-detail rows use Wilderness Connect pages that the official Mt. Hood fire page links as its year-round wilderness fire-regulation detail source.
 
-The seed uses static generated geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation or official GIS layer is available.
+The seed uses static generated or digitized geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation, official map exhibit, or official GIS layer is available.
 
 ## Seed Summary
 
@@ -30,6 +30,7 @@ The generator uses RGeo/GEOS and requires the GEOS system library. Docker instal
 
 Generated geometries are intentionally labeled `derived_nhd_waterbody_buffer` with `geometry_accuracy: approximate`.
 They are good enough to show "roughly where this named lake buffer is" and not good enough to treat as official legal boundaries.
+The Jefferson Park and Waldo Lake island GeoJSON files in the same directory are exceptions: they are hand-digitized `source_pdf_map` polygons from official PDF map exhibits or USGS GeoPDF quadrangles.
 
 Generated coverage:
 
@@ -74,6 +75,7 @@ Decision notes:
 - Gas and liquid-fuel stoves are accepted as allowed because the order excepts stoves fueled with liquid or compressed gas.
 - Alcohol stove policy is `unknown` because the order does not specifically name alcohol stoves or a shutoff-valve requirement.
 - The Jefferson Park page is seeded as a separate permanent campfire prohibition because it explicitly states that campfires are not permitted inside Jefferson Park. Its stove and charcoal fields remain `unknown` because that page does not describe them.
+- The Jefferson Park geometry is hand-digitized from the official Forest Service Jefferson Park Vicinity GeoPDF Fire Ban Area map. The original Forest Service document URL now returns 404, so the archived official PDF is retained as the geometry source. Treat it as an approximate planning polygon, not a surveyed legal boundary.
 
 ### P0 Portland-Area Audit
 
@@ -115,6 +117,7 @@ Decision notes:
 - Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers.
 - Bull Run, Cedar Creek, Beachie/Lionshead, Mount St. Helens, and snowy plover rows are closure/status rows. Where access is prohibited, BFP marks campfire policy as prohibited and records that the campfire policy is inferred from the active access closure rather than from a campfire-only order.
 - Beachie/Lionshead is active on the checked date but expires on 2026-05-21; it is due for immediate post-expiration review.
+- Waldo Lake islands are mapped from official USGS 1997 Waldo Lake and Waldo Mountain GeoPDF quadrangles because the Forest Service recreation page gives the day-use/campfire rule but does not publish machine-readable island boundaries. The geometry represents primary mapped island landforms and remains approximate.
 - The Siuslaw snowy plover row is a 2026 seasonal closure from 2026-03-15 through 2026-09-15. It should be refreshed from the current year's order before the 2027 nesting season.
 - Drift Creek Cove and Mount St. Helens official orders include map exhibits, but BFP has not digitized those polygons yet.
 - Lewis River and broad Goat Rocks "No campfires" recreation-page language remain unseeded because current official evidence is less specific or conflicts with narrower order text.

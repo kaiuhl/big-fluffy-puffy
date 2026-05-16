@@ -304,6 +304,7 @@
               color: color,
               fillColor: color,
               fillOpacity: 0.56,
+              fillRule: "nonzero",
               lineCap: "round",
               lineJoin: "round",
               opacity: 1,

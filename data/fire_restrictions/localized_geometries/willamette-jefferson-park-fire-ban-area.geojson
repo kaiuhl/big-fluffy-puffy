@@ -1,0 +1,116 @@
+{
+  "type": "Feature",
+  "properties": {
+    "slug": "willamette-jefferson-park-fire-ban-area",
+    "title": "Jefferson Park fire ban area",
+    "land_unit_slug": "willamette",
+    "generated_at": "2026-05-16T22:40:00Z",
+    "geometry_source_type": "source_pdf_map",
+    "geometry_accuracy": "approximate",
+    "source_url": "https://web.archive.org/web/20160626070352/http://www.fs.usda.gov:80/Internet/FSE_DOCUMENTS/fseprd503722.pdf",
+    "original_source_url": "http://www.fs.usda.gov/Internet/FSE_DOCUMENTS/fseprd503722.pdf",
+    "official_rule_source_url": "https://www.fs.usda.gov/r06/willamette/recreation/jefferson-park-area-mt-jefferson-wilderness",
+    "notes": "Hand-digitized from the Fire Ban Area boundary on the official Forest Service Jefferson Park Vicinity GeoPDF. The original Forest Service document URL now returns 404, so the archived official PDF is used as the geometry source. This is a planning polygon, not a surveyed legal boundary."
+  },
+  "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+      [
+        [
+          [
+            -121.804853,
+            44.729194
+          ],
+          [
+            -121.808369,
+            44.726444
+          ],
+          [
+            -121.806642,
+            44.723426
+          ],
+          [
+            -121.806627,
+            44.720836
+          ],
+          [
+            -121.817945,
+            44.714502
+          ],
+          [
+            -121.827321,
+            44.709319
+          ],
+          [
+            -121.825456,
+            44.706404
+          ],
+          [
+            -121.821939,
+            44.706971
+          ],
+          [
+            -121.820293,
+            44.706389
+          ],
+          [
+            -121.818703,
+            44.705349
+          ],
+          [
+            -121.81337,
+            44.70234
+          ],
+          [
+            -121.806115,
+            44.703222
+          ],
+          [
+            -121.802301,
+            44.70552
+          ],
+          [
+            -121.798981,
+            44.705627
+          ],
+          [
+            -121.796674,
+            44.706427
+          ],
+          [
+            -121.791368,
+            44.706363
+          ],
+          [
+            -121.787321,
+            44.722986
+          ],
+          [
+            -121.7899,
+            44.723959
+          ],
+          [
+            -121.793119,
+            44.725073
+          ],
+          [
+            -121.796767,
+            44.726333
+          ],
+          [
+            -121.799359,
+            44.727711
+          ],
+          [
+            -121.803436,
+            44.729116
+          ],
+          [
+            -121.804853,
+            44.729194
+          ]
+        ]
+      ]
+    ]
+  }
+}

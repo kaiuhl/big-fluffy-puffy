@@ -274,10 +274,28 @@ localized_rules:
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: willamette-jefferson-park-fire-ban-area
+      name: Jefferson Park fire ban area
+      area_type: named_area
+      area_description: Approximate hand-digitized Jefferson Park fire ban area from the official Forest Service Jefferson Park Vicinity GeoPDF.
+      geometry_path: data/fire_restrictions/localized_geometries/willamette-jefferson-park-fire-ban-area.geojson
+      geometry_source_type: source_pdf_map
+      geometry_source_url: https://web.archive.org/web/20160626070352/http://www.fs.usda.gov:80/Internet/FSE_DOCUMENTS/fseprd503722.pdf
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        digitized_by: manual_trace_from_georeferenced_pdf
+        official_rule_source_url: https://www.fs.usda.gov/r06/willamette/recreation/jefferson-park-area-mt-jefferson-wilderness
+        archived_map_source_url: https://web.archive.org/web/20160626070352/http://www.fs.usda.gov:80/Internet/FSE_DOCUMENTS/fseprd503722.pdf
+        original_map_source_url: http://www.fs.usda.gov/Internet/FSE_DOCUMENTS/fseprd503722.pdf
+        pdf_creator: Esri ArcMap 10.2.2.3574
+        georeference_note: GeoPDF GPTS/LPTS control points exported in NAD 1983 Oregon/Washington Albers.
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: official_jefferson_park_boundary_pending
-      geometry_review_note: Official page does not publish a machine-readable Jefferson Park boundary. Keep unmapped until an official GIS layer or repeatable exhibit-derived shape is available.
+      geometry_strategy: digitized_usfs_geopdf
+      geometry_review_note: Digitized from the official Forest Service Jefferson Park Vicinity GeoPDF Fire Ban Area boundary. The original Forest Service document URL currently returns 404, so the archived official PDF is used as the geometry source.
+      geometry_warning: Approximate planning polygon from a hand-traced map exhibit, not a surveyed legal boundary.
       related_backpacking_rules:
         - No camping within 100 feet of the high-water mark of a lake, creek, spring, or any other water source.
         - No camping on vegetation.
@@ -300,10 +318,31 @@ localized_rules:
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: willamette-waldo-lake-islands
+      name: Waldo Lake mapped islands
+      area_type: named_area
+      area_description: Approximate hand-digitized polygons for the primary mapped islands in Waldo Lake from official USGS 1997 GeoPDF quadrangles.
+      geometry_path: data/fire_restrictions/localized_geometries/willamette-waldo-lake-islands.geojson
+      geometry_source_type: source_pdf_map
+      geometry_source_url: https://prd-tnm.s3.amazonaws.com/StagedProducts/Maps/HistoricalTopo/PDF/OR/24000/OR_Waldo%20Lake_281984_1997_24000_geo.pdf
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        digitized_by: manual_trace_from_georeferenced_pdf
+        official_rule_source_url: https://www.fs.usda.gov/r06/willamette/recreation/waldo-lake-area
+        usgs_waldo_lake_geopdf_url: https://prd-tnm.s3.amazonaws.com/StagedProducts/Maps/HistoricalTopo/PDF/OR/24000/OR_Waldo%20Lake_281984_1997_24000_geo.pdf
+        usgs_waldo_mountain_geopdf_url: https://prd-tnm.s3.amazonaws.com/StagedProducts/Maps/HistoricalTopo/PDF/OR/24000/OR_Waldo%20Mountain_281986_1997_24000_geo.pdf
+        geometry_coverage: primary_mapped_islands
+        mapped_islands:
+          - North Waldo islet cluster
+          - Rhododendron Island
+          - South Waldo islet
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: official_island_geometry_pending
-      geometry_review_note: The official page names Waldo Lake islands but does not publish a machine-readable island boundary.
+      geometry_strategy: digitized_usgs_geopdf
+      geometry_review_note: Digitized primary Waldo Lake island polygons from official USGS 1997 Waldo Lake and Waldo Mountain GeoPDF quadrangles. The official Forest Service recreation page states the island day-use/campfire rule but does not publish machine-readable island boundaries.
+      geometry_warning: Approximate planning polygons from hand-traced map exhibits. Very small rocks or islets may not be represented.
 
   - slug: willamette-cedar-creek-fire-closure
     land_unit_slug: willamette
