@@ -1,0 +1,15 @@
+<% brand_class = active_brand?(current_path) ? "site-brand site-brand-active" : "site-brand" %>
+<% brand_current = active_brand?(current_path) ? ' aria-current="page"' : "" %>
+<header class="site-header" aria-label="Site">
+  <a class="<%= h(brand_class) %>" href="/"<%= brand_current %>>Big Fluffy Puffy</a>
+  <nav class="site-nav" aria-label="Primary">
+    <ul>
+      <% site_nav_links.each do |link| %>
+        <% current = active_nav?(link, current_path) %>
+        <li>
+          <a href="<%= h(link.fetch(:href)) %>"<%= current ? ' class="site-nav-active" aria-current="page"' : "" %>><%= h(link.fetch(:label)) %></a>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+</header>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PNW Fire Restrictions | Big Fluffy Puffy</title>
+    <meta
+      name="description"
+      content="Pacific Northwest fire restriction status for Big Fluffy Puffy's launch market."
+    >
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <script src="/vendor/leaflet/leaflet.js" defer></script>
+    <script src="/scripts/fire-restrictions.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <main class="restrictions-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+
+        <section class="restrictions-intro" aria-labelledby="restrictions-title">
+          <p class="kicker">Source monitor</p>
+          <h1 id="restrictions-title">PNW Fire Restrictions</h1>
+          <p>
+            Source-linked fire restriction status for Oregon, Washington, and Northern California.
+            Big Fluffy Puffy is not a government agency; check the linked official source before you go.
+          </p>
+        </section>
+
+        <% if records.empty? %>
+          <div class="empty-state">
+            <p>No fire restriction sources have been seeded yet.</p>
+          </div>
+          <%= partial("fire_restrictions/_trust") %>
+        <% else %>
+          <% groups = partition_fire_restrictions(records) %>
+          <% active_count = groups.fetch(:active).length %>
+          <% none_count = groups.fetch(:none).length %>
+          <% unknown_count = groups.fetch(:unknown).length %>
+
+          <section class="restrictions-summary" aria-label="Restriction summary">
+            <% if active_count.zero? %>
+              <p class="summary-kicker">Clear for now</p>
+              <p class="summary-statement">No published forest-wide restrictions right now.</p>
+              <p class="summary-detail">
+                <%= h(forest_count(none_count)) %> have published no-restriction status; <%= h(forest_count(unknown_count)) %> still need review.
+              </p>
+            <% else %>
+              <p class="summary-kicker">Restriction watch</p>
+              <p class="summary-statement"><%= h(forest_count(active_count)) %> have published active restrictions.</p>
+              <p class="summary-detail">
+                <%= h(forest_count(none_count)) %> show no published restrictions; <%= h(forest_count(unknown_count)) %> still need review.
+              </p>
+            <% end %>
+          </section>
+
+          <section class="restrictions-map-section" aria-labelledby="restrictions-map-title">
+            <div class="restrictions-map-heading">
+              <div>
+                <p class="summary-kicker">Map overview</p>
+                <h2 id="restrictions-map-title">Forest Status Map</h2>
+              </div>
+              <ul class="restrictions-map-legend" aria-label="Map legend">
+                <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Active restrictions</li>
+                <li><span class="map-legend-swatch map-legend-none" aria-hidden="true"></span>No published restrictions</li>
+                <li><span class="map-legend-swatch map-legend-unknown" aria-hidden="true"></span>Needs review / unknown</li>
+              </ul>
+            </div>
+            <div
+              id="restrictions-map"
+              class="restrictions-map"
+              data-map-endpoint="/api/fire-restrictions/map"
+              role="img"
+              aria-label="Map of Pacific Northwest forest fire restriction statuses"
+            ></div>
+          </section>
+
+          <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
+            <label id="restrictions-filter-label" for="restrictions-search">Search Forests</label>
+            <input
+              id="restrictions-search"
+              name="q"
+              type="search"
+              autocomplete="off"
+              placeholder="Forest, state, source, policy"
+            >
+            <p id="restrictions-filter-status" aria-live="polite">
+              Showing <%= h(forest_count(records.length)) %>.
+            </p>
+          </section>
+
+          <div class="restrictions-sections">
+            <% [
+              ["active-restrictions", "Active Restrictions", groups.fetch(:active), "active", "No published active forest-wide restrictions."],
+              ["no-restrictions", "No Published Restrictions", groups.fetch(:none), "none", "No forests have a published no-restrictions status yet."],
+              ["needs-review", "Needs Review / Unknown", groups.fetch(:unknown), "unknown", "All active forests have a published status."]
+            ].each do |id, title, section_records, tone, empty_message| %>
+              <% noun = section_records.length == 1 ? "forest" : "forests" %>
+              <section class="restrictions-section restrictions-section-<%= h(tone) %>" aria-labelledby="<%= h(id) %>">
+                <div class="restrictions-section-heading">
+                  <h2 id="<%= h(id) %>"><%= h(title) %></h2>
+                  <p class="restrictions-section-count" data-total="<%= section_records.length %>"><%= section_records.length %> <%= noun %></p>
+                </div>
+                <div class="restrictions-table-wrap">
+                  <% if section_records.empty? %>
+                    <div class="empty-state empty-state-section">
+                      <p><%= h(empty_message) %></p>
+                    </div>
+                  <% else %>
+                    <% climate_label = climate_low_column_label(section_records) %>
+                    <table class="restrictions-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Forest</th>
+                          <th scope="col">Campfires</th>
+                          <th scope="col"><%= h(climate_label) %></th>
+                          <th scope="col">Source</th>
+                          <th scope="col">Checked</th>
+                          <th scope="col">Note</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% region_state_sorted_records(section_records).each do |forest| %>
+                          <% source = preferred_source(forest) %>
+                          <% checked_at = checked_at_for(forest, source) %>
+                          <tr>
+                            <th scope="row">
+                              <span><a href="<%= h(forest[:forest_url] || "/fire-restrictions/#{forest[:slug]}") %>"><%= h(forest[:name]) %></a></span>
+                              <small><%= h(region_state_label(forest)) %></small>
+                            </th>
+                            <td data-label="Campfires"><%= h(labelize(campfire_policy_for(forest))) %></td>
+                            <td data-label="<%= h(climate_label) %>">
+                              <% if climate_low_available?(forest) %>
+                                <span class="climate-low-context"><%= climate_low_sparkline(forest) %></span>
+                              <% else %>
+                                not available
+                              <% end %>
+                            </td>
+                            <td data-label="Source">
+                              <% if source && source[:url] %>
+                                <a href="<%= h(source[:url]) %>" rel="noreferrer"><%= h(source[:name]) %></a>
+                              <% else %>
+                                Not checked yet
+                              <% end %>
+                            </td>
+                            <td data-label="Checked">
+                              <% if checked_at %>
+                                <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
+                              <% else %>
+                                not checked
+                              <% end %>
+                            </td>
+                            <td data-label="Note"><%= h(restriction_note(forest)) %></td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                    <div class="empty-state empty-state-section restrictions-filter-empty" hidden>
+                      <p>No matching forests.</p>
+                    </div>
+                  <% end %>
+                </div>
+              </section>
+            <% end %>
+          </div>
+
+          <%= partial("fire_restrictions/_trust") %>
+        <% end %>
+      </main>
+    </div>
+  </body>
+</html>

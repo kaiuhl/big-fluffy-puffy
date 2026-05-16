@@ -23,19 +23,25 @@ module BFP
       ].freeze
 
       SYSTEM_PROMPT = <<~PROMPT.freeze
-        You parse official wildfire and public-use restriction source text into structured observations.
+        You parse official wildfire and public-use restriction source text into structured observations for camping/backpacking fire-use.
 
         Rules:
         - Use only the supplied text. Do not infer from outside knowledge.
         - If the text does not explicitly support a field, return null or "unknown".
         - Evidence quotes must be exact short spans from the supplied text.
+        - Scope is camping/backpacking fire-use: campfires, charcoal or wood fires, and cooking or heating stoves used for camping/backpacking.
+        - Include charcoal restrictions and stove restrictions for gas, liquid-fuel, alcohol, solid fuel/tablet, and wood/biomass stoves, including shutoff valve requirements.
+        - Exclude chainsaws, welding, industrial IFPL, generators, off-road travel, and other industrial or motorized-use rules unless the text directly ties them to camping/backpacking fire-use.
         - Restrictive statuses require prohibition, restriction, order, closure, or Stage 1/Stage 2 evidence.
         - A "none" status requires explicit "no restrictions", "lifted", "rescinded", or equivalent evidence.
         - Low fire danger, no featured alerts, or absence of a restriction is not enough by itself for "none".
         - A generated Forest Alert Summary line saying no active forest fire restriction alerts were listed can support "none" for seasonal forest-wide public-use restrictions.
         - Ignore Alerts Key labels, Region Alerts, fireworks/explosives boilerplate, fire danger definitions, and unrelated road/camping/occupancy closures when deciding seasonal fire restriction status.
-        - If a fire restriction is geographically limited, wilderness-only, corridor-only, incident-area-only, or future/seasonal but not currently effective, mark it partial and include a review reason.
-        - Current "PUR: Seasonal Restrictions" or Phase A public-use restrictions should be advisory unless the current phase explicitly prohibits campfires.
+        - Keep the top-level fields focused on the current forest-wide or land-unit-wide camping/backpacking fire-use posture.
+        - If an active camping/backpacking fire-use restriction is geographically limited, wilderness-only, corridor-only, incident-area-only, campground-only, or trail-specific, mark the top-level status partial and include the localized rule in localized_rules.
+        - Only include localized_rules entries for active localized camping/backpacking fire-use restrictions. Do not include inactive, rescinded, lifted, expired, future-only, purely industrial, or non-fire-use entries.
+        - Use duration_type "permanent" for standing/year-round rules, "seasonal" for recurring month/day seasons, "temporary" for date-limited non-incident rules, and "incident" for restrictions tied to an active wildfire or incident area.
+        - Current "PUR: Seasonal Restrictions" or Phase A public-use restrictions should be advisory unless the current phase explicitly prohibits campfires. Treat IFPL as industrial-only unless the source ties it to camping/backpacking fire-use or a current public-use restrictions table.
         - InciWeb, NIFC, and active incident context cannot determine campfire policy.
         - Prefer needs_review_reasons over guessing.
       PROMPT

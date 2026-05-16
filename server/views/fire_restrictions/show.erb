@@ -1,0 +1,191 @@
+<% forest = detail.fetch(:forest) %>
+<% source = preferred_source(forest) %>
+<% checked_at = checked_at_for(forest, source) %>
+<% climate_label = climate_low_column_label([forest]) %>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= h(forest.fetch(:name)) %> Fire Restrictions | Big Fluffy Puffy</title>
+    <meta
+      name="description"
+      content="Forest-wide and localized camping fire-use restrictions for <%= h(forest.fetch(:name)) %>."
+    >
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <script src="/vendor/leaflet/leaflet.js" defer></script>
+    <script src="/scripts/fire-restrictions.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <main class="restrictions-page forest-restrictions-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+
+        <section class="restrictions-intro forest-restrictions-intro" aria-labelledby="forest-restrictions-title">
+          <p class="kicker">Forest monitor</p>
+          <h1 id="forest-restrictions-title"><%= h(forest.fetch(:name)) %></h1>
+          <p>
+            Camping and backpacking fire-use status for this forest, with localized restrictions shown only when BFP has an active published rule.
+          </p>
+        </section>
+
+        <section class="restrictions-summary forest-fire-use-summary" aria-label="Forest-wide fire use summary">
+          <p class="summary-kicker">Forest-wide status</p>
+          <p class="summary-statement">Campfires: <%= h(labelize(campfire_policy_for(forest))) %></p>
+          <div class="forest-summary-grid">
+            <p><strong>Status</strong><span><%= h(labelize(forest[:status])) %></span></p>
+            <p>
+              <strong><%= h(climate_label) %></strong>
+              <span>
+                <% if climate_low_available?(forest) %>
+                  <span class="climate-low-context"><%= climate_low_sparkline(forest) %></span>
+                <% else %>
+                  not available
+                <% end %>
+              </span>
+            </p>
+            <p>
+              <strong>Source</strong>
+              <span>
+                <% if source && source[:url] %>
+                  <a href="<%= h(source[:url]) %>" rel="noreferrer"><%= h(source[:name]) %></a>
+                <% else %>
+                  Not checked yet
+                <% end %>
+              </span>
+            </p>
+            <p>
+              <strong>Checked</strong>
+              <span>
+                <% if checked_at %>
+                  <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
+                <% else %>
+                  not checked
+                <% end %>
+              </span>
+            </p>
+          </div>
+          <p class="summary-detail"><%= h(restriction_note(forest)) %></p>
+        </section>
+
+        <section class="restrictions-map-section" aria-labelledby="forest-map-title">
+          <div class="restrictions-map-heading">
+            <div>
+              <p class="summary-kicker">Map detail</p>
+              <h2 id="forest-map-title"><%= h(forest.fetch(:name)) %> Map</h2>
+            </div>
+            <ul class="restrictions-map-legend" aria-label="Map legend">
+              <li><span class="map-legend-swatch map-legend-boundary" aria-hidden="true"></span>Forest boundary</li>
+              <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
+            </ul>
+          </div>
+          <div
+            id="restrictions-map"
+            class="restrictions-map"
+            data-map-endpoint="<%= h(detail.fetch(:map_endpoint)) %>"
+            role="img"
+            aria-label="Map of <%= h(forest.fetch(:name)) %> fire restriction areas"
+          ></div>
+          <p id="restrictions-map-status" class="map-status" aria-live="polite"></p>
+        </section>
+
+        <% rules = detail.fetch(:localized_restrictions) %>
+        <% if rules.empty? %>
+          <section class="restrictions-section" aria-labelledby="localized-restrictions-title">
+            <div class="restrictions-section-heading">
+              <h2 id="localized-restrictions-title">Localized Restrictions</h2>
+            </div>
+            <div class="restrictions-table-wrap">
+              <div class="empty-state empty-state-section">
+                <p>No active localized camping fire-use restrictions are published by BFP for this forest. Confirm with the official source before you go.</p>
+              </div>
+            </div>
+          </section>
+        <% else %>
+          <% grouped_rules = [
+            ["current-localized-restrictions", "Seasonal / Current Orders", rules.select { |rule| rule[:group] == "current" }, "No active current localized camping fire-use restrictions are published."],
+            ["permanent-localized-restrictions", "Permanent / Standing Rules", rules.select { |rule| rule[:group] == "permanent" }, "No permanent localized camping fire-use restrictions are published."]
+          ] %>
+          <div class="restrictions-sections">
+            <% grouped_rules.each do |id, title, section_rules, empty_message| %>
+              <% noun = section_rules.length == 1 ? "rule" : "rules" %>
+              <section class="restrictions-section" aria-labelledby="<%= h(id) %>">
+                <div class="restrictions-section-heading">
+                  <h2 id="<%= h(id) %>"><%= h(title) %></h2>
+                  <p class="restrictions-section-count"><%= section_rules.length %> <%= noun %></p>
+                </div>
+                <div class="restrictions-table-wrap">
+                  <% if section_rules.empty? %>
+                    <div class="empty-state empty-state-section">
+                      <p><%= h(empty_message) %></p>
+                    </div>
+                  <% else %>
+                    <table class="restrictions-table localized-restrictions-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Area</th>
+                          <th scope="col">Campfires</th>
+                          <th scope="col">Stoves / Charcoal</th>
+                          <th scope="col">Duration</th>
+                          <th scope="col">Source</th>
+                          <th scope="col">Map</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% section_rules.each do |rule| %>
+                          <% rule_source_url = rule[:source_url] %>
+                          <% rule_source_title = rule[:source_title] || "Source" %>
+                          <tr data-restriction-id="<%= h(rule[:id]) %>">
+                            <th scope="row">
+                              <span><%= h(rule[:title]) %></span>
+                              <small><%= h(rule[:affected_area] || rule.dig(:area, :name) || "Localized area") %></small>
+                            </th>
+                            <td data-label="Campfires"><%= h(policy_label(rule[:campfire_policy])) %></td>
+                            <td data-label="Stoves / Charcoal">
+                              <dl class="stove-policy-list">
+                                <% [
+                                  ["Charcoal", rule[:charcoal_policy]],
+                                  ["Gas", rule[:gas_stove_policy]],
+                                  ["Alcohol", rule[:alcohol_stove_policy]],
+                                  ["Solid fuel", rule[:solid_fuel_stove_policy]],
+                                  ["Wood stove", rule[:wood_stove_policy]]
+                                ].each do |label, policy| %>
+                                  <div>
+                                    <dt><%= h(label) %></dt>
+                                    <dd><%= h(stove_policy_label(policy, shutoff_required: rule[:stove_shutoff_valve_required])) %></dd>
+                                  </div>
+                                <% end %>
+                              </dl>
+                            </td>
+                            <td data-label="Duration"><%= h(duration_label(rule)) %></td>
+                            <td data-label="Source">
+                              <% if rule_source_url %>
+                                <a href="<%= h(rule_source_url) %>" rel="noreferrer"><%= h(rule_source_title) %></a>
+                              <% else %>
+                                Not checked yet
+                              <% end %>
+                            </td>
+                            <td data-label="Map">
+                              <% if rule[:mapped] %>
+                                Mapped from <%= h(labelize(rule[:geometry_source_type])) %>
+                              <% else %>
+                                Not mapped
+                              <% end %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  <% end %>
+                </div>
+              </section>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%= partial("fire_restrictions/_trust") %>
+      </main>
+    </div>
+  </body>
+</html>

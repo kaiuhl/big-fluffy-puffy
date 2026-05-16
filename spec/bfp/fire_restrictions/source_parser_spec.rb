@@ -90,6 +90,83 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(normalized["needs_review_reasons"]).to be_empty
   end
 
+  it "marks parser results with only localized rules as localized observations" do
+    result = parser_result("partial", confidence: 0.8).merge(
+      "campfire_policy" => "unknown",
+      "localized_rules" => [localized_rule]
+    )
+
+    expect(parser.send(:observation_scope, result)).to eq("localized")
+  end
+
+  it "marks parser results with forestwide and localized signals as mixed observations" do
+    result = parser_result("stage_1", confidence: 0.9).merge(
+      "campfire_policy" => "developed_sites_only",
+      "localized_rules" => [localized_rule]
+    )
+
+    expect(parser.send(:observation_scope, result)).to eq("mixed")
+  end
+
+  it "keeps localized rules in review by default even when validation is strong" do
+    validation = BFP::FireRestrictions::LocalizedRuleValidator::Result.new(valid?: true, errors: [])
+    source = source_with_metadata({})
+
+    expect(parser.send(:localized_review_status, source, localized_rule.merge("confidence" => 0.95), validation)).to eq("needs_review")
+  end
+
+  it "allows localized auto acceptance only with explicit localized metadata and strong validation" do
+    validation = BFP::FireRestrictions::LocalizedRuleValidator::Result.new(valid?: true, errors: [])
+    source = source_with_metadata("localized_auto_publish" => true)
+
+    expect(parser.send(:localized_review_status, source, localized_rule.merge("confidence" => 0.95), validation)).to eq("auto_accepted")
+  end
+
+  it "drops non-GeoJSON parser geometry before localized persistence" do
+    expect(parser.send(:explicit_geojson, {"type" => "text_description", "description" => "wilderness boundary"})).to be_nil
+    expect(parser.send(:explicit_geojson, {"type" => "Polygon", "coordinates" => []})).to eq({"type" => "Polygon", "coordinates" => []})
+  end
+
+  it "persists localized rules with needs_review status and nil geometry unless parser supplied GeoJSON" do
+    created_rules = []
+    created_areas = []
+    stub_const("BFP::FireRestrictions::LocalizedFireUseRule", Class.new do
+      define_singleton_method(:first) { |**| nil }
+      define_singleton_method(:create) { |attributes| created_rules << attributes }
+    end)
+    stub_const("BFP::FireRestrictions::RestrictionArea", Class.new do
+      define_singleton_method(:first) { |**| nil }
+      define_singleton_method(:create) do |attributes|
+        created_areas << attributes
+        Struct.new(:id).new(99)
+      end
+    end)
+
+    source = source_with_metadata("localized_auto_publish" => true)
+    fetch = Struct.new(:id, :final_url, :source_document, keyword_init: true).new(
+      id: 7,
+      final_url: "https://example.test/final",
+      source_document: Struct.new(:extracted_text, :canonical_url, :title, keyword_init: true).new(
+        extracted_text: "Campfires are prohibited in Jefferson Park.",
+        canonical_url: "https://example.test/canonical",
+        title: "Fire order"
+      )
+    )
+    observation = Struct.new(:id, keyword_init: true).new(id: 42)
+    result = {"localized_rules" => [localized_rule.merge("geometry_json" => {"type" => "text_description"})]}
+
+    parser.send(:persist_localized_rules, fetch, source, land_unit, observation, result)
+
+    expect(created_areas.first).to include(geometry_json: nil, geometry_source_type: nil)
+    expect(created_rules.first).to include(
+      restriction_observation_id: 42,
+      restriction_area_id: 99,
+      review_status: "needs_review",
+      geometry_json: nil
+    )
+    expect(created_rules.first.fetch(:slug)).to start_with("jefferson-park-")
+  end
+
   def should_escalate?(result, validation, text)
     parser.send(:should_escalate?, result, validation, text, source, land_unit)
   end
@@ -100,6 +177,50 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
       "confidence" => confidence,
       "needs_review_reasons" => reasons
     }
+  end
+
+  def localized_rule
+    {
+      "title" => "Jefferson Park",
+      "status" => "stage_1",
+      "campfire_policy" => "prohibited",
+      "charcoal_policy" => "prohibited",
+      "gas_stove_policy" => "allowed_with_shutoff_valve",
+      "liquid_fuel_stove_policy" => "allowed_with_shutoff_valve",
+      "alcohol_stove_policy" => "prohibited",
+      "solid_fuel_stove_policy" => "prohibited",
+      "wood_stove_policy" => "prohibited",
+      "stove_shutoff_valve_required" => true,
+      "duration_type" => "seasonal",
+      "effective_start" => nil,
+      "effective_end" => nil,
+      "season_start_month" => 6,
+      "season_start_day" => 1,
+      "season_end_month" => 10,
+      "season_end_day" => 15,
+      "incident_name" => nil,
+      "incident_number" => nil,
+      "incident_url" => nil,
+      "affected_area" => "Jefferson Park",
+      "area_type" => "wilderness",
+      "geometry_source_type" => "text_description",
+      "summary" => "Campfires are prohibited in Jefferson Park.",
+      "evidence_quotes" => ["Campfires are prohibited in Jefferson Park."],
+      "confidence" => 0.95,
+      "needs_review_reasons" => []
+    }
+  end
+
+  def source_with_metadata(metadata)
+    Struct.new(:source_type, :id, :authority, :slug, :name, :url, :metadata, keyword_init: true).new(
+      source_type: "fs_fire_info_page",
+      id: 1,
+      authority: "official_usfs",
+      slug: "willamette-fire-info",
+      name: "Willamette Fire Info",
+      url: "https://example.test/fire",
+      metadata: metadata
+    )
   end
 
   def validation_result(valid, errors: [])

@@ -43,6 +43,7 @@ module BFP
           "evidence_quotes" => evidence,
           "confidence" => confidence,
           "needs_review_reasons" => reasons,
+          "localized_rules" => [],
           "parser_provider" => "fake",
           "parser_model_id" => model_id || "fake"
         }

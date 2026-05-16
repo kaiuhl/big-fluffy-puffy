@@ -1,5 +1,7 @@
 require "date"
+require "digest"
 require_relative "auto_review_policy"
+require_relative "localized_rule_validator"
 
 module BFP
   module FireRestrictions
@@ -7,9 +9,10 @@ module BFP
       PRIMARY_MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
       ESCALATION_MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
-      def initialize(parser_client: BFP::LLM::ParserClient.build, validator: ObservationValidator.new, auto_review_policy: AutoReviewPolicy.new)
+      def initialize(parser_client: BFP::LLM::ParserClient.build, validator: ObservationValidator.new, localized_rule_validator: LocalizedRuleValidator.new, auto_review_policy: AutoReviewPolicy.new)
         @parser_client = parser_client
         @validator = validator
+        @localized_rule_validator = localized_rule_validator
         @auto_review_policy = auto_review_policy
       end
 
@@ -147,10 +150,11 @@ module BFP
           extracted_text: fetch.source_document&.extracted_text.to_s
         )
 
-        RestrictionObservation.create(
+        observation = RestrictionObservation.create(
           land_unit_id: land_unit.id,
           restriction_source_id: source.id,
           source_fetch_id: fetch.id,
+          scope: observation_scope(result),
           status: clean_enum(result["status"], "unknown"),
           campfire_policy: clean_enum(result["campfire_policy"], "unknown"),
           fire_danger_rating: result["fire_danger_rating"],
@@ -173,6 +177,85 @@ module BFP
           validation_errors: Jsonb.wrap(validation.errors),
           raw_output: Jsonb.wrap(result)
         )
+
+        persist_localized_rules(fetch, source, land_unit, observation, result)
+        observation
+      end
+
+      def persist_localized_rules(fetch, source, land_unit, observation, result)
+        Array(result["localized_rules"]).each do |rule|
+          next unless rule.is_a?(Hash)
+
+          validation = @localized_rule_validator.validate(
+            rule,
+            source: source,
+            extracted_text: fetch.source_document&.extracted_text.to_s
+          )
+          reasons = (Array(rule["needs_review_reasons"]) + validation.errors).uniq
+          geometry = explicit_geojson(rule["geometry_json"])
+          area = find_or_create_restriction_area(source, land_unit, rule, geometry)
+          review_status = localized_review_status(source, rule, validation)
+
+          persist_localized_fire_use_rule(
+            land_unit_id: land_unit.id,
+            restriction_area_id: area&.id,
+            restriction_observation_id: observation.id,
+            restriction_source_id: source.id,
+            source_fetch_id: fetch.id,
+            slug: localized_rule_slug(source, rule),
+            title: presence(rule["title"]) || presence(rule["affected_area"]) || "Localized fire-use rule",
+            origin: "parsed_source",
+            status: clean_enum(rule["status"], "unknown"),
+            campfire_policy: clean_enum(rule["campfire_policy"], "unknown"),
+            charcoal_policy: clean_enum(rule["charcoal_policy"], "unknown"),
+            gas_stove_policy: clean_enum(rule["gas_stove_policy"], "unknown"),
+            liquid_fuel_stove_policy: clean_enum(rule["liquid_fuel_stove_policy"], "unknown"),
+            alcohol_stove_policy: clean_enum(rule["alcohol_stove_policy"], "unknown"),
+            solid_fuel_stove_policy: clean_enum(rule["solid_fuel_stove_policy"], "unknown"),
+            wood_stove_policy: clean_enum(rule["wood_stove_policy"], "unknown"),
+            stove_shutoff_valve_required: rule["stove_shutoff_valve_required"],
+            stove_requirements_json: Jsonb.wrap(rule["stove_requirements_json"] || {}),
+            duration_type: clean_enum(rule["duration_type"], "unknown"),
+            effective_start: parse_date(rule["effective_start"]),
+            effective_end: parse_date(rule["effective_end"]),
+            season_start_month: integer_or_nil(rule["season_start_month"]),
+            season_start_day: integer_or_nil(rule["season_start_day"]),
+            season_end_month: integer_or_nil(rule["season_end_month"]),
+            season_end_day: integer_or_nil(rule["season_end_day"]),
+            incident_name: rule["incident_name"],
+            incident_number: rule["incident_number"],
+            incident_url: rule["incident_url"],
+            affected_area: rule["affected_area"],
+            geometry_json: Jsonb.wrap(geometry),
+            geometry_source_type: geometry ? clean_enum(rule["geometry_source_type"], "unknown") : nil,
+            summary: rule["summary"],
+            evidence_quotes: Jsonb.wrap(Array(rule["evidence_quotes"])),
+            source_url: fetch.source_document&.canonical_url || fetch.final_url || source.url,
+            source_title: fetch.source_document&.title || source.name,
+            confidence: rule["confidence"].to_f,
+            review_status: review_status,
+            published_at: (review_status == "auto_accepted") ? Time.now : nil,
+            content_fingerprint: localized_rule_fingerprint(source, rule),
+            raw_output: Jsonb.wrap(rule),
+            metadata_json: Jsonb.wrap(
+              "needs_review_reasons" => reasons,
+              "validation_errors" => validation.errors,
+              "geometry_provenance" => geometry_provenance(source, fetch, rule, geometry)
+            )
+          )
+        end
+      end
+
+      def persist_localized_fire_use_rule(attributes)
+        existing = LocalizedFireUseRule.first(
+          land_unit_id: attributes.fetch(:land_unit_id),
+          slug: attributes.fetch(:slug)
+        )
+        return LocalizedFireUseRule.create(attributes) unless existing
+
+        existing.set(attributes.merge(updated_at: Time.now))
+        existing.save
+        existing
       end
 
       def create_unknown_observation(fetch, source, land_unit, reasons)
@@ -201,6 +284,121 @@ module BFP
 
       def clean_enum(value, fallback)
         value.to_s.empty? ? fallback : value.to_s
+      end
+
+      def integer_or_nil(value)
+        return if value.nil? || value.to_s.strip.empty?
+
+        Integer(value)
+      rescue ArgumentError, TypeError
+        nil
+      end
+
+      def presence(value)
+        string = value.to_s.strip
+        string.empty? ? nil : string
+      end
+
+      def observation_scope(result)
+        localized_rules = Array(result["localized_rules"]).select { |rule| rule.is_a?(Hash) }
+        return "forestwide" if localized_rules.empty?
+
+        forestwide_fields = %w[fire_danger_rating ifpl_level order_number].any? { |field| presence(result[field]) }
+        forestwide_fields ||= presence(result["affected_area"]) && !localized_only_status?(result)
+        forestwide_fields ||= !%w[unknown partial].include?(result["status"].to_s)
+
+        forestwide_fields ? "mixed" : "localized"
+      end
+
+      def localized_only_status?(result)
+        result["status"].to_s == "partial" && result["campfire_policy"].to_s == "unknown"
+      end
+
+      def find_or_create_restriction_area(source, land_unit, rule, geometry)
+        name = presence(rule["affected_area"]) || presence(rule["title"])
+        return unless name
+
+        slug = restriction_area_slug(rule)
+        area = RestrictionArea.first(land_unit_id: land_unit.id, slug: slug)
+        return area if area
+
+        RestrictionArea.create(
+          land_unit_id: land_unit.id,
+          slug: slug,
+          name: name,
+          area_type: clean_enum(rule["area_type"], "unknown"),
+          area_description: rule["affected_area"],
+          geometry_json: Jsonb.wrap(geometry),
+          geometry_source_type: geometry ? clean_enum(rule["geometry_source_type"], "unknown") : nil,
+          geometry_source_url: geometry ? source.url : nil,
+          geometry_external_id: geometry ? presence(rule["geometry_external_id"]) : nil,
+          geometry_acquired_at: geometry ? Time.now : nil,
+          geometry_provenance_json: Jsonb.wrap(geometry_provenance(source, nil, rule, geometry)),
+          active: true,
+          created_at: Time.now,
+          updated_at: Time.now
+        )
+      end
+
+      def localized_review_status(source, rule, validation)
+        return "needs_review" unless source.metadata["localized_auto_publish"] == true
+        return "needs_review" unless @localized_rule_validator.strong?(rule, validation)
+
+        "auto_accepted"
+      end
+
+      def localized_rule_slug(source, rule)
+        base = slugify(presence(rule["title"]) || presence(rule["affected_area"]) || "localized-fire-use-rule")
+        "#{base}-#{localized_rule_fingerprint(source, rule)[0, 8]}"
+      end
+
+      def restriction_area_slug(rule)
+        base = slugify(presence(rule["affected_area"]) || presence(rule["title"]) || "localized-area")
+        hash = Digest::SHA256.hexdigest([
+          rule["area_type"],
+          rule["affected_area"],
+          rule["geometry_json"]
+        ].compact.join("\n"))[0, 8]
+        "#{base}-#{hash}"
+      end
+
+      def localized_rule_fingerprint(source, rule)
+        Digest::SHA256.hexdigest([
+          source.respond_to?(:slug) ? source.slug : source.id,
+          rule["title"],
+          rule["affected_area"],
+          rule["status"],
+          rule["campfire_policy"],
+          rule["effective_start"],
+          rule["effective_end"],
+          rule["season_start_month"],
+          rule["season_start_day"],
+          rule["season_end_month"],
+          rule["season_end_day"],
+          Array(rule["evidence_quotes"]).join("\n")
+        ].compact.join("\n"))
+      end
+
+      def slugify(value)
+        value.to_s.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/\A-|-+\z/, "")[0, 72].sub(/-\z/, "")
+      end
+
+      def explicit_geojson(value)
+        return unless value.is_a?(Hash)
+        return unless %w[Point MultiPoint LineString MultiLineString Polygon MultiPolygon GeometryCollection Feature FeatureCollection].include?(value["type"].to_s)
+
+        value
+      end
+
+      def geometry_provenance(source, fetch, rule, geometry)
+        return {} unless geometry
+
+        {
+          "parser_supplied" => true,
+          "geometry_source_type" => rule["geometry_source_type"],
+          "source_url" => fetch&.source_document&.canonical_url || fetch&.final_url || source.url,
+          "source_title" => fetch&.source_document&.title || source.name
+        }
       end
 
       def parse_disabled_result

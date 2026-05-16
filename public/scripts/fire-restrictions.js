@@ -117,6 +117,7 @@
   function mapColor(status) {
     return {
       active: "#ff4b1f",
+      boundary: "#3f5f52",
       none: "#2f7f62",
       unknown: "#8b8b8b"
     }[status] || "#8b8b8b";
@@ -124,9 +125,13 @@
 
   function popupContent(properties) {
     var sourceUrl = safeHttpUrl(properties.source_url);
+    var forestUrl = (properties.forest_url || "").toString();
     var sourceTitle = properties.source_title || "Source";
     var sourceLink = sourceUrl
       ? '<p class="map-popup-source"><a href="' + escapeHtml(sourceUrl) + '" rel="noreferrer">View ' + escapeHtml(sourceTitle) + "</a></p>"
+      : "";
+    var forestLink = /^\/fire-restrictions\/[^/]+$/i.test(forestUrl)
+      ? '<p class="map-popup-source"><a href="' + escapeHtml(forestUrl) + '">Open forest page</a></p>'
       : "";
 
     return [
@@ -137,6 +142,7 @@
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
       "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",
+      forestLink,
       sourceLink,
       "</div>"
     ].join("");
@@ -239,13 +245,15 @@
         var layer = L.geoJSON(data, {
           style: function (feature) {
             var color = mapColor(feature.properties && feature.properties.map_status);
+            var isBoundary = feature.properties && feature.properties.map_status === "boundary";
 
             return {
               color: color,
               fillColor: color,
-              fillOpacity: 0.56,
+              fillOpacity: isBoundary ? 0.08 : 0.56,
               opacity: 1,
-              weight: 2
+              weight: isBoundary ? 2 : 2,
+              dashArray: isBoundary ? "6 4" : null
             };
           },
           onEachFeature: function (feature, featureLayer) {

@@ -92,6 +92,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("No Published Restrictions")
     expect(last_response.body).to include("Needs Review / Unknown")
     expect(last_response.body).to include("Restriction Forest")
+    expect(last_response.body).to include('href="/fire-restrictions/deschutes"')
     expect(last_response.body).to include("Clear Forest")
     expect(last_response.body).to include("Review Forest")
     expect(last_response.body).to include("Developed Sites Only")
@@ -114,6 +115,67 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-label="Checked"')
     expect(last_response.body).to include('data-label="Note"')
     expect(last_response.body).to include("restrictions-filter-empty")
+  end
+
+  it "serves per-forest fire restriction detail pages" do
+    stub_fire_restriction_detail("deschutes", forest_detail)
+
+    get "/fire-restrictions/deschutes"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Deschutes National Forest")
+    expect(last_response.body).to include("Forest-wide status")
+    expect(last_response.body).to include("Seasonal / Current Orders")
+    expect(last_response.body).to include("Permanent / Standing Rules")
+    expect(last_response.body).to include("Jefferson Park")
+    expect(last_response.body).to include("Gas")
+    expect(last_response.body).to include("Allowed with shutoff valve")
+    expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/forests/deschutes/map"')
+  end
+
+  it "returns 404 for unknown per-forest pages" do
+    stub_fire_restriction_detail("unknown", nil)
+
+    get "/fire-restrictions/unknown"
+
+    expect(last_response.status).to eq(404)
+    expect(last_response.body).to include("Forest Not Found")
+  end
+
+  it "serves per-forest fire restriction detail JSON" do
+    stub_fire_restriction_detail("deschutes", forest_detail)
+
+    get "/api/fire-restrictions/forests/deschutes"
+
+    expect(last_response).to be_ok
+    data = JSON.parse(last_response.body)
+
+    expect(data.dig("forest", "slug")).to eq("deschutes")
+    expect(data.fetch("localized_restrictions").first).to include(
+      "title" => "Jefferson Park",
+      "duration_type" => "permanent"
+    )
+  end
+
+  it "serves per-forest fire restriction map GeoJSON" do
+    allow_any_instance_of(described_class).to receive(:forest_fire_restriction_map).with("deschutes").and_return(
+      {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {"type" => "Polygon", "coordinates" => []},
+            properties: {kind: "localized_restriction", name: "Jefferson Park"}
+          }
+        ]
+      }
+    )
+
+    get "/api/fire-restrictions/forests/deschutes/map"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/geo+json")
+    expect(JSON.parse(last_response.body).dig("features", 0, "properties", "kind")).to eq("localized_restriction")
   end
 
   it "renders region and state under the forest name and sorts by state then forest" do
@@ -253,6 +315,10 @@ RSpec.describe RodaApp do
     allow_any_instance_of(described_class).to receive(:fire_restriction_records).and_return(records)
   end
 
+  def stub_fire_restriction_detail(slug, detail)
+    allow_any_instance_of(described_class).to receive(:forest_fire_restriction_detail).with(slug).and_return(detail)
+  end
+
   def restriction_record(overrides = {})
     {
       slug: "example",
@@ -326,6 +392,75 @@ RSpec.describe RodaApp do
           warm_p90_low_f: 36.7,
           sample_cell_count: 16,
           area_pct_of_forest: 5.4
+        }
+      ]
+    }
+  end
+
+  def forest_detail
+    {
+      forest: restriction_record(
+        slug: "deschutes",
+        name: "Deschutes National Forest",
+        forest_url: "/fire-restrictions/deschutes",
+        status: "partial",
+        campfire_policy: "developed_sites_only",
+        review_status: "accepted",
+        climate_low_context: climate_context
+      ),
+      map_endpoint: "/api/fire-restrictions/forests/deschutes/map",
+      localized_restrictions: [
+        {
+          id: 12,
+          slug: "jefferson-park",
+          title: "Jefferson Park",
+          status: "year_round",
+          duration_type: "permanent",
+          group: "permanent",
+          campfire_policy: "prohibited",
+          charcoal_policy: "prohibited",
+          gas_stove_policy: "allowed_with_shutoff_valve",
+          liquid_fuel_stove_policy: "allowed_with_shutoff_valve",
+          alcohol_stove_policy: "prohibited",
+          solid_fuel_stove_policy: "prohibited",
+          wood_stove_policy: "prohibited",
+          stove_shutoff_valve_required: true,
+          affected_area: "Jefferson Park",
+          summary: "Campfires are prohibited in Jefferson Park.",
+          evidence_quotes: ["Campfires are prohibited"],
+          source_url: "https://example.test/jefferson-park",
+          source_title: "Jefferson Park rules",
+          mapped: false,
+          geometry_source_type: "none",
+          season_start: nil,
+          season_end: nil,
+          effective_start: nil,
+          effective_end: nil
+        },
+        {
+          id: 13,
+          slug: "temporary-order",
+          title: "Temporary order",
+          status: "stage_1",
+          duration_type: "temporary",
+          group: "current",
+          campfire_policy: "developed_sites_only",
+          charcoal_policy: "prohibited",
+          gas_stove_policy: "allowed_with_shutoff_valve",
+          liquid_fuel_stove_policy: "allowed_with_shutoff_valve",
+          alcohol_stove_policy: "prohibited",
+          solid_fuel_stove_policy: "prohibited",
+          wood_stove_policy: "prohibited",
+          stove_shutoff_valve_required: true,
+          affected_area: "Dispersed campsites",
+          source_url: "https://example.test/order",
+          source_title: "Current order",
+          mapped: true,
+          geometry_source_type: "source_map",
+          season_start: nil,
+          season_end: nil,
+          effective_start: "2026-07-01",
+          effective_end: "2026-09-01"
         }
       ]
     }

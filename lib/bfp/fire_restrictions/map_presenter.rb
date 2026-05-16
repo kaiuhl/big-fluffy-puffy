@@ -49,6 +49,7 @@ module BFP
           properties: {
             slug: record[:slug],
             name: record[:name],
+            forest_url: record[:forest_url] || "/fire-restrictions/#{record[:slug]}",
             region_code: record[:region_code],
             status: record[:status],
             campfire_policy: StatusDisplay.campfire_policy(

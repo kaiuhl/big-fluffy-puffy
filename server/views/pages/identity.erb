@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= h(page.fetch(:title)) %></title>
+    <meta name="description" content="<%= h(page.fetch(:description)) %>">
+    <meta property="og:title" content="<%= h(page.fetch(:title)) %>">
+    <meta property="og:description" content="<%= h(page.fetch(:description)) %>">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+  </head>
+  <body>
+    <div class="page">
+      <main class="identity-page">
+        <%= partial("shared/site_header", current_path: page.fetch(:current_path)) %>
+
+        <section class="identity-intro" aria-labelledby="identity-title">
+          <p class="kicker"><%= h(page.fetch(:kicker)) %></p>
+          <h1 id="identity-title"><%= h(page.fetch(:heading)) %></h1>
+          <p><%= h(page.fetch(:lead)) %></p>
+        </section>
+
+        <section class="identity-list" aria-label="<%= h(page.fetch(:kicker)) %> details">
+          <% page.fetch(:rows).each do |label, text, href| %>
+            <article class="identity-row">
+              <p><%= h(label) %></p>
+              <div>
+                <% if href %>
+                  <a href="<%= h(href) %>"><%= h(text) %></a>
+                <% else %>
+                  <%= h(text) %>
+                <% end %>
+              </div>
+            </article>
+          <% end %>
+        </section>
+
+        <section class="identity-action" aria-label="Next step">
+          <a href="<%= h(page.fetch(:action_href)) %>"><%= h(page.fetch(:action_label)) %></a>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

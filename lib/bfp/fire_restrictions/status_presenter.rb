@@ -21,6 +21,16 @@ module BFP
         []
       end
 
+      def forest(slug)
+        land_unit = LandUnit.first(slug: slug.to_s, active: true)
+        return unless land_unit
+
+        climate_context = load_climate_contexts([land_unit])[land_unit.id]
+        serialize_land_unit(land_unit, climate_context)
+      rescue Sequel::DatabaseError
+        nil
+      end
+
       private
 
       def load_climate_contexts(land_units)
@@ -35,6 +45,7 @@ module BFP
         {
           slug: land_unit.slug,
           name: land_unit.name,
+          forest_url: "/fire-restrictions/#{land_unit.slug}",
           unit_type: land_unit.unit_type,
           market_bucket: land_unit.market_bucket,
           region_code: land_unit.region_code,

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= h(title) %> | Big Fluffy Puffy</title>
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+  </head>
+  <body>
+    <div class="page">
+      <main class="identity-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+        <section class="identity-intro" aria-labelledby="not-found-title">
+          <p class="kicker">Not found</p>
+          <h1 id="not-found-title"><%= h(title) %></h1>
+          <p><%= h(message) %></p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

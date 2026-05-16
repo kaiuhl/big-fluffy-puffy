@@ -36,6 +36,7 @@ module BFP
       def accepted_candidates(land_unit)
         RestrictionObservation
           .where(land_unit_id: land_unit.id, review_status: %w[accepted auto_accepted])
+          .where(Sequel.|({scope: nil}, {scope: "forestwide"}))
           .where { created_at > Time.now - (30 * 24 * 60 * 60) }
           .all
       end

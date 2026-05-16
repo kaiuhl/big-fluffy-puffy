@@ -69,6 +69,17 @@ namespace :fire do
     end
   end
 
+  namespace :localized do
+    desc "Seed curated localized camping and backpacking fire-use rules"
+    task :seed do
+      load_fire_restrictions
+
+      counts = BFP::FireRestrictions::CuratedRuleSeeder.new.seed
+      puts "Seeded #{counts[:rules]} localized rules and #{counts[:areas]} restriction areas."
+      puts "#{counts[:changed_rules]} localized rules changed and need review." if counts[:changed_rules].positive?
+    end
+  end
+
   desc "Poll all due fire restriction sources synchronously"
   task :poll_due do
     load_fire_restrictions
