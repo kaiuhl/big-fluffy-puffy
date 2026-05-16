@@ -208,6 +208,296 @@ localized_rules:
         - No camping within 100 feet of the high-water mark of a lake, creek, spring, or any other water source.
         - No camping on vegetation.
 
+  - slug: willamette-waldo-lake-islands-campfire-prohibition
+    land_unit_slug: willamette
+    title: Waldo Lake island campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Islands in Waldo Lake
+    summary: Waldo Lake islands are day use only; overnight camping and campfires are prohibited.
+    evidence_quotes:
+      - Islands are day use only, no overnight camping or campfires.
+    source_url: https://www.fs.usda.gov/r06/willamette/recreation/waldo-lake-area
+    source_title: Willamette National Forest Waldo Lake Area
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_island_geometry_pending
+      geometry_review_note: The official page names Waldo Lake islands but does not publish a machine-readable island boundary.
+
+  - slug: willamette-cedar-creek-fire-closure
+    land_unit_slug: willamette
+    title: Cedar Creek Fire closure
+    origin: curated
+    status: closure
+    campfire_policy: prohibited
+    duration_type: incident
+    effective_start: "2026-03-22"
+    effective_end: "2026-12-31"
+    incident_name: Cedar Creek Fire
+    affected_area: Cedar Creek Fire closure area, closed roads, trails, trailheads, campgrounds, and recreation sites on the Willamette National Forest
+    summary: The Cedar Creek Fire closure prohibits being on listed roads, trails, trailheads, campgrounds, recreation sites, and closure-area lands while the order is active.
+    evidence_quotes:
+      - Entering in to or being upon National Forest System Lands closed for the protection of public health or safety.
+    source_url: https://www.fs.usda.gov/r06/willamette/alerts/cedar-creek-fire-closure
+    source_title: Willamette National Forest Cedar Creek Fire Closure
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-12-15"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      closure_policy_note: Campfire policy is inferred from the active public access closure; the order is an area closure, not a campfire-only order.
+      order_number: 06-18-10-26-04
+
+  - slug: willamette-beachie-lionshead-fire-closure
+    land_unit_slug: willamette
+    title: Beachie Creek and Lionshead Fires closure
+    origin: curated
+    status: closure
+    campfire_policy: prohibited
+    duration_type: incident
+    effective_start: "2025-05-22"
+    effective_end: "2026-05-21"
+    incident_name: Beachie Creek and Lionshead Fires
+    affected_area: Beachie Creek and Lionshead Fires closure roads, trailheads, recreation sites, and closure area on the Willamette National Forest
+    summary: The Beachie Creek and Lionshead Fires closure prohibits being on listed roads, trailheads, recreation sites, and closure-area lands while the order is active.
+    evidence_quotes:
+      - Entering into or being upon National Forest System Lands closed for the protection of public health or safety.
+    source_url: https://www.fs.usda.gov/r06/willamette/alerts/beachie-creek-and-lionshead-fires-closure
+    source_title: Willamette National Forest Beachie Creek and Lionshead Fires Closure
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-05-22"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      closure_policy_note: Campfire policy is inferred from the active public access closure; the order is an area closure, not a campfire-only order.
+      order_number: 06-18-04-25-07
+
+  - slug: mt-hood-bull-run-watershed-fire-prohibition
+    land_unit_slug: mt-hood
+    title: Bull Run Watershed fire and access closure
+    origin: curated
+    status: closure
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2025-03-13"
+    effective_end: "2027-03-13"
+    affected_area: Bull Run Watershed Management Unit on the Mt. Hood National Forest, with PCT and Huckleberry Trail travel exceptions
+    summary: The Bull Run Watershed Management Unit is closed to public entry, roads, and trails except listed travel corridors; fire, campfire, and stove fire are prohibited except pressurized liquid or gas stoves.
+    evidence_quotes:
+      - Building, maintaining, attending or using a fire, campfire, or stove fire, except for a pressurized liquid or gas stove.
+    source_url: https://www.fs.usda.gov/r06/mthood/alerts/bull-run-watershed-closure
+    source_title: Mt. Hood National Forest Bull Run Watershed Closure
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-02-13"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 06-06-09-25-01
+      closure_policy_note: This is primarily an access closure with a specific fire/stove prohibition.
+
+  - slug: mt-hood-sportsmans-park-fire-occupancy-prohibition
+    land_unit_slug: mt-hood
+    title: Sportsman's Park fire and camping prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: prohibited
+    liquid_fuel_stove_policy: prohibited
+    alcohol_stove_policy: prohibited
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: permanent
+    affected_area: Sportsman's Park Wildland Urban Interface Zone on the Mt. Hood National Forest Barlow Ranger District
+    summary: Fire, campfire, stove fire, and camping are prohibited in the Sportsman's Park Wildland Urban Interface Zone.
+    evidence_quotes:
+      - Building, maintaining, attending or using a fire, campfire, or stove fire.
+    source_url: https://www.fs.usda.gov/r06/mthood/alerts/sportsmans-park-fire-occupancy-restrictions
+    source_title: Mt. Hood National Forest Sportsman's Park Fire & Occupancy Restrictions
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: MH-2011-4
+      backpacking_relevance_note: Camping is prohibited in the same order, but this is a WUI/occupancy area rather than a typical wilderness backpacking route.
+
+  - slug: mt-hood-mount-hood-wilderness-named-area-campfire-prohibitions
+    land_unit_slug: mt-hood
+    title: Mount Hood Wilderness named-area campfire prohibitions
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Meadows, McNeil Point Shelter buffer, Ramona Falls buffer, Elk Cove and Elk Meadows tree-covered islands, and the Paradise Park PCT corridor in Mount Hood Wilderness
+    summary: Campfires are prohibited in several Mount Hood Wilderness meadows, waterfall/shelter buffers, tree-covered island areas, and the described Paradise Park PCT corridor.
+    evidence_quotes:
+      - Campfires are prohibited
+    source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
+    source_title: Wilderness Connect Mount Hood Wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: named_area_manual_review
+      linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+      geometry_review_note: The official Mt. Hood fire page links to Wilderness Connect for these year-round wilderness fire rules; named buffers and corridor segments need manual or official GIS geometry.
+      excluded_subarea_rule: Burnt Lake is seeded separately with approximate lake-buffer geometry.
+
+  - slug: mt-hood-burnt-lake-half-mile-campfire-prohibition
+    land_unit_slug: mt-hood
+    title: Burnt Lake half-mile campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: At and within 1/2 mile of Burnt Lake in Mount Hood Wilderness
+    summary: Campfires are prohibited at and within 1/2 mile of Burnt Lake in Mount Hood Wilderness.
+    evidence_quotes:
+      - At or within 1/2 mile of Burnt Lake
+    source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
+    source_title: Wilderness Connect Mount Hood Wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-hood-burnt-lake-half-mile-campfire-buffer
+      name: Burnt Lake 1/2-mile campfire buffer
+      area_type: named_area
+      area_description: Approximate 1/2-mile buffer around the NHD Burnt Lake waterbody centroid.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-hood-burnt-lake-half-mile-campfire-buffer.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
+        linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+
+  - slug: mt-hood-mark-o-hatfield-wahtum-lake-campfire-prohibition
+    land_unit_slug: mt-hood
+    title: Wahtum Lake campfire buffer prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 200 feet of Wahtum Lake in Mark O. Hatfield Wilderness
+    summary: Campfires are prohibited within 200 feet of Wahtum Lake in Mark O. Hatfield Wilderness.
+    evidence_quotes:
+      - Campfires are prohibited within 200 feet of Wahtum Lake
+    source_url: https://wilderness.net/visit-wilderness/?ID=342#area-management
+    source_title: Wilderness Connect Mark O. Hatfield Wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-hood-wahtum-lake-200-foot-campfire-buffer
+      name: Wahtum Lake 200-foot campfire buffer
+      area_type: named_area
+      area_description: Approximate 200-foot buffer around the NHD Wahtum Lake waterbody centroid.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-hood-wahtum-lake-200-foot-campfire-buffer.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://wilderness.net/visit-wilderness/?ID=342#area-management
+        linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+      cross_unit_note: Mark O. Hatfield Wilderness spans Mt. Hood and Columbia River Gorge administration; BFP has no Columbia River Gorge land unit yet.
+      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+
+  - slug: mt-hood-mark-o-hatfield-eagle-creek-trail-campfire-prohibition
+    land_unit_slug: mt-hood
+    title: Eagle Creek Trail campfire corridor prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 1000 feet of Eagle Creek Trail #440 from the Columbia River Gorge National Scenic Area boundary southeast to Eagle Tanner Trail #433
+    summary: Campfires are prohibited within 1000 feet of the described Eagle Creek Trail #440 corridor in Mark O. Hatfield Wilderness.
+    evidence_quotes:
+      - within 1000 feet of the Eagle Creek Trail #440
+    source_url: https://wilderness.net/visit-wilderness/?ID=342#area-management
+    source_title: Wilderness Connect Mark O. Hatfield Wilderness regulations
+    confidence: 0.82
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_trail_segment_buffer_pending
+      linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+      cross_unit_note: Mark O. Hatfield Wilderness spans Mt. Hood and Columbia River Gorge administration; BFP has no Columbia River Gorge land unit yet.
+      geometry_review_note: Needs an official trail segment geometry and 1000-foot buffer clipped to the described start/end points.
+
+  - slug: siuslaw-snowy-plover-dry-sand-burning-prohibition
+    land_unit_slug: siuslaw
+    title: Snowy plover dry sand closure burning prohibition
+    origin: curated
+    status: closure
+    campfire_policy: prohibited
+    duration_type: temporary
+    effective_start: "2026-03-15"
+    effective_end: "2026-09-15"
+    affected_area: Snowy Plover Dry Sand Closure Area in the Oregon Dunes National Recreation Area on the Siuslaw National Forest
+    summary: Burning wood or other materials, camping, and most recreation are prohibited in snowy plover dry sand closure areas while the seasonal closure is active.
+    evidence_quotes:
+      - Burning wood or other materials
+    source_url: https://www.fs.usda.gov/r06/siuslaw/alerts/beach-restrictions-effect-march-15-sept-15-protect-nesting-western-snowy-plover
+    source_title: Siuslaw National Forest snowy plover beach restrictions
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-09-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 06-12-04-25-02
+      geometry_review_note: Official PDF maps and legal descriptions exist, but BFP does not yet derive beach/foredune closure polygons.
+
   - slug: okanogan-wenatchee-alpine-lakes-5000-ft-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
     title: Alpine Lakes Wilderness campfire prohibition above 5000 feet
@@ -638,3 +928,101 @@ localized_rules:
       checked_on: "2026-05-16"
       geometry_strategy: official_lake_basin_pending
       geometry_review_note: Official text names a basin; exact basin geometry is pending.
+
+  - slug: gifford-pinchot-william-o-douglas-dewey-lakes-campfire-prohibition
+    land_unit_slug: gifford-pinchot
+    title: William O. Douglas Wilderness Dewey Lakes campfire buffer
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 1/4 mile of the shoreline of Dewey Lakes in William O. Douglas Wilderness
+    summary: Campfires are prohibited within 1/4 mile of the shoreline of Dewey Lakes in the Gifford Pinchot/Wenatchee William O. Douglas Wilderness order.
+    evidence_quotes:
+      - Within William O. Douglas Wilderness within 1/4 mile of the shoreline of Dewey Lakes.
+    source_url: https://www.fs.usda.gov/media/151852
+    source_title: Gifford Pinchot and Wenatchee wilderness camping and campfire restrictions order
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes
+      name: William O. Douglas Dewey Lakes 1/4-mile campfire buffer
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffer around the NHD Dewey Lakes waterbody centroid.
+      geometry_path: data/fire_restrictions/localized_geometries/gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/151852
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+      cross_unit_note: The order covers Gifford Pinchot and Wenatchee units; this row publishes the Gifford Pinchot-facing rule.
+      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+
+  - slug: gifford-pinchot-drift-creek-cove-fire-prohibition
+    land_unit_slug: gifford-pinchot
+    title: Drift Creek Cove fire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2024-04-01"
+    effective_end: "2027-04-01"
+    affected_area: Drift Creek Cove boat-in dispersed shoreline campsites on Swift Reservoir
+    summary: Fire, campfire, and stove fire are prohibited in Drift Creek Cove while the order is active; petroleum-fueled stoves, lanterns, and heaters are exempt if safe and able to be turned off.
+    evidence_quotes:
+      - Building, maintaining, attending, or using a fire, campfire, or stove fire
+    source_url: https://www.fs.usda.gov/r06/giffordpinchot/alerts/drift-creek-cove-fire-restrictions
+    source_title: Gifford Pinchot Drift Creek Cove Fire Restrictions
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-03-01"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 06-03-01-24-02
+      geometry_review_note: The order includes Exhibit A and describes six boat-in shoreline campsites; BFP has not digitized those sites yet.
+
+  - slug: gifford-pinchot-mount-st-helens-area-three-margaret-fire-prohibition
+    land_unit_slug: gifford-pinchot
+    title: Mount St. Helens Area Three and Mount Margaret fire prohibition
+    origin: curated
+    status: closure
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    solid_fuel_stove_policy: allowed
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-04-25"
+    effective_end: "2027-04-25"
+    affected_area: Area Three and Mount Margaret Backcountry in Mount St. Helens National Volcanic Monument
+    summary: Fire, campfire, and stove fire are prohibited in Area Three and Mount Margaret Backcountry, with gas, propane, alcohol, and tablet/cube fuel stoves and heaters exempted.
+    evidence_quotes:
+      - Building, maintaining, attending or using a fire, campfire, or stove
+    source_url: https://www.fs.usda.gov/r06/giffordpinchot/alerts/mount-st-helens-volcanic-monument-restrictions
+    source_title: Gifford Pinchot Mount St. Helens Volcanic Monument Restrictions
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-03-25"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 06-03-01-24-03
+      stove_review_note: Tablet/cube fuel is mapped to solid_fuel_stove_policy allowed; wood-burning stove policy remains prohibited.
+      geometry_review_note: Official exhibits describe and map Areas Three and Mount Margaret Backcountry, but BFP has not digitized them yet.

@@ -83,8 +83,8 @@ RSpec.describe "fire restriction database integration", :db do
 
     counts = BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
 
-    expect(counts[:rules]).to eq(22)
-    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(19)
+    expect(counts[:rules]).to eq(35)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(32)
     expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(3)
 
     detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("wallowa-whitman")
@@ -107,6 +107,32 @@ RSpec.describe "fire restriction database integration", :db do
       affected_area: "Jefferson Park area within Mt. Jefferson Wilderness on the Willamette National Forest",
       mapped: false
     )
+
+    mt_hood_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("mt-hood")
+    mt_hood_slugs = mt_hood_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }
+    expect(mt_hood_slugs).to include(
+      "mt-hood-bull-run-watershed-fire-prohibition",
+      "mt-hood-burnt-lake-half-mile-campfire-prohibition",
+      "mt-hood-mark-o-hatfield-wahtum-lake-campfire-prohibition"
+    )
+
+    burnt_lake = mt_hood_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "mt-hood-burnt-lake-half-mile-campfire-prohibition" }
+    expect(burnt_lake).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_nhd_centroid_buffer"
+    )
+
+    gifford_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("gifford-pinchot")
+    dewey_lakes = gifford_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "gifford-pinchot-william-o-douglas-dewey-lakes-campfire-prohibition" }
+    expect(dewey_lakes).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_nhd_centroid_buffer"
+    )
+
+    siuslaw_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("siuslaw")
+    expect(siuslaw_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("siuslaw-snowy-plover-dry-sand-burning-prohibition")
 
     map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "wallowa-whitman").geojson
     localized_feature = map.fetch(:features).find { |feature| feature.dig(:properties, :kind) == "localized_restriction" }

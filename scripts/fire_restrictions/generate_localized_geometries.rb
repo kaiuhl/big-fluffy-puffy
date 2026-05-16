@@ -132,6 +132,39 @@ GROUPS = [
       "Goat Lake",
       "Shoe Lake"
     ]
+  },
+  {
+    slug: "mt-hood-burnt-lake-half-mile-campfire-buffer",
+    title: "Burnt Lake 1/2-mile campfire buffer",
+    source_url: "https://wilderness.net/visit-wilderness/?ID=374#area-management",
+    radius_miles: 0.5,
+    bbox: [-122.1, 45.25, -121.55, 45.55],
+    center: [-121.82, 45.39],
+    lakes: [
+      "Burnt Lake"
+    ]
+  },
+  {
+    slug: "mt-hood-wahtum-lake-200-foot-campfire-buffer",
+    title: "Wahtum Lake 200-foot campfire buffer",
+    source_url: "https://wilderness.net/visit-wilderness/?ID=342#area-management",
+    radius_miles: 0.0378788,
+    bbox: [-122.0, 45.45, -121.6, 45.65],
+    center: [-121.79, 45.58],
+    lakes: [
+      "Wahtum Lake"
+    ]
+  },
+  {
+    slug: "gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes",
+    title: "William O. Douglas Dewey Lakes 1/4-mile campfire buffer",
+    source_url: "https://www.fs.usda.gov/media/151852",
+    radius_miles: 0.25,
+    bbox: [-121.6, 46.55, -120.95, 47.0],
+    center: [-121.38, 46.78],
+    lakes: [
+      {name: "Dewey Lakes", aliases: ["Dewey Lakes", "Dewey Lake"]}
+    ]
   }
 ].freeze
 

@@ -4,18 +4,18 @@ Checked date: 2026-05-16.
 
 ## Scope
 
-This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Only official Forest Service sources were used.
+This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Official Forest Service sources were used for accepted Forest Service orders and recreation pages. Mt. Hood wilderness-detail rows use Wilderness Connect pages that the official Mt. Hood fire page links as its year-round wilderness fire-regulation detail source.
 
 The seed uses static generated geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated shapes are approximate lake-buffer circles derived from official NHD waterbody centroids. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation or official GIS layer is available.
 
 ## Seed Summary
 
-- Rules in seed file: 22
-- High-confidence accepted rules: 19
+- Rules in seed file: 35
+- High-confidence accepted rules: 32
 - Needs-review rules: 3
-- Official source URLs used as primary `source_url` values: 11
-- Generated localized GeoJSON files: 6
-- Approximate NHD centroid-buffer polygons generated: 58
+- Primary `source_url` values: 23
+- Generated localized GeoJSON files: 9
+- Approximate NHD centroid-buffer polygons generated: 61
 - Checked date embedded in metadata: 2026-05-16
 
 ## Generated Geometry
@@ -39,6 +39,9 @@ Generated coverage:
 | Okanogan-Wenatchee Glacier Peak Ice Lakes | 1 | none | 1/2-mile approximate buffer |
 | Okanogan-Wenatchee William O. Douglas named lakes | 2 | none | 1/4-mile approximate buffers |
 | Gifford Pinchot Goat Rocks named lakes | 2 | none | Partial geometry only; Snowgrass Flats and Dana Yelverton Shelter are not represented |
+| Mt. Hood Burnt Lake | 1 | none | 1/2-mile approximate buffer |
+| Mt. Hood Wahtum Lake | 1 | none | 200-foot approximate buffer |
+| Gifford Pinchot William O. Douglas Dewey Lakes | 1 | none | 1/4-mile approximate buffer |
 
 ## Priority Coverage
 
@@ -69,6 +72,52 @@ Decision notes:
 - Gas and liquid-fuel stoves are accepted as allowed because the order excepts stoves fueled with liquid or compressed gas.
 - Alcohol stove policy is `unknown` because the order does not specifically name alcohol stoves or a shutoff-valve requirement.
 - The Jefferson Park page is seeded as a separate permanent campfire prohibition because it explicitly states that campfires are not permitted inside Jefferson Park. Its stove and charcoal fields remain `unknown` because that page does not describe them.
+
+### P0 Portland-Area Audit
+
+Audited Portland-adjacent catalog forests: Mt. Hood, Gifford Pinchot, Willamette, and Siuslaw. Columbia River Gorge National Scenic Area is not yet a BFP land unit; Mark O. Hatfield Wilderness rules linked from the official Mt. Hood fire page are currently seeded under Mt. Hood with cross-unit provenance notes.
+
+New accepted rules added from the audit:
+
+- `willamette-waldo-lake-islands-campfire-prohibition`
+- `willamette-cedar-creek-fire-closure`
+- `willamette-beachie-lionshead-fire-closure`
+- `mt-hood-bull-run-watershed-fire-prohibition`
+- `mt-hood-sportsmans-park-fire-occupancy-prohibition`
+- `mt-hood-mount-hood-wilderness-named-area-campfire-prohibitions`
+- `mt-hood-burnt-lake-half-mile-campfire-prohibition`
+- `mt-hood-mark-o-hatfield-wahtum-lake-campfire-prohibition`
+- `mt-hood-mark-o-hatfield-eagle-creek-trail-campfire-prohibition`
+- `siuslaw-snowy-plover-dry-sand-burning-prohibition`
+- `gifford-pinchot-william-o-douglas-dewey-lakes-campfire-prohibition`
+- `gifford-pinchot-drift-creek-cove-fire-prohibition`
+- `gifford-pinchot-mount-st-helens-area-three-margaret-fire-prohibition`
+
+Primary sources:
+
+- https://www.fs.usda.gov/r06/willamette/recreation/waldo-lake-area
+- https://www.fs.usda.gov/r06/willamette/alerts/cedar-creek-fire-closure
+- https://www.fs.usda.gov/r06/willamette/alerts/beachie-creek-and-lionshead-fires-closure
+- https://www.fs.usda.gov/r06/mthood/fire
+- https://www.fs.usda.gov/r06/mthood/alerts/bull-run-watershed-closure
+- https://www.fs.usda.gov/r06/mthood/alerts/sportsmans-park-fire-occupancy-restrictions
+- https://wilderness.net/visit-wilderness/?ID=374#area-management
+- https://wilderness.net/visit-wilderness/?ID=342#area-management
+- https://www.fs.usda.gov/r06/siuslaw/alerts/beach-restrictions-effect-march-15-sept-15-protect-nesting-western-snowy-plover
+- https://www.fs.usda.gov/media/151852
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/drift-creek-cove-fire-restrictions
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/mount-st-helens-volcanic-monument-restrictions
+
+Decision notes:
+
+- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD centroid buffers.
+- Bull Run, Cedar Creek, Beachie/Lionshead, Mount St. Helens, and snowy plover rows are closure/status rows. Where access is prohibited, BFP marks campfire policy as prohibited and records that the campfire policy is inferred from the active access closure rather than from a campfire-only order.
+- Beachie/Lionshead is active on the checked date but expires on 2026-05-21; it is due for immediate post-expiration review.
+- The Siuslaw snowy plover row is a 2026 seasonal closure from 2026-03-15 through 2026-09-15. It should be refreshed from the current year's order before the 2027 nesting season.
+- Drift Creek Cove and Mount St. Helens official orders include map exhibits, but BFP has not digitized those polygons yet.
+- Lewis River and broad Goat Rocks "No campfires" recreation-page language remain unseeded because current official evidence is less specific or conflicts with narrower order text.
+- Opal Creek has vague page-level campfire-prohibition wording, but the current closure order reviewed in this pass did not clearly establish a separate active campfire restriction.
+- Siuslaw sand-camping and general beach-fire FAQ guidance are not seeded as localized fire restrictions because the audit did not find a clean active Forest Service order for those backpacking/campfire scenarios.
 
 ### P0 Okanogan-Wenatchee Always-In-Effect Rules
 
@@ -147,13 +196,16 @@ Decision notes:
 - The rule uses `geometry_strategy: elevation_above`.
 - Stove and charcoal sub-policies are left `unknown` because the current page resolves open-fire policy, not BFP stove fuel classes.
 
-### P1 Gifford Pinchot Named Wilderness Rules
+### P1 Gifford Pinchot Named Wilderness And Localized Closure Rules
 
-Seeded three accepted rules:
+Seeded six accepted rules:
 
 - `gifford-pinchot-mt-adams-high-country-campfire-prohibition`
 - `gifford-pinchot-goat-rocks-named-campfire-prohibitions`
 - `gifford-pinchot-tatoosh-lakes-basin-campfire-prohibition`
+- `gifford-pinchot-william-o-douglas-dewey-lakes-campfire-prohibition`
+- `gifford-pinchot-drift-creek-cove-fire-prohibition`
+- `gifford-pinchot-mount-st-helens-area-three-margaret-fire-prohibition`
 
 Official sources:
 
@@ -161,35 +213,51 @@ Official sources:
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-goat-rocks
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-tatoosh
 - https://www.fs.usda.gov/media/151852
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/drift-creek-cove-fire-restrictions
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/mount-st-helens-volcanic-monument-restrictions
 
 Decision notes:
 
 - Mt. Adams, Goat Rocks named areas, and Tatoosh Lakes Basin have direct official evidence.
 - The seed uses the narrower Goat Rocks named prohibitions from the regulations/order rather than the broader recreation-page "No campfires" wording, because the broad wording conflicts with the narrower order text.
 - Mt. Adams is accepted as text-supported but uses `named_area_manual_review` because the boundary is described by trails and forest boundaries rather than coordinates.
+- Dewey Lakes is mapped as an approximate NHD centroid buffer because the order states a 1/4-mile shoreline buffer, but BFP has not derived a true shoreline polygon buffer.
+- Drift Creek Cove and Mount St. Helens are accepted as active temporary orders with official exhibit geometry pending.
 
 ## Source URLs
 
 Primary source URLs in the seed:
 
+- https://wilderness.net/visit-wilderness/?ID=342#area-management
+- https://wilderness.net/visit-wilderness/?ID=374#area-management
 - https://www.fs.usda.gov/media/144510
-- https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
-- https://www.fs.usda.gov/r06/okanogan-wenatchee/alerts/campfire-and-camping-restrictions-henry-m-jackson-wilderness
-- https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee
-- https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
+- https://www.fs.usda.gov/media/151852
 - https://www.fs.usda.gov/r05/klamath/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/shasta-trinity/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/sixrivers/alerts/trinity-wilderness-area-restrictions
-- https://www.fs.usda.gov/r06/olympic/wilderness
+- https://www.fs.usda.gov/r06/deschutes/wilderness
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/drift-creek-cove-fire-restrictions
+- https://www.fs.usda.gov/r06/giffordpinchot/alerts/mount-st-helens-volcanic-monument-restrictions
 - https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+- https://www.fs.usda.gov/r06/mthood/alerts/bull-run-watershed-closure
+- https://www.fs.usda.gov/r06/mthood/alerts/sportsmans-park-fire-occupancy-restrictions
+- https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+- https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee
+- https://www.fs.usda.gov/r06/olympic/wilderness
+- https://www.fs.usda.gov/r06/siuslaw/alerts/beach-restrictions-effect-march-15-sept-15-protect-nesting-western-snowy-plover
+- https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
+- https://www.fs.usda.gov/r06/willamette/alerts/beachie-creek-and-lionshead-fires-closure
+- https://www.fs.usda.gov/r06/willamette/alerts/cedar-creek-fire-closure
+- https://www.fs.usda.gov/r06/willamette/recreation/jefferson-park-area-mt-jefferson-wilderness
+- https://www.fs.usda.gov/r06/willamette/recreation/waldo-lake-area
+- https://www.fs.usda.gov/r06/willamette/wilderness
 
 Related official URLs captured in metadata or review notes:
 
-- https://www.fs.usda.gov/r06/deschutes/wilderness
-- https://www.fs.usda.gov/r06/willamette/wilderness
+- https://www.fs.usda.gov/r06/mthood/fire
+- https://www.fs.usda.gov/r06/okanogan-wenatchee/alerts/campfire-and-camping-restrictions-henry-m-jackson-wilderness
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-goat-rocks
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-tatoosh
-- https://www.fs.usda.gov/media/151852
 
 ## Uncertainty Ledger
 
@@ -200,5 +268,15 @@ Related official URLs captured in metadata or review notes:
 - Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD centroid buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
+- Mt. Hood: Wilderness Connect is used for some Mt. Hood and Mark O. Hatfield rows because the official Mt. Hood fire page links it as the detail source for year-round wilderness fire rules. Keep that provenance visible.
+- Mt. Hood: Mark O. Hatfield Wilderness crosses Mt. Hood and Columbia River Gorge administration. BFP should add a Columbia River Gorge land unit before these rules can be assigned perfectly.
+- Mt. Hood: Eagle Creek Trail needs official trail-segment geometry and a 1000-foot buffer clipped to the described endpoints before mapping.
+- Mt. Hood: Bull Run and Sportsman's Park need official exhibit geometry digitized before mapping.
+- Willamette: Beachie Creek/Lionshead expires on 2026-05-21 and should be removed or refreshed immediately after that date.
+- Willamette: Cedar Creek and Beachie/Lionshead closure rows are access closures, not campfire-only restrictions. Their campfire prohibition is inferred from the fact that public entry is prohibited in the affected areas.
+- Willamette: Opal Creek page-level campfire-prohibition wording needs a clearer current order or official detail source before it should be seeded.
+- Siuslaw: Snowy plover beach restriction geometry is map/exhibit-derived and not yet digitized. General sand-camping and beach-fire FAQ guidance was not accepted as an active localized fire restriction.
 - Gifford Pinchot: Goat Rocks has broader "No campfires" wording on a recreation page and narrower named prohibitions in the regulations/order. The seed accepts only the narrower named restrictions. Generated geometry is partial for Goat Lake and Shoe Lake only.
 - Gifford Pinchot: Mt. Adams requires later manual geometry work because the official boundary is described by named trails and forest boundaries.
+- Gifford Pinchot: Lewis River "No campfires" wording was not seeded because the audit did not find an active order/date with enough specificity.
+- Gifford Pinchot: Drift Creek Cove and Mount St. Helens exhibit maps are official but not yet digitized.
