@@ -86,7 +86,6 @@
               <h2 id="forest-map-title"><%= h(forest.fetch(:name)) %> Map</h2>
             </div>
             <ul class="restrictions-map-legend" aria-label="Map legend">
-              <li><span class="map-legend-swatch map-legend-boundary" aria-hidden="true"></span>Forest boundary</li>
               <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
             </ul>
           </div>
@@ -138,7 +137,6 @@
                           <th scope="col">Fire Use</th>
                           <th scope="col">Duration</th>
                           <th scope="col">Source</th>
-                          <th scope="col">Map</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -166,16 +164,6 @@
                                 <a href="<%= h(rule_source_url) %>" rel="noreferrer"><%= h(rule_source_title) %></a>
                               <% else %>
                                 Not checked yet
-                              <% end %>
-                            </td>
-                            <td data-label="Map">
-                              <% if rule[:mapped] %>
-                                <%= h(geometry_label(rule)) %>
-                                <% if approximate_geometry?(rule) %>
-                                  <small class="restriction-map-note">Derived shape; verify the official source for exact boundaries.</small>
-                                <% end %>
-                              <% else %>
-                                Not mapped
                               <% end %>
                             </td>
                           </tr>

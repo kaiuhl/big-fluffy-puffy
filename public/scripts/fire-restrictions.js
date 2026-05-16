@@ -1,4 +1,7 @@
 (function () {
+  var DEFAULT_FIT_MAX_ZOOM = 8;
+  var DEFAULT_FIT_ZOOM_OFFSET = 1;
+
   function normalize(value) {
     return value.toLowerCase().replace(/\s+/g, " ").trim();
   }
@@ -130,12 +133,204 @@
     }).addTo(map);
   }
 
+  function ringToLatLngs(ring) {
+    return ring.map(function (coordinate) {
+      return [coordinate[1], coordinate[0]];
+    });
+  }
+
+  function isBoundaryFeature(feature) {
+    return feature.properties && feature.properties.map_status === "boundary";
+  }
+
+  function boundaryMaskHoles(features) {
+    return features.reduce(function (holes, feature) {
+      var geometry = feature.geometry || {};
+
+      if (!isBoundaryFeature(feature)) return holes;
+
+      if (geometry.type === "Polygon") {
+        holes.push(ringToLatLngs(geometry.coordinates[0] || []));
+      } else if (geometry.type === "MultiPolygon") {
+        geometry.coordinates.forEach(function (polygon) {
+          holes.push(ringToLatLngs(polygon[0] || []));
+        });
+      }
+
+      return holes;
+    }, []).filter(function (hole) {
+      return hole.length >= 4;
+    });
+  }
+
+  function addOutsideBoundaryMask(map, features) {
+    var holes = boundaryMaskHoles(features);
+
+    if (holes.length === 0) return;
+
+    L.polygon(
+      [
+        [
+          [-89.9, -360],
+          [-89.9, 360],
+          [89.9, 360],
+          [89.9, -360]
+        ]
+      ].concat(holes),
+      {
+        fillColor: "#111111",
+        fillOpacity: 0.66,
+        fillRule: "evenodd",
+        interactive: false,
+        stroke: false
+      }
+    ).addTo(map);
+  }
+
+  function isInteractiveMapShape(target, container) {
+    if (!target || target === container || typeof target.closest !== "function") return false;
+
+    var interactiveTarget = target.closest(".leaflet-interactive");
+
+    return !!(interactiveTarget && container.contains(interactiveTarget));
+  }
+
+  function enableShapeDoubleClickZoom(map, container) {
+    container.addEventListener("dblclick", function (event) {
+      if (!isInteractiveMapShape(event.target, container)) return;
+
+      L.DomEvent.stop(event);
+      zoomMapAround(map, map.mouseEventToLatLng(event), event);
+    }, true);
+  }
+
+  function zoomMapAround(map, latlng, originalEvent) {
+    var zoomDelta = map.options.zoomDelta || 1;
+    var nextZoom = map.getZoom() + (originalEvent && originalEvent.shiftKey ? -zoomDelta : zoomDelta);
+
+    map.setZoomAround(latlng, nextZoom);
+  }
+
+  function shapeRepeatedClickZoomHandler(map) {
+    var lastClick = null;
+
+    return function (event) {
+      var originalEvent = event.originalEvent || {};
+      var point = event.containerPoint;
+      var now = Date.now();
+      var repeatedClick = originalEvent.detail > 1;
+
+      if (!repeatedClick && lastClick && point && lastClick.point) {
+        repeatedClick = now - lastClick.time < 450 && point.distanceTo(lastClick.point) < 12;
+      }
+
+      lastClick = {
+        point: point,
+        time: now
+      };
+
+      if (!repeatedClick) return;
+
+      lastClick = null;
+      if (event.originalEvent && L.DomEvent) {
+        L.DomEvent.stop(event.originalEvent);
+      }
+      zoomMapAround(map, event.latlng, originalEvent);
+    };
+  }
+
+  function setupFireRestrictionMap() {
+    var container = document.getElementById("restrictions-map");
+    var status = document.getElementById("restrictions-map-status");
+
+    if (!container) return;
+
+    function setStatus(message) {
+      if (status) status.textContent = message;
+    }
+
+    if (typeof L === "undefined" || typeof fetch === "undefined") {
+      setStatus("Map unavailable; forest list remains below.");
+      return;
+    }
+
+    var map = L.map(container, {
+      scrollWheelZoom: false
+    }).setView([43.9, -121.9], 6);
+
+    enableShapeDoubleClickZoom(map, container);
+    addBaseMap(map);
+
+    fetch(container.dataset.mapEndpoint || "/api/fire-restrictions/map")
+      .then(function (response) {
+        if (!response.ok) throw new Error("Map request failed");
+
+        return response.json();
+      })
+      .then(function (data) {
+        var features = Array.isArray(data.features) ? data.features : [];
+
+        if (features.length === 0) {
+          setStatus("Map boundaries unavailable; forest list remains below.");
+          return;
+        }
+
+        addOutsideBoundaryMask(map, features);
+
+        var boundsLayer = L.geoJSON(data);
+        var shapeClickZoom = shapeRepeatedClickZoomHandler(map);
+        var layer = L.geoJSON(data, {
+          filter: function (feature) {
+            return !isBoundaryFeature(feature);
+          },
+          style: function (feature) {
+            var color = mapColor(feature.properties && feature.properties.map_status);
+
+            return {
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.56,
+              lineCap: "round",
+              lineJoin: "round",
+              opacity: 1,
+              weight: 2
+            };
+          },
+          onEachFeature: function (feature, featureLayer) {
+            featureLayer.bindPopup(popupContent(feature.properties || {}));
+            featureLayer.on({
+              mouseover: function () {
+                featureLayer.setStyle({
+                  fillOpacity: 0.72,
+                  weight: 3
+                });
+              },
+              mouseout: function () {
+                layer.resetStyle(featureLayer);
+              },
+              click: function (event) {
+                shapeClickZoom(event);
+              }
+            });
+          }
+        }).addTo(map);
+
+        fitMapToLayer(map, boundsLayer);
+
+        setStatus("Map showing " + forestCount(features.length) + ".");
+      })
+      .catch(function () {
+        setStatus("Map unavailable; forest list remains below.");
+      });
+  }
+
   function popupContent(properties) {
     var sourceUrl = safeHttpUrl(properties.source_url);
     var forestUrl = (properties.forest_url || "").toString();
     var sourceTitle = properties.source_title || "Source";
-    var geometryLabel = properties.geometry_source_type ? labelize(properties.geometry_source_type) : "";
-    var geometryAccuracy = properties.geometry_is_approximate ? "Approximate " : "";
+    var boundaryNote = properties.geometry_is_approximate
+      ? "Approximation shown on map. Read official sources and signs for exact boundaries."
+      : "";
     var sourceLink = sourceUrl
       ? '<p class="map-popup-source"><a href="' + escapeHtml(sourceUrl) + '" rel="noreferrer">View ' + escapeHtml(sourceTitle) + "</a></p>"
       : "";
@@ -149,7 +344,7 @@
       "<dl>",
       "<dt>Status</dt><dd>" + escapeHtml(labelize(properties.map_status)) + "</dd>",
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
-      geometryLabel ? "<dt>Geometry</dt><dd>" + escapeHtml(geometryAccuracy + geometryLabel) + "</dd>" : "",
+      boundaryNote ? "<dt>Boundary</dt><dd>" + escapeHtml(boundaryNote) + "</dd>" : "",
       "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",
       forestLink,
@@ -194,9 +389,10 @@
 
       attempts = 0;
       map.fitBounds(bounds, {
-        maxZoom: 7,
+        maxZoom: DEFAULT_FIT_MAX_ZOOM,
         padding: [18, 18]
       });
+      zoomInAfterFit(map);
     }
 
     function queueFit() {
@@ -214,83 +410,25 @@
     window.addEventListener("resize", queueFit);
   }
 
-  function setupFireRestrictionMap() {
-    var container = document.getElementById("restrictions-map");
-    var status = document.getElementById("restrictions-map-status");
+  function zoomInAfterFit(map) {
+    var currentZoom = map.getZoom();
+    var mapMaxZoom = map.getMaxZoom();
 
-    if (!container) return;
-
-    function setStatus(message) {
-      if (status) status.textContent = message;
+    if (typeof mapMaxZoom !== "number") {
+      mapMaxZoom = DEFAULT_FIT_MAX_ZOOM;
     }
 
-    if (typeof L === "undefined" || typeof fetch === "undefined") {
-      setStatus("Map unavailable; forest list remains below.");
-      return;
-    }
+    var targetZoom = Math.min(
+      currentZoom + DEFAULT_FIT_ZOOM_OFFSET,
+      DEFAULT_FIT_MAX_ZOOM,
+      mapMaxZoom
+    );
 
-    var map = L.map(container, {
-      scrollWheelZoom: false
-    }).setView([43.9, -121.9], 6);
-
-    addBaseMap(map);
-
-    fetch(container.dataset.mapEndpoint || "/api/fire-restrictions/map")
-      .then(function (response) {
-        if (!response.ok) throw new Error("Map request failed");
-
-        return response.json();
-      })
-      .then(function (data) {
-        var features = Array.isArray(data.features) ? data.features : [];
-
-        if (features.length === 0) {
-          setStatus("Map boundaries unavailable; forest list remains below.");
-          return;
-        }
-
-        var layer = L.geoJSON(data, {
-          style: function (feature) {
-            var color = mapColor(feature.properties && feature.properties.map_status);
-            var isBoundary = feature.properties && feature.properties.map_status === "boundary";
-
-            return {
-              color: color,
-              fill: !isBoundary,
-              fillColor: color,
-              fillOpacity: isBoundary ? 0 : 0.56,
-              lineCap: "round",
-              lineJoin: "round",
-              opacity: 1,
-              weight: isBoundary ? 4 : 2,
-              dashArray: isBoundary ? "1 8" : null
-            };
-          },
-          onEachFeature: function (feature, featureLayer) {
-            featureLayer.bindPopup(popupContent(feature.properties || {}));
-            featureLayer.on({
-              mouseover: function () {
-                var isBoundary = feature.properties && feature.properties.map_status === "boundary";
-
-                featureLayer.setStyle({
-                  fillOpacity: isBoundary ? 0 : 0.72,
-                  weight: isBoundary ? 5 : 3
-                });
-              },
-              mouseout: function () {
-                layer.resetStyle(featureLayer);
-              }
-            });
-          }
-        }).addTo(map);
-
-        fitMapToLayer(map, layer);
-
-        setStatus("Map showing " + forestCount(features.length) + ".");
-      })
-      .catch(function () {
-        setStatus("Map unavailable; forest list remains below.");
+    if (targetZoom > currentZoom) {
+      map.setZoom(targetZoom, {
+        animate: false
       });
+    }
   }
 
   function setupFireRestrictionsPage() {

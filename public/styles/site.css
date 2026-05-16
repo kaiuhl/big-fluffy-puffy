@@ -420,7 +420,7 @@ h1 {
 
 .map-legend-boundary {
   background: transparent;
-  border: 2px dotted #3f5f52;
+  border: 2px solid var(--black);
 }
 
 .restrictions-map {
@@ -586,7 +586,8 @@ h1 {
   min-width: 920px;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.92rem;
+  font-size: 0.78rem;
+  line-height: 1.38;
 }
 
 .restrictions-table th,
@@ -603,9 +604,9 @@ h1 {
   z-index: 2;
   border-bottom-color: var(--black);
   background: var(--white);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -616,6 +617,10 @@ h1 {
 
 .restrictions-table tbody th {
   min-width: 260px;
+  color: var(--near-black);
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.32;
 }
 
 .restrictions-table tbody th span,
@@ -624,12 +629,13 @@ h1 {
 }
 
 .restrictions-table tbody th small {
-  margin-top: 4px;
+  margin-top: 6px;
   color: var(--mid-gray);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-transform: none;
 }
 
 .restrictions-table tbody th a {
@@ -700,36 +706,35 @@ h1 {
 }
 
 .localized-restrictions-table {
-  min-width: 980px;
+  min-width: 760px;
 }
 
 .localized-restrictions-table td:nth-child(2) {
   min-width: 310px;
 }
 
-.localized-restrictions-table td:nth-child(5) {
-  color: var(--charcoal);
-  font-weight: 700;
-  white-space: normal;
-}
-
 .fire-use-profile {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+  min-width: 0;
   max-width: 330px;
 }
 
 .fire-use-summary {
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
   color: var(--near-black);
-  font-size: 0.86rem;
-  font-weight: 780;
-  line-height: 1.32;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: inherit;
 }
 
 .fire-use-chart {
   display: block;
-  width: max-content;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
 }
 
@@ -802,16 +807,6 @@ h1 {
   text-align: center;
 }
 
-.restriction-map-note {
-  color: var(--mid-gray);
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.35;
-  margin-top: 0.25rem;
-  max-width: 18rem;
-}
-
 .restrictions-table td:nth-child(3) {
   min-width: 190px;
 }
@@ -880,12 +875,12 @@ h1 {
   display: inline-block;
   margin: 0 8px 6px 0;
   color: var(--signal);
-  font-weight: 800;
+  font-weight: 650;
 }
 
 .restrictions-table td:nth-child(5) {
-  color: var(--mid-gray);
-  font-weight: 800;
+  color: var(--charcoal);
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -1134,7 +1129,7 @@ h1 {
   .restrictions-table {
     display: block;
     min-width: 0;
-    font-size: 0.95rem;
+    font-size: 0.78rem;
   }
 
   .restrictions-table thead {
@@ -1171,8 +1166,8 @@ h1 {
   }
 
   .restrictions-table tbody th span {
-    font-size: 1.08rem;
-    line-height: 1.15;
+    font-size: 0.95rem;
+    line-height: 1.22;
   }
 
   .restrictions-table td {
