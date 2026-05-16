@@ -42,7 +42,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260516-map-topo"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -308,6 +308,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("dataset.filterText")
     expect(last_response.body).to include("timeZone: \"UTC\"")
     expect(last_response.body).to include("last_checked_label")
+    expect(last_response.body).to include("USGSTopo/MapServer/tile/{z}/{y}/{x}")
+    expect(last_response.body).to include("USGS The National Map")
+    expect(last_response.body).to include("fill: !isBoundary")
+    expect(last_response.body).to include("dashArray: isBoundary ? \"1 8\" : null")
     expect(last_response.body).not_to include("climate_low_context")
   end
 

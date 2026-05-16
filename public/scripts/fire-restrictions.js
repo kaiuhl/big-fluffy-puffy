@@ -123,6 +123,13 @@
     }[status] || "#8b8b8b";
   }
 
+  function addBaseMap(map) {
+    L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 16,
+      attribution: 'Tiles: <a href="https://www.usgs.gov/programs/national-geospatial-program/national-map">USGS The National Map</a>'
+    }).addTo(map);
+  }
+
   function popupContent(properties) {
     var sourceUrl = safeHttpUrl(properties.source_url);
     var forestUrl = (properties.forest_url || "").toString();
@@ -226,10 +233,7 @@
       scrollWheelZoom: false
     }).setView([43.9, -121.9], 6);
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 12,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    addBaseMap(map);
 
     fetch(container.dataset.mapEndpoint || "/api/fire-restrictions/map")
       .then(function (response) {
@@ -252,20 +256,25 @@
 
             return {
               color: color,
+              fill: !isBoundary,
               fillColor: color,
-              fillOpacity: isBoundary ? 0.08 : 0.56,
+              fillOpacity: isBoundary ? 0 : 0.56,
+              lineCap: "round",
+              lineJoin: "round",
               opacity: 1,
-              weight: isBoundary ? 2 : 2,
-              dashArray: isBoundary ? "6 4" : null
+              weight: isBoundary ? 4 : 2,
+              dashArray: isBoundary ? "1 8" : null
             };
           },
           onEachFeature: function (feature, featureLayer) {
             featureLayer.bindPopup(popupContent(feature.properties || {}));
             featureLayer.on({
               mouseover: function () {
+                var isBoundary = feature.properties && feature.properties.map_status === "boundary";
+
                 featureLayer.setStyle({
-                  fillOpacity: 0.72,
-                  weight: 3
+                  fillOpacity: isBoundary ? 0 : 0.72,
+                  weight: isBoundary ? 5 : 3
                 });
               },
               mouseout: function () {
