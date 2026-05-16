@@ -244,7 +244,7 @@ localized_rules:
     source_title: Willamette National Forest wilderness regulations
     confidence: 0.9
     review_status: accepted
-    seed_review_override: geometry_source_upgrade_2026_05_16
+    seed_review_override: reviewed_lake_basin_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
