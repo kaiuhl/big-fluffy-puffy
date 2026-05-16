@@ -235,21 +235,49 @@ localized_rules:
     duration_type: temporary
     effective_start: "2024-05-01"
     effective_end: "2029-04-30"
-    affected_area: Marion, Ann, Table, Benson, and Tenas lake basins on the Willamette National Forest
-    summary: Campfires are prohibited in named Mt. Jefferson and Mt. Washington lake basins while the Central Cascades order is active.
+    affected_area: Within 1/4 mile of the high-water mark of Marion Lake, Lake Ann, Table Lake, Benson Lake, and Tenas Lakes on the Willamette National Forest
+    summary: Campfires and stove fires, except liquid- or compressed-gas stoves, are prohibited within 1/4 mile of the named Mt. Jefferson and Mt. Washington wilderness lakes while the Central Cascades order is active.
     evidence_quotes:
       - Campfires are prohibited above 5,700 feet and within these lake basins
+      - within ¼ mile of the high water mark
     source_url: https://www.fs.usda.gov/r06/willamette/wilderness
     source_title: Willamette National Forest wilderness regulations
     confidence: 0.9
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: willamette-mt-jefferson-washington-quarter-mile-lake-basin-buffers
+      name: Mt. Jefferson and Mt. Washington named lake 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around official NHD waterbody polygons for Marion Lake, Lake Ann, Table Lake, Benson Lake, and Tenas Lakes.
+      geometry_path: data/fire_restrictions/localized_geometries/willamette-mt-jefferson-washington-quarter-mile-lake-basin-buffers.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        derivation: 1/4-mile buffers around official NHD waterbody polygons
+        official_order_source_url: https://www.fs.usda.gov/media/144510
+        official_rule_source_url: https://www.fs.usda.gov/r06/willamette/wilderness
+        order_number: 06-01-24-01
+        map_exhibits:
+          - Exhibit L
+          - Exhibit M
+        selected_lakes:
+          - Marion Lake
+          - Lake Ann
+          - Table Lake
+          - Benson Lake
+          - Tenas Lakes
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: official_lake_basin_pending
-      geometry_review_note: Official text uses lake basins, not simple lake buffers.
+      geometry_strategy: derived_nhd_waterbody_buffer
+      legal_area_note: The order names lake basins but defines the fire prohibition as within 1/4 mile of the high-water mark.
+      geometry_review_note: Derived from official NHD waterbody polygons after verifying the Central Cascades order text and Exhibits L/M show 1/4-mile lake-buffer areas for the named lakes.
+      geometry_warning: Approximate planning polygons from NHD high-water geometry, not surveyed legal boundaries.
 
   - slug: willamette-jefferson-park-campfire-prohibition
     land_unit_slug: willamette

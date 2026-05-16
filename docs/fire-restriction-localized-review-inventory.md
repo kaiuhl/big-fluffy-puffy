@@ -6,7 +6,7 @@ Checked date: 2026-05-16.
 
 This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Official Forest Service sources were used for accepted Forest Service orders and recreation pages. Mt. Hood wilderness-detail rows use Wilderness Connect pages that the official Mt. Hood fire page links as its year-round wilderness fire-regulation detail source.
 
-The seed uses static generated or digitized geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation, official map exhibit, or official GIS layer is available.
+The seed uses static generated or digitized geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation, official map exhibit, or official GIS layer is available. The Willamette Mt. Jefferson/Mt. Washington lake-basin row is mapped because the order defines those named lake basins as 1/4-mile high-water buffers.
 
 ## Seed Summary
 
@@ -14,8 +14,8 @@ The seed uses static generated or digitized geometry only where the rule shape c
 - High-confidence accepted rules: 32
 - Needs-review rules: 3
 - Primary `source_url` values: 23
-- Generated localized GeoJSON files: 9
-- Approximate NHD waterbody-buffer polygons generated: 61
+- Generated localized GeoJSON files: 10
+- Approximate NHD waterbody-buffer polygons generated: 69
 - Checked date embedded in metadata: 2026-05-16
 
 ## Generated Geometry
@@ -45,6 +45,7 @@ Generated coverage:
 | Mt. Hood Burnt Lake | 1 | none | 1/2-mile approximate buffer |
 | Mt. Hood Wahtum Lake | 1 | none | 200-foot approximate buffer |
 | Gifford Pinchot William O. Douglas Dewey Lakes | 1 | none | 1/4-mile approximate buffer |
+| Willamette Mt. Jefferson/Mt. Washington named lakes | 8 | none | 1/4-mile approximate buffers around Marion Lake, Lake Ann, Table Lake, Benson Lake, and four Tenas Lakes NHD polygons |
 
 ## Priority Coverage
 
@@ -74,6 +75,7 @@ Decision notes:
 - `status` is `year_round` because the restrictions apply as standing non-seasonal localized rules while the order is active.
 - Gas and liquid-fuel stoves are accepted as allowed because the order excepts stoves fueled with liquid or compressed gas.
 - Alcohol stove policy is `unknown` because the order does not specifically name alcohol stoves or a shutoff-valve requirement.
+- The Willamette Mt. Jefferson/Mt. Washington named lake geometry maps the order's "within 1/4 mile of the high water mark" language for Marion Lake, Lake Ann, Table Lake, Benson Lake, and Tenas Lakes. It uses approximate NHD waterbody buffers and was spot-checked against Exhibits L and M.
 - The Jefferson Park page is seeded as a separate permanent campfire prohibition because it explicitly states that campfires are not permitted inside Jefferson Park. Its stove and charcoal fields remain `unknown` because that page does not describe them.
 - The Jefferson Park geometry is hand-digitized from the official Forest Service Jefferson Park Vicinity GeoPDF Fire Ban Area map. The original Forest Service document URL now returns 404, so the archived official PDF is retained as the geometry source. Treat it as an approximate planning polygon, not a surveyed legal boundary.
 

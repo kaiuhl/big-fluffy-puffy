@@ -229,6 +229,21 @@ GROUPS = [
     lakes: [
       {name: "Dewey Lakes", aliases: ["Dewey Lakes", "Dewey Lake"]}
     ]
+  },
+  {
+    slug: "willamette-mt-jefferson-washington-quarter-mile-lake-basin-buffers",
+    title: "Willamette Mt. Jefferson and Mt. Washington named lake basin 1/4-mile campfire buffers",
+    source_url: "https://www.fs.usda.gov/media/144510",
+    radius_miles: 0.25,
+    bbox: [-122.0, 44.18, -121.75, 44.66],
+    center: [-121.87, 44.43],
+    lakes: [
+      "Marion Lake",
+      {name: "Lake Ann", aliases: ["Lake Ann", "Ann Lake"], center: [-121.8714, 44.5718]},
+      "Table Lake",
+      "Benson Lake",
+      {name: "Tenas Lakes", aliases: ["Tenas Lakes"], select_all_features: true}
+    ]
   }
 ].freeze
 
@@ -315,6 +330,22 @@ def best_feature(features, center)
   features
     .filter_map { |feature| [feature, geometry_center(feature.fetch("geometry"))] if feature["geometry"] }
     .min_by { |_feature, point| distance_squared(point, center) }
+end
+
+def all_features(features, center)
+  features
+    .filter_map { |feature| [feature, geometry_center(feature.fetch("geometry"))] if feature["geometry"] }
+    .sort_by { |_feature, point| distance_squared(point, center) }
+end
+
+def selected_features(lake, features, group)
+  center = lake_center(lake, group)
+  if lake.is_a?(Hash) && lake[:select_all_features]
+    return all_features(features, center)
+  end
+
+  best = best_feature(features, center)
+  best ? [best] : []
 end
 
 def geos_factory
@@ -406,20 +437,21 @@ def generated_feature(group)
 
   group.fetch(:lakes).each do |lake|
     features = dedupe_features(lake_aliases(lake).flat_map { |name| query_waterbody(name, group.fetch(:bbox)) })
-    best = best_feature(features, lake_center(lake, group))
+    matches = selected_features(lake, features, group)
 
-    if best
-      feature, center = best
-      selected << {
-        lake_name: lake_name(lake),
-        selected_name: feature.dig("properties", "GNIS_NAME"),
-        permanent_identifier: feature.dig("properties", "PERMANENT_IDENTIFIER"),
-        gnis_id: feature.dig("properties", "GNIS_ID"),
-        area_sq_km: feature.dig("properties", "AREASQKM"),
-        candidate_count: features.length,
-        source_geometry_type: feature.dig("geometry", "type"),
-        buffered_coordinates: buffered_coordinates(factory, feature, radius_meters, center)
-      }
+    if matches.any?
+      matches.each do |feature, center|
+        selected << {
+          lake_name: lake_name(lake),
+          selected_name: feature.dig("properties", "GNIS_NAME"),
+          permanent_identifier: feature.dig("properties", "PERMANENT_IDENTIFIER"),
+          gnis_id: feature.dig("properties", "GNIS_ID"),
+          area_sq_km: feature.dig("properties", "AREASQKM"),
+          candidate_count: features.length,
+          source_geometry_type: feature.dig("geometry", "type"),
+          buffered_coordinates: buffered_coordinates(factory, feature, radius_meters, center)
+        }
+      end
     else
       missing << lake_name(lake)
     end
@@ -449,7 +481,12 @@ end
 
 FileUtils.mkdir_p(OUTPUT_DIR)
 
-GROUPS.each do |group|
+requested_slugs = ENV.fetch("LOCALIZED_GEOMETRY_SLUGS", "").split(",").map(&:strip).reject(&:empty?)
+groups = requested_slugs.empty? ? GROUPS : GROUPS.select { |group| requested_slugs.include?(group.fetch(:slug)) }
+missing_slugs = requested_slugs - groups.map { |group| group.fetch(:slug) }
+raise "Unknown localized geometry slug(s): #{missing_slugs.join(", ")}" if missing_slugs.any?
+
+groups.each do |group|
   feature = generated_feature(group)
   path = File.join(OUTPUT_DIR, "#{group.fetch(:slug)}.geojson")
   File.write(path, "#{JSON.pretty_generate(feature)}\n")

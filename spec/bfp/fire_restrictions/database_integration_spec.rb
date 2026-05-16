@@ -112,6 +112,15 @@ RSpec.describe "fire restriction database integration", :db do
     )
     expect(jefferson_park.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
 
+    lake_basins = willamette_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "willamette-mt-jefferson-washington-lake-basins-fire-prohibition" }
+    expect(lake_basins).to include(
+      status: "year_round",
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_nhd_waterbody_buffer"
+    )
+    expect(lake_basins.dig(:geometry_provenance, "selected_lakes")).to include("Marion Lake", "Lake Ann", "Table Lake", "Benson Lake", "Tenas Lakes")
+
     waldo_islands = willamette_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "willamette-waldo-lake-islands-campfire-prohibition" }
     expect(waldo_islands).to include(
       campfire_policy: "prohibited",

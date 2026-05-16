@@ -15,6 +15,10 @@ The generator uses RGeo/GEOS to buffer official NHD waterbody polygons. Current
 files are not legal closure boundaries. The app labels them as approximate and
 links back to the official rule source.
 
+The Willamette Mt. Jefferson/Mt. Washington named-lake file uses that same NHD
+waterbody-buffer pattern, with `select_all_features` for Tenas Lakes so every
+matching NHD polygon in the lake cluster is buffered.
+
 The elevation-band generator uses USFS EDW wilderness boundaries, BFP's cached
 forest boundaries, and the PRISM 800m DEM cached by `scripts/climate/build_normals.py`.
 It produces approximate planning polygons for rules such as "above 5,700 feet";
