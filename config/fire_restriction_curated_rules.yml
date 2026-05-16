@@ -394,9 +394,9 @@ localized_rules:
       slug: mt-hood-burnt-lake-half-mile-campfire-buffer
       name: Burnt Lake 1/2-mile campfire buffer
       area_type: named_area
-      area_description: Approximate 1/2-mile buffer around the NHD Burnt Lake waterbody centroid.
+      area_description: Approximate 1/2-mile buffer around the NHD Burnt Lake waterbody polygon.
       geometry_path: data/fire_restrictions/localized_geometries/mt-hood-burnt-lake-half-mile-campfire-buffer.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -406,8 +406,8 @@ localized_rules:
         linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
-      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+      geometry_strategy: derived_nhd_waterbody_buffer
+      geometry_warning: Approximate buffer around selected NHD lake polygon, not a surveyed closure boundary.
 
   - slug: mt-hood-mark-o-hatfield-wahtum-lake-campfire-prohibition
     land_unit_slug: mt-hood
@@ -431,9 +431,9 @@ localized_rules:
       slug: mt-hood-wahtum-lake-200-foot-campfire-buffer
       name: Wahtum Lake 200-foot campfire buffer
       area_type: named_area
-      area_description: Approximate 200-foot buffer around the NHD Wahtum Lake waterbody centroid.
+      area_description: Approximate 200-foot buffer around the NHD Wahtum Lake waterbody polygon.
       geometry_path: data/fire_restrictions/localized_geometries/mt-hood-wahtum-lake-200-foot-campfire-buffer.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -443,9 +443,9 @@ localized_rules:
         linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
       cross_unit_note: Mark O. Hatfield Wilderness spans Mt. Hood and Columbia River Gorge administration; BFP has no Columbia River Gorge land unit yet.
-      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+      geometry_warning: Approximate buffer around selected NHD lake polygon, not a surveyed closure boundary.
 
   - slug: mt-hood-mark-o-hatfield-eagle-creek-trail-campfire-prohibition
     land_unit_slug: mt-hood
@@ -542,9 +542,9 @@ localized_rules:
       slug: okanogan-wenatchee-alpine-lakes-half-mile-named-lakes
       name: Alpine Lakes named lake 1/2-mile campfire buffers
       area_type: named_area
-      area_description: Approximate 1/2-mile buffers around NHD waterbody centroids for the listed Alpine Lakes Wilderness lakes.
+      area_description: Approximate 1/2-mile buffers around NHD waterbody polygons for the listed Alpine Lakes Wilderness lakes.
       geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-alpine-lakes-half-mile-named-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -554,8 +554,8 @@ localized_rules:
         review_note: Upper Park Lake did not resolve cleanly in NHD and is not represented in the generated shape.
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
-      geometry_warning: Approximate circles around selected NHD lake centroids, not surveyed closure boundaries.
+      geometry_strategy: derived_nhd_waterbody_buffer
+      geometry_warning: Approximate buffers around selected NHD lake polygons, not surveyed closure boundaries.
 
   - slug: okanogan-wenatchee-henry-jackson-named-lakes-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
@@ -579,9 +579,9 @@ localized_rules:
       slug: okanogan-wenatchee-henry-jackson-quarter-mile-named-lakes
       name: Henry M. Jackson named lake 1/4-mile campfire buffers
       area_type: named_area
-      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for the listed Henry M. Jackson Wilderness lakes.
+      area_description: Approximate 1/4-mile buffers around NHD waterbody polygons for the listed Henry M. Jackson Wilderness lakes.
       geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-henry-jackson-quarter-mile-named-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -590,7 +590,7 @@ localized_rules:
         official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
 
   - slug: okanogan-wenatchee-glacier-peak-lake-buffers-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
@@ -616,7 +616,7 @@ localized_rules:
       area_type: named_area
       area_description: Approximate 1/2-mile buffer around the NHD Ice Lakes waterbody feature.
       geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-glacier-peak-half-mile-ice-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -625,7 +625,7 @@ localized_rules:
         official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
 
   - slug: okanogan-wenatchee-glacier-peak-lime-ridge-4000-ft-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
@@ -671,9 +671,9 @@ localized_rules:
       slug: okanogan-wenatchee-william-o-douglas-quarter-mile-named-lakes
       name: William O. Douglas named lake 1/4-mile campfire buffers
       area_type: named_area
-      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for Dewey Lake and Goat Lake.
+      area_description: Approximate 1/4-mile buffers around NHD waterbody polygons for Dewey Lake and Goat Lake.
       geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-william-o-douglas-quarter-mile-named-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -682,7 +682,7 @@ localized_rules:
         official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
 
   - slug: okanogan-wenatchee-goat-rocks-shoe-snowgrass-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
@@ -729,9 +729,9 @@ localized_rules:
       slug: wallowa-whitman-eagle-cap-quarter-mile-named-lakes
       name: Eagle Cap named lake 1/4-mile campfire buffers
       area_type: named_area
-      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for the listed Eagle Cap Wilderness lakes.
+      area_description: Approximate 1/4-mile buffers around NHD waterbody polygons for the listed Eagle Cap Wilderness lakes.
       geometry_path: data/fire_restrictions/localized_geometries/wallowa-whitman-eagle-cap-quarter-mile-named-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -740,7 +740,7 @@ localized_rules:
         official_rule_source_url: https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
 
   - slug: klamath-trinity-alps-campfire-prohibition-areas
     land_unit_slug: klamath
@@ -892,9 +892,9 @@ localized_rules:
       slug: gifford-pinchot-goat-rocks-quarter-mile-named-lakes
       name: Goat Rocks named lake campfire buffer candidates
       area_type: named_area
-      area_description: Approximate NHD centroid buffers for Goat Lake and Shoe Lake. Snowgrass Flats and Dana Yelverton Shelter are not represented.
+      area_description: Approximate NHD waterbody polygon buffers for Goat Lake and Shoe Lake. Snowgrass Flats and Dana Yelverton Shelter are not represented.
       geometry_path: data/fire_restrictions/localized_geometries/gifford-pinchot-goat-rocks-quarter-mile-named-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -904,7 +904,7 @@ localized_rules:
         review_note: Generated geometry is partial; Snowgrass Flats and Dana Yelverton Shelter need separate official/manual geometry.
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer_partial
+      geometry_strategy: derived_nhd_waterbody_buffer_partial
 
   - slug: gifford-pinchot-tatoosh-lakes-basin-campfire-prohibition
     land_unit_slug: gifford-pinchot
@@ -951,9 +951,9 @@ localized_rules:
       slug: gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes
       name: William O. Douglas Dewey Lakes 1/4-mile campfire buffer
       area_type: named_area
-      area_description: Approximate 1/4-mile buffer around the NHD Dewey Lakes waterbody centroid.
+      area_description: Approximate 1/4-mile buffer around the NHD Dewey Lakes waterbody polygon.
       geometry_path: data/fire_restrictions/localized_geometries/gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes.geojson
-      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_type: derived_nhd_waterbody_buffer
       geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
       geometry_acquired_at: "2026-05-16T00:00:00Z"
       geometry_provenance_json:
@@ -962,9 +962,9 @@ localized_rules:
         official_rule_source_url: https://www.fs.usda.gov/media/151852
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_strategy: derived_nhd_waterbody_buffer
       cross_unit_note: The order covers Gifford Pinchot and Wenatchee units; this row publishes the Gifford Pinchot-facing rule.
-      geometry_warning: Approximate circle around selected NHD lake centroid, not a surveyed closure boundary.
+      geometry_warning: Approximate buffer around selected NHD lake polygon, not a surveyed closure boundary.
 
   - slug: gifford-pinchot-drift-creek-cove-fire-prohibition
     land_unit_slug: gifford-pinchot

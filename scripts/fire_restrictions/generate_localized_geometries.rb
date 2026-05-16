@@ -4,6 +4,7 @@
 require "fileutils"
 require "json"
 require "net/http"
+require "rgeo"
 require "time"
 require "uri"
 
@@ -11,7 +12,8 @@ ROOT = File.expand_path("../..", __dir__)
 OUTPUT_DIR = File.join(ROOT, "data/fire_restrictions/localized_geometries")
 NHD_WATERBODY_QUERY_URL = "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12/query"
 METERS_PER_MILE = 1609.344
-METERS_PER_DEGREE_LATITUDE = 111_320.0
+EARTH_RADIUS_METERS = 6_378_137.0
+BUFFER_RESOLUTION = 12
 
 GROUPS = [
   {
@@ -219,7 +221,7 @@ def coordinate_pairs(value, pairs = [])
   pairs
 end
 
-def centroid(geometry)
+def geometry_center(geometry)
   pairs = coordinate_pairs(geometry.fetch("coordinates", []))
   return unless pairs.any?
 
@@ -243,27 +245,93 @@ end
 
 def best_feature(features, center)
   features
-    .filter_map { |feature| [feature, centroid(feature.fetch("geometry"))] if feature["geometry"] }
+    .filter_map { |feature| [feature, geometry_center(feature.fetch("geometry"))] if feature["geometry"] }
     .min_by { |_feature, point| distance_squared(point, center) }
 end
 
-def circle_ring(center, radius_meters, segments: 72)
-  lon, lat = center
-  lat_radius = radius_meters / METERS_PER_DEGREE_LATITUDE
-  lon_radius = radius_meters / (METERS_PER_DEGREE_LATITUDE * Math.cos(lat * Math::PI / 180.0))
+def geos_factory
+  raise "RGeo GEOS support is required. Install GEOS before running this script." unless RGeo::Geos.supported?
 
-  ring = (0...segments).map do |index|
-    angle = (2.0 * Math::PI * index) / segments
-    [
-      (lon + (Math.cos(angle) * lon_radius)).round(6),
-      (lat + (Math.sin(angle) * lat_radius)).round(6)
-    ]
+  RGeo::Geos.factory(buffer_resolution: BUFFER_RESOLUTION)
+end
+
+def project_coordinate(lon, lat, origin)
+  origin_lon, origin_lat = origin
+  origin_lat_radians = origin_lat * Math::PI / 180.0
+
+  [
+    (lon - origin_lon) * Math::PI / 180.0 * EARTH_RADIUS_METERS * Math.cos(origin_lat_radians),
+    (lat - origin_lat) * Math::PI / 180.0 * EARTH_RADIUS_METERS
+  ]
+end
+
+def unproject_coordinate(x, y, origin)
+  origin_lon, origin_lat = origin
+  origin_lat_radians = origin_lat * Math::PI / 180.0
+
+  [
+    (origin_lon + (x / (EARTH_RADIUS_METERS * Math.cos(origin_lat_radians)) * 180.0 / Math::PI)).round(6),
+    (origin_lat + (y / EARTH_RADIUS_METERS * 180.0 / Math::PI)).round(6)
+  ]
+end
+
+def ring_points(factory, coordinates, origin)
+  pairs = coordinates.map { |coordinate| [coordinate[0].to_f, coordinate[1].to_f] }
+  pairs << pairs.first unless pairs.first == pairs.last
+
+  pairs.map do |lon, lat|
+    x, y = project_coordinate(lon, lat, origin)
+    factory.point(x, y)
   end
-  ring << ring.first
-  ring
+end
+
+def polygon_from_coordinates(factory, coordinates, origin)
+  exterior = factory.linear_ring(ring_points(factory, coordinates.fetch(0), origin))
+  interiors = coordinates.drop(1).map { |ring| factory.linear_ring(ring_points(factory, ring, origin)) }
+
+  factory.polygon(exterior, interiors)
+end
+
+def geometry_from_geojson(factory, geometry, origin)
+  case geometry.fetch("type")
+  when "Polygon"
+    polygon_from_coordinates(factory, geometry.fetch("coordinates"), origin)
+  when "MultiPolygon"
+    factory.multi_polygon(
+      geometry.fetch("coordinates").map { |coordinates| polygon_from_coordinates(factory, coordinates, origin) }
+    )
+  else
+    raise "Unsupported NHD waterbody geometry type: #{geometry.fetch("type")}"
+  end
+end
+
+def polygon_coordinates(polygon, origin)
+  rings = [polygon.exterior_ring] + polygon.interior_rings
+  rings.map do |ring|
+    ring.points.map { |point| unproject_coordinate(point.x, point.y, origin) }
+  end
+end
+
+def multipolygon_coordinates(geometry, origin)
+  case geometry.geometry_type.type_name
+  when "Polygon"
+    [polygon_coordinates(geometry, origin)]
+  when "MultiPolygon"
+    geometry.flat_map { |polygon| multipolygon_coordinates(polygon, origin) }
+  when "GeometryCollection"
+    geometry.flat_map { |part| multipolygon_coordinates(part, origin) }
+  else
+    []
+  end
+end
+
+def buffered_coordinates(factory, feature, radius_meters, origin)
+  geometry = geometry_from_geojson(factory, feature.fetch("geometry"), origin)
+  multipolygon_coordinates(geometry.buffer(radius_meters), origin)
 end
 
 def generated_feature(group)
+  factory = geos_factory
   radius_meters = group.fetch(:radius_miles) * METERS_PER_MILE
   selected = []
   missing = []
@@ -281,7 +349,8 @@ def generated_feature(group)
         gnis_id: feature.dig("properties", "GNIS_ID"),
         area_sq_km: feature.dig("properties", "AREASQKM"),
         candidate_count: features.length,
-        center: center
+        source_geometry_type: feature.dig("geometry", "type"),
+        buffered_coordinates: buffered_coordinates(factory, feature, radius_meters, center)
       }
     else
       missing << lake_name(lake)
@@ -294,18 +363,18 @@ def generated_feature(group)
       "slug" => group.fetch(:slug),
       "title" => group.fetch(:title),
       "generated_at" => Time.now.utc.iso8601,
-      "geometry_source_type" => "derived_nhd_centroid_buffer",
+      "geometry_source_type" => "derived_nhd_waterbody_buffer",
       "geometry_accuracy" => "approximate",
       "buffer_radius_miles" => group.fetch(:radius_miles),
       "source_url" => group.fetch(:source_url),
       "nhd_layer_url" => "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12",
-      "selected_lakes" => selected.map { |lake| lake.except(:center) },
+      "selected_lakes" => selected.map { |lake| lake.except(:buffered_coordinates) },
       "missing_lakes" => missing,
-      "notes" => "Derived from official NHD waterbody centroids; buffers are approximate and require reviewer spot checks before relying on exact boundaries."
+      "notes" => "Derived from official NHD waterbody polygons; buffers are approximate and require reviewer spot checks before relying on exact boundaries."
     },
     "geometry" => {
       "type" => "MultiPolygon",
-      "coordinates" => selected.map { |lake| [circle_ring(lake.fetch(:center), radius_meters)] }
+      "coordinates" => selected.flat_map { |lake| lake.fetch(:buffered_coordinates) }
     }
   }
 end

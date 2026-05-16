@@ -9,6 +9,6 @@ Generate them with:
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_localized_geometries.rb
 ```
 
-Current files are approximate buffers around official NHD waterbody centroids,
-not legal closure boundaries. The app labels them as approximate and links back
-to the official rule source.
+The generator uses RGeo/GEOS to buffer official NHD waterbody polygons. Current
+files are not legal closure boundaries. The app labels them as approximate and
+links back to the official rule source.

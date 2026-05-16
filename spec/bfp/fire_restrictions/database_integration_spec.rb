@@ -94,7 +94,7 @@ RSpec.describe "fire restriction database integration", :db do
       status: "year_round",
       campfire_policy: "prohibited",
       mapped: true,
-      geometry_source_type: "derived_nhd_centroid_buffer"
+      geometry_source_type: "derived_nhd_waterbody_buffer"
     )
     expect(eagle_cap.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
 
@@ -120,7 +120,7 @@ RSpec.describe "fire restriction database integration", :db do
     expect(burnt_lake).to include(
       campfire_policy: "prohibited",
       mapped: true,
-      geometry_source_type: "derived_nhd_centroid_buffer"
+      geometry_source_type: "derived_nhd_waterbody_buffer"
     )
 
     gifford_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("gifford-pinchot")
@@ -128,7 +128,7 @@ RSpec.describe "fire restriction database integration", :db do
     expect(dewey_lakes).to include(
       campfire_policy: "prohibited",
       mapped: true,
-      geometry_source_type: "derived_nhd_centroid_buffer"
+      geometry_source_type: "derived_nhd_waterbody_buffer"
     )
 
     siuslaw_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("siuslaw")

@@ -6,7 +6,7 @@ Checked date: 2026-05-16.
 
 This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Official Forest Service sources were used for accepted Forest Service orders and recreation pages. Mt. Hood wilderness-detail rows use Wilderness Connect pages that the official Mt. Hood fire page links as its year-round wilderness fire-regulation detail source.
 
-The seed uses static generated geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated shapes are approximate lake-buffer circles derived from official NHD waterbody centroids. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation or official GIS layer is available.
+The seed uses static generated geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation or official GIS layer is available.
 
 ## Seed Summary
 
@@ -15,7 +15,7 @@ The seed uses static generated geometry only where the rule shape can be represe
 - Needs-review rules: 3
 - Primary `source_url` values: 23
 - Generated localized GeoJSON files: 9
-- Approximate NHD centroid-buffer polygons generated: 61
+- Approximate NHD waterbody-buffer polygons generated: 61
 - Checked date embedded in metadata: 2026-05-16
 
 ## Generated Geometry
@@ -26,7 +26,9 @@ Generated files live in `data/fire_restrictions/localized_geometries/` and are c
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_localized_geometries.rb
 ```
 
-Generated geometries are intentionally labeled `derived_nhd_centroid_buffer` with `geometry_accuracy: approximate`.
+The generator uses RGeo/GEOS and requires the GEOS system library. Docker installs `libgeos-dev` for parity with local generation.
+
+Generated geometries are intentionally labeled `derived_nhd_waterbody_buffer` with `geometry_accuracy: approximate`.
 They are good enough to show "roughly where this named lake buffer is" and not good enough to treat as official legal boundaries.
 
 Generated coverage:
@@ -110,7 +112,7 @@ Primary sources:
 
 Decision notes:
 
-- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD centroid buffers.
+- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers.
 - Bull Run, Cedar Creek, Beachie/Lionshead, Mount St. Helens, and snowy plover rows are closure/status rows. Where access is prohibited, BFP marks campfire policy as prohibited and records that the campfire policy is inferred from the active access closure rather than from a campfire-only order.
 - Beachie/Lionshead is active on the checked date but expires on 2026-05-21; it is due for immediate post-expiration review.
 - The Siuslaw snowy plover row is a 2026 seasonal closure from 2026-03-15 through 2026-09-15. It should be refreshed from the current year's order before the 2027 nesting season.
@@ -221,7 +223,7 @@ Decision notes:
 - Mt. Adams, Goat Rocks named areas, and Tatoosh Lakes Basin have direct official evidence.
 - The seed uses the narrower Goat Rocks named prohibitions from the regulations/order rather than the broader recreation-page "No campfires" wording, because the broad wording conflicts with the narrower order text.
 - Mt. Adams is accepted as text-supported but uses `named_area_manual_review` because the boundary is described by trails and forest boundaries rather than coordinates.
-- Dewey Lakes is mapped as an approximate NHD centroid buffer because the order states a 1/4-mile shoreline buffer, but BFP has not derived a true shoreline polygon buffer.
+- Dewey Lakes is mapped as an approximate NHD waterbody buffer because the order states a 1/4-mile shoreline buffer. The generated shape buffers the NHD waterbody polygon, not an official legal exhibit.
 - Drift Creek Cove and Mount St. Helens are accepted as active temporary orders with official exhibit geometry pending.
 
 ## Source URLs
@@ -264,8 +266,8 @@ Related official URLs captured in metadata or review notes:
 - Central Cascades: The joint order is strong, but it expires on 2029-04-30 unless extended or rescinded earlier. Annual review is still needed.
 - Central Cascades: Alcohol stove policy is unresolved. The order excepts liquid-fuel stoves but does not specifically identify alcohol stoves or shutoff-valve requirements.
 - Okanogan-Wenatchee: Several official pages state only campfire prohibitions. Stove and charcoal policy fields are therefore `unknown` unless the source explicitly provides an exception.
-- Okanogan-Wenatchee: Named lake buffers are generated as approximate NHD centroid buffers. Upper Park Lake did not resolve cleanly in NHD and remains unmapped.
-- Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD centroid buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
+- Okanogan-Wenatchee: Named lake buffers are generated as approximate NHD waterbody buffers. Upper Park Lake did not resolve cleanly in NHD and remains unmapped.
+- Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD waterbody buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
 - Mt. Hood: Wilderness Connect is used for some Mt. Hood and Mark O. Hatfield rows because the official Mt. Hood fire page links it as the detail source for year-round wilderness fire rules. Keep that provenance visible.

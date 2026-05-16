@@ -14,6 +14,8 @@ gem "dotenv", "~> 3.1"
 gem "nokogiri", "~> 1.18"
 gem "pdf-reader", "~> 2.14"
 gem "rake", "~> 13.2"
+gem "rgeo", "~> 3.0"
+gem "ffi-geos", "~> 2.5"
 
 group :development, :test do
   gem "rspec", "~> 3.13"
