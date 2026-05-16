@@ -38,7 +38,7 @@ module BFP
         area = rule.restriction_area
         source = rule.restriction_source
         fetch = rule.source_fetch
-        geometry = rule.geometry_json || area&.geometry_json
+        geometry = json_hash(rule.geometry_json || area&.geometry_json)
         geometry_source_type = rule.geometry_source_type || area&.geometry_source_type || "none"
 
         {
@@ -74,7 +74,7 @@ module BFP
           geometry_json: geometry,
           mapped: geojson_geometry?(geometry),
           geometry_source_type: geometry_source_type,
-          geometry_provenance: area&.geometry_provenance_json || {},
+          geometry_provenance: json_hash(area&.geometry_provenance_json) || {},
           next_review_due_on: rule.next_review_due_on&.iso8601
         }
       end
@@ -107,9 +107,10 @@ module BFP
       end
 
       def geojson_geometry?(geometry)
-        geometry.is_a?(Hash) &&
+        geometry = json_hash(geometry)
+        !!(geometry.is_a?(Hash) &&
           (geometry["type"] || geometry[:type]).to_s != "" &&
-          (geometry["coordinates"] || geometry[:coordinates])
+          (geometry["coordinates"] || geometry[:coordinates]))
       end
 
       def json_array(value)
@@ -118,6 +119,13 @@ module BFP
         return value.to_a if value.respond_to?(:to_a)
 
         [value]
+      end
+
+      def json_hash(value)
+        return if value.nil?
+        return value.to_hash if value.respond_to?(:to_hash)
+
+        value
       end
     end
   end

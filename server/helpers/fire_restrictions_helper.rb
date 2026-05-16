@@ -156,6 +156,21 @@ module FireRestrictionsHelper
     BFP::FireRestrictions::StatusDisplay.duration_label(rule)
   end
 
+  def geometry_label(rule)
+    return "Not mapped" unless rule[:mapped]
+
+    label = labelize(rule[:geometry_source_type])
+    approximate_geometry?(rule) ? "Approximate #{label}" : "Mapped from #{label}"
+  end
+
+  def approximate_geometry?(rule)
+    provenance = rule[:geometry_provenance] || {}
+    source_type = rule[:geometry_source_type].to_s
+    accuracy = provenance["geometry_accuracy"] || provenance[:geometry_accuracy]
+
+    accuracy.to_s == "approximate" || source_type.start_with?("derived_")
+  end
+
   def labelize(value)
     value.to_s.tr("_", " ").split.map(&:capitalize).join(" ")
   end

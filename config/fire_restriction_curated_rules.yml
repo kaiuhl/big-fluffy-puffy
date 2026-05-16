@@ -1,1 +1,609 @@
-localized_rules: []
+localized_rules:
+  - slug: deschutes-central-cascades-5700-ft-fire-prohibition
+    land_unit_slug: deschutes
+    title: Central Cascades wilderness campfire prohibition above 5700 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Mt. Jefferson, Mt. Washington, and Three Sisters wilderness areas above 5700 feet on the Deschutes National Forest
+    summary: Campfires are prohibited above 5700 feet in the Deschutes portions of the Mt. Jefferson, Mt. Washington, and Three Sisters wilderness areas while the Central Cascades order is active.
+    evidence_quotes:
+      - Campfires are prohibited above 5,700 ft. in Wilderness within the Deschutes National Forest
+    source_url: https://www.fs.usda.gov/media/144510
+    source_title: Central Cascades Wilderness fire prohibition order
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+      geometry_review_note: Elevation-derived polygons are not generated yet.
+
+  - slug: willamette-central-cascades-5700-ft-fire-prohibition
+    land_unit_slug: willamette
+    title: Central Cascades wilderness campfire prohibition above 5700 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Mt. Jefferson, Mt. Washington, and Three Sisters wilderness areas above 5700 feet on the Willamette National Forest
+    summary: Campfires are prohibited above 5700 feet in the Willamette portions of the Mt. Jefferson, Mt. Washington, and Three Sisters wilderness areas while the Central Cascades order is active.
+    evidence_quotes:
+      - Campfires are prohibited above 5,700 ft. in Wilderness within the Willamette National Forest
+    source_url: https://www.fs.usda.gov/media/144510
+    source_title: Central Cascades Wilderness fire prohibition order
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+      geometry_review_note: Elevation-derived polygons are not generated yet.
+
+  - slug: deschutes-diamond-peak-6000-ft-fire-prohibition
+    land_unit_slug: deschutes
+    title: Diamond Peak Wilderness campfire prohibition above 6000 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Diamond Peak Wilderness above 6000 feet on the Deschutes National Forest
+    summary: Campfires are prohibited above 6000 feet in the Deschutes portion of Diamond Peak Wilderness while the Central Cascades order is active.
+    evidence_quotes:
+      - Diamond Peak Wilderness, where campfires are prohibited above 6,000 ft
+    source_url: https://www.fs.usda.gov/media/144510
+    source_title: Central Cascades Wilderness fire prohibition order
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+
+  - slug: willamette-diamond-peak-6000-ft-fire-prohibition
+    land_unit_slug: willamette
+    title: Diamond Peak Wilderness campfire prohibition above 6000 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Diamond Peak Wilderness above 6000 feet on the Willamette National Forest
+    summary: Campfires are prohibited above 6000 feet in the Willamette portion of Diamond Peak Wilderness while the Central Cascades order is active.
+    evidence_quotes:
+      - Diamond Peak Wilderness, where campfires are prohibited above 6,000 ft
+    source_url: https://www.fs.usda.gov/media/144510
+    source_title: Central Cascades Wilderness fire prohibition order
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+
+  - slug: deschutes-mt-jefferson-washington-lake-basins-fire-prohibition
+    land_unit_slug: deschutes
+    title: Mt. Jefferson and Mt. Washington lake basin campfire prohibitions
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Marion, Ann, Table, Benson, and Tenas lake basins on the Deschutes National Forest
+    summary: Campfires are prohibited in named Mt. Jefferson and Mt. Washington lake basins while the Central Cascades order is active.
+    evidence_quotes:
+      - Campfires are prohibited above 5,700 feet and within these lake basins
+    source_url: https://www.fs.usda.gov/r06/deschutes/wilderness
+    source_title: Deschutes National Forest wilderness regulations
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_lake_basin_pending
+      geometry_review_note: Official text uses lake basins, not simple lake buffers.
+
+  - slug: willamette-mt-jefferson-washington-lake-basins-fire-prohibition
+    land_unit_slug: willamette
+    title: Mt. Jefferson and Mt. Washington lake basin campfire prohibitions
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2024-05-01"
+    effective_end: "2029-04-30"
+    affected_area: Marion, Ann, Table, Benson, and Tenas lake basins on the Willamette National Forest
+    summary: Campfires are prohibited in named Mt. Jefferson and Mt. Washington lake basins while the Central Cascades order is active.
+    evidence_quotes:
+      - Campfires are prohibited above 5,700 feet and within these lake basins
+    source_url: https://www.fs.usda.gov/r06/willamette/wilderness
+    source_title: Willamette National Forest wilderness regulations
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_lake_basin_pending
+      geometry_review_note: Official text uses lake basins, not simple lake buffers.
+
+  - slug: okanogan-wenatchee-alpine-lakes-5000-ft-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Alpine Lakes Wilderness campfire prohibition above 5000 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Alpine Lakes Wilderness above 5000 feet on the Okanogan-Wenatchee National Forest
+    summary: Campfires are never allowed above 5000 feet in the Okanogan-Wenatchee portion of Alpine Lakes Wilderness.
+    evidence_quotes:
+      - Above 5,000 feet elevation in the Alpine Lakes Wilderness on the Okanogan-Wenatchee National Forest
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+
+  - slug: okanogan-wenatchee-alpine-lakes-named-lakes-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Alpine Lakes Wilderness named lake campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Named Alpine Lakes Wilderness lake buffers on the Wenatchee River and Cle Elum Ranger Districts
+    summary: Campfires are never allowed within 1/2 mile of listed Alpine Lakes Wilderness lakes on the Okanogan-Wenatchee National Forest.
+    evidence_quotes:
+      - Within 1/2 mile of the following lakes in the Alpine Lakes Wilderness area
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-alpine-lakes-half-mile-named-lakes
+      name: Alpine Lakes named lake 1/2-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/2-mile buffers around NHD waterbody centroids for the listed Alpine Lakes Wilderness lakes.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-alpine-lakes-half-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+        review_note: Upper Park Lake did not resolve cleanly in NHD and is not represented in the generated shape.
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+      geometry_warning: Approximate circles around selected NHD lake centroids, not surveyed closure boundaries.
+
+  - slug: okanogan-wenatchee-henry-jackson-named-lakes-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Henry M. Jackson Wilderness named lake campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Named Henry M. Jackson Wilderness lake buffers
+    summary: Campfires are never allowed within 1/4 mile of Sally Ann, Minotaur, Theseus, Heather, Glasses, and Valhalla lakes.
+    evidence_quotes:
+      - Within 1/4 mile of the following lakes in the Henry M. Jackson Wilderness area
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-henry-jackson-quarter-mile-named-lakes
+      name: Henry M. Jackson named lake 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for the listed Henry M. Jackson Wilderness lakes.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-henry-jackson-quarter-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+
+  - slug: okanogan-wenatchee-glacier-peak-lake-buffers-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Glacier Peak Wilderness Ice Lakes campfire buffer
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Ice Lakes in the Glacier Peak Wilderness on the Entiat Ranger District
+    summary: Campfires are never allowed within 1/2 mile of Ice Lakes in the Glacier Peak Wilderness on the Entiat Ranger District.
+    evidence_quotes:
+      - Within 1/2 mile of the following lakes in the Glacier Peak Wilderness area on the Entiat Ranger District
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-glacier-peak-half-mile-ice-lakes
+      name: Glacier Peak Ice Lakes 1/2-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/2-mile buffer around the NHD Ice Lakes waterbody feature.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-glacier-peak-half-mile-ice-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+
+  - slug: okanogan-wenatchee-glacier-peak-lime-ridge-4000-ft-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Lime Ridge campfire prohibition above 4000 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Lime Ridge in the Glacier Peak Wilderness above 4000 feet
+    summary: Campfires are never allowed above 4000 feet on Lime Ridge in the Glacier Peak Wilderness.
+    evidence_quotes:
+      - Campfires are prohibited above 4000 feet on Lime Ridge
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee
+    source_title: Glacier Peak Wilderness Okanogan-Wenatchee page
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+
+  - slug: okanogan-wenatchee-william-o-douglas-named-lakes-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: William O. Douglas Wilderness named lake campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Dewey Lake and Goat Lake in the William O. Douglas Wilderness
+    summary: Campfires are never allowed within 1/4 mile of Dewey Lake and Goat Lake in the William O. Douglas Wilderness.
+    evidence_quotes:
+      - Within 1/4 mile of the following lakes in the William O. Douglas Wilderness
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-william-o-douglas-quarter-mile-named-lakes
+      name: William O. Douglas named lake 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for Dewey Lake and Goat Lake.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-william-o-douglas-quarter-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+
+  - slug: okanogan-wenatchee-goat-rocks-shoe-snowgrass-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Goat Rocks Wilderness Shoe Lake Basin and Snowgrass Flats campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Shoe Lake Basin and Snowgrass Flats in Goat Rocks Wilderness
+    summary: Campfires are never allowed in Shoe Lake Basin and Snowgrass Flats in the Goat Rocks Wilderness.
+    evidence_quotes:
+      - Within these areas of Goat Rocks Wilderness
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+    source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
+    confidence: 0.82
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: named_area_manual_review
+      geometry_review_note: Snowgrass Flats and Shoe Lake Basin need official/manual geometry before mapping.
+
+  - slug: wallowa-whitman-eagle-cap-named-lakes-campfire-prohibition
+    land_unit_slug: wallowa-whitman
+    title: Eagle Cap Wilderness named lake campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Named Eagle Cap Wilderness lakes with 1/4-mile campfire buffers
+    summary: Campfires are prohibited within 1/4 mile of the listed Eagle Cap Wilderness lakes.
+    evidence_quotes:
+      - Campfires prohibited within 1/4 mile of the following lakes
+    source_url: https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
+    source_title: Eagle Cap Wilderness regulations
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: wallowa-whitman-eagle-cap-quarter-mile-named-lakes
+      name: Eagle Cap named lake 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around NHD waterbody centroids for the listed Eagle Cap Wilderness lakes.
+      geometry_path: data/fire_restrictions/localized_geometries/wallowa-whitman-eagle-cap-quarter-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer
+
+  - slug: klamath-trinity-alps-campfire-prohibition-areas
+    land_unit_slug: klamath
+    title: Trinity Alps Wilderness Campfire Prohibition Areas
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2025-09-19"
+    effective_end: "2028-09-19"
+    affected_area: Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 on the Klamath National Forest
+    summary: Campfires are prohibited in Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 while Forest Order 14-25-03 is active.
+    evidence_quotes:
+      - Campfire Prohibition Areas 1, 2 and 3
+    source_url: https://www.fs.usda.gov/r05/klamath/alerts/trinity-alps-wilderness-area-restrictions
+    source_title: Trinity Alps Wilderness Area restrictions
+    confidence: 0.74
+    review_status: needs_review
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-06-15"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      review_note: Active order is clear, but Exhibit B geometry is not represented yet.
+
+  - slug: shasta-trinity-trinity-alps-campfire-prohibition-areas
+    land_unit_slug: shasta-trinity
+    title: Trinity Alps Wilderness Campfire Prohibition Areas
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2025-09-19"
+    effective_end: "2028-09-19"
+    affected_area: Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 on the Shasta-Trinity National Forest
+    summary: Campfires are prohibited in Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 while Forest Order 14-25-03 is active.
+    evidence_quotes:
+      - Campfire Prohibition Areas 1, 2 and 3
+    source_url: https://www.fs.usda.gov/r05/shasta-trinity/alerts/trinity-alps-wilderness-area-restrictions
+    source_title: Trinity Alps Wilderness Area restrictions
+    confidence: 0.74
+    review_status: needs_review
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-06-15"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      review_note: Active order is clear, but Exhibit B geometry is not represented yet.
+
+  - slug: six-rivers-trinity-alps-campfire-prohibition-areas
+    land_unit_slug: six-rivers
+    title: Trinity Alps Wilderness Campfire Prohibition Areas
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2025-09-19"
+    effective_end: "2028-09-19"
+    affected_area: Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 on the Six Rivers National Forest
+    summary: Campfires are prohibited in Trinity Alps Wilderness Campfire Prohibition Areas 1, 2, and 3 while Forest Order 14-25-03 is active.
+    evidence_quotes:
+      - Campfire Prohibition Areas 1, 2 and 3
+    source_url: https://www.fs.usda.gov/r05/sixrivers/alerts/trinity-wilderness-area-restrictions
+    source_title: Trinity Wilderness Area restrictions
+    confidence: 0.74
+    review_status: needs_review
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-06-15"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      review_note: Active order is clear, but Exhibit B geometry is not represented yet.
+
+  - slug: olympic-wilderness-3500-ft-open-fire-prohibition
+    land_unit_slug: olympic
+    title: Olympic Wilderness open fire prohibition above 3500 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: permanent
+    affected_area: Olympic Wilderness above 3500 feet
+    summary: Open fires, including camp, cooking, and warming fires, are prohibited above 3500 feet in Olympic Wilderness.
+    evidence_quotes:
+      - fires, such as camp, cooking and warming fires above 3,500 feet elevation
+    source_url: https://www.fs.usda.gov/r06/olympic/wilderness
+    source_title: Olympic National Forest wilderness regulations
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation_pending
+      stove_review_note: Page resolves open fires and wood-burning stoves, not gas/liquid stove policy.
+
+  - slug: gifford-pinchot-mt-adams-high-country-campfire-prohibition
+    land_unit_slug: gifford-pinchot
+    title: Mt. Adams Wilderness high-country campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Mt. Adams Wilderness high-country area bounded by Round-the-Mountain Trail, Pacific Crest Trail, Highline Trail, and the forest boundary
+    summary: Campfires are prohibited in the described Mt. Adams Wilderness high-country area.
+    evidence_quotes:
+      - campfire, within Mt. Adams Wilderness is prohibited
+    source_url: https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+    source_title: Gifford Pinchot wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: named_area_manual_review
+      geometry_review_note: Boundary is described by trails and forest boundary; exact polygon is pending.
+
+  - slug: gifford-pinchot-goat-rocks-named-campfire-prohibitions
+    land_unit_slug: gifford-pinchot
+    title: Goat Rocks Wilderness named campfire prohibitions
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Shoe Lake Basin, Dana Yelverton Shelter, and 1/4 mile of Goat Lake shoreline in Goat Rocks Wilderness
+    summary: Campfires are prohibited within Shoe Lake Basin, at Dana Yelverton Shelter, and within 1/4 mile of the shoreline of Goat Lake.
+    evidence_quotes:
+      - campfire within Shoe Lake Basin, at Dana Yelverton Shelter or within 1/4 mile of the shoreline of Goat Lake
+    source_url: https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+    source_title: Gifford Pinchot wilderness regulations
+    confidence: 0.82
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: gifford-pinchot-goat-rocks-quarter-mile-named-lakes
+      name: Goat Rocks named lake campfire buffer candidates
+      area_type: named_area
+      area_description: Approximate NHD centroid buffers for Goat Lake and Shoe Lake. Snowgrass Flats and Dana Yelverton Shelter are not represented.
+      geometry_path: data/fire_restrictions/localized_geometries/gifford-pinchot-goat-rocks-quarter-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_centroid_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+        review_note: Generated geometry is partial; Snowgrass Flats and Dana Yelverton Shelter need separate official/manual geometry.
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_centroid_buffer_partial
+
+  - slug: gifford-pinchot-tatoosh-lakes-basin-campfire-prohibition
+    land_unit_slug: gifford-pinchot
+    title: Tatoosh Lakes Basin campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Tatoosh Lakes Basin
+    summary: Campfires are prohibited within Tatoosh Lakes Basin.
+    evidence_quotes:
+      - campfire within Tatoosh Lakes Basin is prohibited
+    source_url: https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+    source_title: Gifford Pinchot wilderness regulations
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_lake_basin_pending
+      geometry_review_note: Official text names a basin; exact basin geometry is pending.

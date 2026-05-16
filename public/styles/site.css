@@ -654,6 +654,16 @@ h1 {
   font-weight: 750;
 }
 
+.restriction-map-note {
+  color: var(--mid-gray);
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 0.25rem;
+  max-width: 18rem;
+}
+
 .restrictions-table td:nth-child(3) {
   min-width: 190px;
 }

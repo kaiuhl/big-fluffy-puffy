@@ -85,6 +85,8 @@ module BFP
               map_status: "active",
               affected_area: rule[:affected_area],
               geometry_source_type: rule[:geometry_source_type],
+              geometry_accuracy: rule.dig(:geometry_provenance, "geometry_accuracy") || rule.dig(:geometry_provenance, :geometry_accuracy),
+              geometry_is_approximate: approximate_geometry?(rule),
               source_url: rule[:source_url],
               source_title: rule[:source_title]
             }
@@ -93,9 +95,17 @@ module BFP
       end
 
       def geojson_geometry?(geometry)
-        geometry.is_a?(Hash) &&
+        geometry = geometry.to_hash if geometry.respond_to?(:to_hash)
+        !!(geometry.is_a?(Hash) &&
           (geometry["type"] || geometry[:type]).to_s != "" &&
-          (geometry["coordinates"] || geometry[:coordinates])
+          (geometry["coordinates"] || geometry[:coordinates]))
+      end
+
+      def approximate_geometry?(rule)
+        source_type = rule[:geometry_source_type].to_s
+        accuracy = rule.dig(:geometry_provenance, "geometry_accuracy") || rule.dig(:geometry_provenance, :geometry_accuracy)
+
+        accuracy.to_s == "approximate" || source_type.start_with?("derived_")
       end
     end
   end

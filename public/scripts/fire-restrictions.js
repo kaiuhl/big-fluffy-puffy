@@ -127,6 +127,8 @@
     var sourceUrl = safeHttpUrl(properties.source_url);
     var forestUrl = (properties.forest_url || "").toString();
     var sourceTitle = properties.source_title || "Source";
+    var geometryLabel = properties.geometry_source_type ? labelize(properties.geometry_source_type) : "";
+    var geometryAccuracy = properties.geometry_is_approximate ? "Approximate " : "";
     var sourceLink = sourceUrl
       ? '<p class="map-popup-source"><a href="' + escapeHtml(sourceUrl) + '" rel="noreferrer">View ' + escapeHtml(sourceTitle) + "</a></p>"
       : "";
@@ -140,6 +142,7 @@
       "<dl>",
       "<dt>Status</dt><dd>" + escapeHtml(labelize(properties.map_status)) + "</dd>",
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
+      geometryLabel ? "<dt>Geometry</dt><dd>" + escapeHtml(geometryAccuracy + geometryLabel) + "</dd>" : "",
       "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",
       forestLink,

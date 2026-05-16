@@ -31,6 +31,12 @@ module BFP
         source_arcgis_feature
         geojson
         linked_map
+        usfs_edw_wilderness
+        usgs_nhd_waterbody
+        derived_nhd_centroid_buffer
+        derived_dem_elevation
+        official_order_map_pending
+        named_area_manual_review
       ].freeze
       RESTRICTIVE_STATUSES = %w[advisory partial stage_1 stage_2 full closure year_round].freeze
       RESTRICTIVE_EVIDENCE = ObservationValidator::RESTRICTIVE_EVIDENCE

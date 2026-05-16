@@ -168,7 +168,10 @@
                             </td>
                             <td data-label="Map">
                               <% if rule[:mapped] %>
-                                Mapped from <%= h(labelize(rule[:geometry_source_type])) %>
+                                <%= h(geometry_label(rule)) %>
+                                <% if approximate_geometry?(rule) %>
+                                  <small class="restriction-map-note">Derived shape; verify the official source for exact boundaries.</small>
+                                <% end %>
                               <% else %>
                                 Not mapped
                               <% end %>

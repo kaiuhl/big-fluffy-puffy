@@ -77,6 +77,37 @@ RSpec.describe "fire restriction database integration", :db do
     expect(presenter.format_detail(observation.id)).to include("Observation #{observation.id}")
   end
 
+  it "seeds curated localized rules with approximate mapped geometry" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    counts = BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
+
+    expect(counts[:rules]).to eq(21)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(18)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(3)
+
+    detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("wallowa-whitman")
+    eagle_cap = detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "wallowa-whitman-eagle-cap-named-lakes-campfire-prohibition" }
+
+    expect(eagle_cap).to include(
+      status: "year_round",
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_nhd_centroid_buffer"
+    )
+    expect(eagle_cap.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
+
+    map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "wallowa-whitman").geojson
+    localized_feature = map.fetch(:features).find { |feature| feature.dig(:properties, :kind) == "localized_restriction" }
+
+    expect(localized_feature.dig(:geometry, "type")).to eq("MultiPolygon")
+    expect(localized_feature.dig(:properties, :geometry_is_approximate)).to be(true)
+
+    trinity_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("klamath")
+    expect(trinity_detail.fetch(:localized_restrictions)).to be_empty
+  end
+
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"

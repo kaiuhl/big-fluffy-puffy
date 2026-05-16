@@ -89,13 +89,13 @@ module BFP
         changed = existing && existing.content_fingerprint.to_s != "" && existing.content_fingerprint != fingerprint
         review_status = review_status_for(config, existing, changed)
 
-        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, now))
+        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, existing, now))
         rule.save
 
         changed ? :changed : :seeded
       end
 
-      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, now)
+      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, existing, now)
         attributes = {
           land_unit_id: land_unit.id,
           restriction_area_id: area&.id,
@@ -135,7 +135,7 @@ module BFP
           review_status: review_status,
           next_review_due_on: parse_date(config["next_review_due_on"]),
           review_notes: review_notes_for(config, changed: changed),
-          published_at: published_at_for(config, review_status),
+          published_at: published_at_for(config, review_status, existing),
           content_fingerprint: fingerprint,
           supersedes_rule_id: nil,
           raw_output: Jsonb.wrap(config),
@@ -160,9 +160,10 @@ module BFP
         config["review_notes"]
       end
 
-      def published_at_for(config, review_status)
+      def published_at_for(config, review_status, existing)
         configured = parse_time(config["published_at"])
         return configured if configured
+        return existing.published_at if existing&.published_at && PUBLISHABLE_REVIEW_STATUSES.include?(review_status)
         return @now if PUBLISHABLE_REVIEW_STATUSES.include?(review_status)
 
         nil
