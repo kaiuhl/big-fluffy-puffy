@@ -736,59 +736,45 @@ h1 {
 .fire-use-sparkline {
   display: block;
   width: 246px;
-  height: 62px;
+  height: 40px;
   max-width: 100%;
   overflow: visible;
   font-family: inherit;
 }
 
-.fire-use-guide {
-  stroke: var(--spark-guide);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.fire-use-point-allowed {
+  --fire-use-color: #4f8f66;
 }
 
-.fire-use-dot {
-  stroke: var(--white);
-  stroke-width: 1.2;
+.fire-use-point-limited {
+  --fire-use-color: #b8782f;
 }
 
-.fire-use-point-allowed .fire-use-dot {
-  fill: #4f8f66;
+.fire-use-point-prohibited {
+  --fire-use-color: var(--signal);
 }
 
-.fire-use-point-limited .fire-use-dot {
-  fill: #b8782f;
-}
-
-.fire-use-point-prohibited .fire-use-dot {
-  fill: var(--signal);
-}
-
-.fire-use-point-unknown .fire-use-dot {
+.fire-use-ring {
   fill: var(--white);
-  stroke: var(--mid-gray);
+  stroke: var(--fire-use-color);
+  stroke-width: 1.6;
 }
 
 .fire-use-mark {
   fill: none;
-  stroke: var(--white);
+  stroke: var(--fire-use-color);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.5;
+  stroke-width: 2.1;
   vector-effect: non-scaling-stroke;
 }
 
 .fire-use-mark-text {
   dominant-baseline: central;
-  fill: var(--white);
-  font-size: 8px;
+  fill: var(--fire-use-color);
+  font-size: 13px;
   font-weight: 900;
   text-anchor: middle;
-}
-
-.fire-use-point-unknown .fire-use-mark-text {
-  fill: var(--mid-gray);
 }
 
 .fire-use-label {

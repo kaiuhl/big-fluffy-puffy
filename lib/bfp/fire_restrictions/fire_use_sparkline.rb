@@ -4,20 +4,13 @@ module BFP
   module FireRestrictions
     class FireUseSparkline
       WIDTH = 246.0
-      HEIGHT = 62.0
+      HEIGHT = 40.0
       PAD = {
-        left: 14.0,
-        right: 14.0,
-        top: 8.0,
-        bottom: 19.0
+        left: 12.0,
+        right: 12.0
       }.freeze
-
-      POINT_Y = {
-        "allowed" => 12.0,
-        "limited" => 22.0,
-        "unknown" => 31.0,
-        "prohibited" => 40.0
-      }.freeze
+      ICON_Y = 13.0
+      LABEL_Y = 36.0
 
       ITEMS = [
         {
@@ -78,6 +71,7 @@ module BFP
 
       def render
         points = policy_points
+        return "" if points.empty?
 
         <<~HTML
           <svg
@@ -85,7 +79,6 @@ module BFP
             viewBox="0 0 #{svg_number(WIDTH)} #{svg_number(HEIGHT)}"
             role="img"
             aria-label="#{h(aria_label)}">
-            #{guides(points)}
             #{points.map { |point| point_markup(point) }.join}
           </svg>
         HTML
@@ -102,10 +95,13 @@ module BFP
       private
 
       def policy_points
-        usable_width = WIDTH - PAD.fetch(:left) - PAD.fetch(:right)
-        x_step = usable_width / (ITEMS.length - 1)
+        items = visible_items
+        return [] if items.empty?
 
-        ITEMS.each_with_index.map do |item, index|
+        usable_width = WIDTH - PAD.fetch(:left) - PAD.fetch(:right)
+        x_step = (items.length > 1) ? usable_width / (items.length - 1) : 0
+
+        items.each_with_index.map do |item, index|
           policy = policy_for(item)
           state = policy_state(policy)
 
@@ -113,21 +109,16 @@ module BFP
             item: item,
             policy: policy,
             state: state,
-            x: PAD.fetch(:left) + (x_step * index),
-            y: POINT_Y.fetch(state)
+            x: (items.length == 1) ? (WIDTH / 2.0) : PAD.fetch(:left) + (x_step * index),
+            y: ICON_Y
           }
         end
       end
 
-      def guides(points)
-        guide_top = PAD.fetch(:top)
-        guide_bottom = HEIGHT - PAD.fetch(:bottom)
-
-        points.map do |point|
-          <<~HTML.chomp
-            <line class="fire-use-guide" x1="#{svg_number(point.fetch(:x))}" y1="#{svg_number(guide_top)}" x2="#{svg_number(point.fetch(:x))}" y2="#{svg_number(guide_bottom)}"></line>
-          HTML
-        end.join
+      def visible_items
+        ITEMS.reject do |item|
+          policy_state(policy_for(item)) == "unknown"
+        end
       end
 
       def point_markup(point)
@@ -138,23 +129,21 @@ module BFP
 
         <<~HTML
           <g class="fire-use-point fire-use-point-#{h(state)}" transform="translate(#{svg_number(x)} #{svg_number(y)})">
-            <circle class="fire-use-dot" cx="0" cy="0" r="5.2"></circle>
+            <circle class="fire-use-ring" cx="0" cy="0" r="8.2"></circle>
             #{state_mark(state)}
           </g>
-          <text class="fire-use-label" x="#{svg_number(x)}" y="#{svg_number(HEIGHT - 4)}">#{h(item.fetch(:short_label))}</text>
+          <text class="fire-use-label" x="#{svg_number(x)}" y="#{svg_number(LABEL_Y)}">#{h(item.fetch(:short_label))}</text>
         HTML
       end
 
       def state_mark(state)
         case state
         when "allowed"
-          %(<path class="fire-use-mark" d="M -2.8 0.2 L -0.8 2.2 L 3 -2.4"></path>)
+          %(<path class="fire-use-mark" d="M -4.4 0.2 L -1.4 3.5 L 5 -4"></path>)
         when "limited"
-          %(<text class="fire-use-mark-text" x="0" y="0">!</text>)
+          %(<text class="fire-use-mark-text" x="0" y="0.6">!</text>)
         when "prohibited"
-          %(<path class="fire-use-mark" d="M -2.8 -2.8 L 2.8 2.8 M 2.8 -2.8 L -2.8 2.8"></path>)
-        else
-          %(<text class="fire-use-mark-text" x="0" y="0">?</text>)
+          %(<path class="fire-use-mark" d="M -4.8 4.8 L 4.8 -4.8"></path>)
         end
       end
 
@@ -220,7 +209,7 @@ module BFP
       end
 
       def aria_label
-        descriptions = ITEMS.map do |item|
+        descriptions = visible_items.map do |item|
           "#{item.fetch(:aria_label)} #{policy_phrase(item, policy_for(item))}"
         end
 

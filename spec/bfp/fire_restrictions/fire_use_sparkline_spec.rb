@@ -14,23 +14,38 @@ RSpec.describe BFP::FireRestrictions::FireUseSparkline do
     }
   end
 
-  it "renders a compact categorical fire-use SVG with accessible policy detail" do
+  it "renders a compact one-row fire-use SVG with accessible policy detail" do
     html = described_class.render(rule)
 
     expect(html).to include('class="fire-use-sparkline"')
+    expect(html).to include('viewBox="0 0 246 40"')
     expect(html).to include("fire-use-point-prohibited")
     expect(html).to include("fire-use-point-allowed")
-    expect(html).to include("fire-use-point-unknown")
+    expect(html).not_to include("fire-use-point-unknown")
+    expect(html).not_to include("fire-use-guide")
     expect(html).to include(">Camp</text>")
     expect(html).to include(">Gas</text>")
-    expect(html).to include(">Alc</text>")
-    expect(html).to include("aria-label=\"Fire use: campfires prohibited, gas stoves allowed with shutoff valve, alcohol stoves unknown, charcoal prohibited, solid fuel stoves prohibited, wood stoves prohibited\"")
+    expect(html).not_to include(">Alc</text>")
+    expect(html).to include("aria-label=\"Fire use: campfires prohibited, gas stoves allowed with shutoff valve, charcoal prohibited, solid fuel stoves prohibited, wood stoves prohibited\"")
   end
 
   it "summarizes the user-facing takeaway without appending shutoff rules to prohibited fuels" do
     expect(described_class.summary(rule)).to eq(
       "Campfires prohibited. Gas stoves allowed with shutoff valve. Alcohol stoves unknown. Charcoal, solid fuel stoves, and wood stoves prohibited."
     )
+  end
+
+  it "renders nothing when every policy is unknown" do
+    expect(
+      described_class.render(
+        campfire_policy: "unknown",
+        gas_stove_policy: "unknown",
+        alcohol_stove_policy: "unknown",
+        charcoal_policy: "unknown",
+        solid_fuel_stove_policy: "unknown",
+        wood_stove_policy: "unknown"
+      )
+    ).to eq("")
   end
 
   it "treats fire-pan requirements as limited campfire use" do
