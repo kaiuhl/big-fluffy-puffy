@@ -15,6 +15,22 @@ module BFP
         last_reviewed_at
         next_review_due_on
       ].freeze
+      REVIEW_NEUTRAL_TOP_LEVEL_KEYS = (MUTABLE_REVIEW_KEYS + %w[
+        seed_review_override
+        geometry_json
+        geometry_source_type
+      ]).freeze
+      REVIEW_NEUTRAL_AREA_KEYS = %w[
+        area_description
+        geometry_path
+        geometry_json
+        geometry_source_type
+        geometry_source_url
+        geometry_external_id
+        geometry_acquired_at
+        geometry_provenance
+        geometry_provenance_json
+      ].freeze
       PUBLISHABLE_REVIEW_STATUSES = %w[accepted auto_accepted].freeze
 
       def initialize(path: CONFIG_PATH, now: Time.now)
@@ -34,7 +50,7 @@ module BFP
 
             counts[:areas] += 1 if area
             counts[:rules] += 1
-            counts[:changed_rules] += 1 if result == :changed
+            counts[:changed_rules] += 1 if result == :review_changed
           end
         end
 
@@ -87,15 +103,16 @@ module BFP
         existing = LocalizedFireUseRule.first(land_unit_id: land_unit.id, slug: config.fetch("slug"))
         rule = existing || LocalizedFireUseRule.new(land_unit_id: land_unit.id, slug: config.fetch("slug"), created_at: now)
         changed = existing && existing.content_fingerprint.to_s != "" && existing.content_fingerprint != fingerprint
-        review_status = review_status_for(config, existing, changed)
+        review_affecting_changed = review_affecting_changed?(existing, config, changed)
+        review_status = review_status_for(config, existing, changed, review_affecting_changed)
 
-        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, existing, now))
+        rule.set(rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_affecting_changed, existing, now))
         rule.save
 
-        changed ? :changed : :seeded
+        review_affecting_changed ? :review_changed : :seeded
       end
 
-      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, changed, existing, now)
+      def rule_attributes(config, land_unit, area, source, fingerprint, review_status, review_affecting_changed, existing, now)
         attributes = {
           land_unit_id: land_unit.id,
           restriction_area_id: area&.id,
@@ -134,7 +151,7 @@ module BFP
           confidence: Float(config.fetch("confidence", 0.0)),
           review_status: review_status,
           next_review_due_on: parse_date(config["next_review_due_on"]),
-          review_notes: review_notes_for(config, changed: changed),
+          review_notes: review_notes_for(config, review_affecting_changed: review_affecting_changed),
           published_at: published_at_for(config, review_status, existing),
           content_fingerprint: fingerprint,
           supersedes_rule_id: nil,
@@ -147,15 +164,16 @@ module BFP
         attributes
       end
 
-      def review_status_for(config, existing, changed)
-        return "needs_review" if changed
+      def review_status_for(config, existing, changed, review_affecting_changed)
+        return "needs_review" if review_affecting_changed
+        return config.fetch("review_status", "needs_review") if changed && seed_review_override?(config)
         return existing.review_status if existing && existing.review_status.to_s != ""
 
         config.fetch("review_status", "needs_review")
       end
 
-      def review_notes_for(config, changed:)
-        return "Curated rule content changed during seed; review before publishing." if changed
+      def review_notes_for(config, review_affecting_changed:)
+        return "Curated rule content changed during seed; review before publishing." if review_affecting_changed
 
         config["review_notes"]
       end
@@ -172,6 +190,40 @@ module BFP
       def fingerprint_for(config)
         stable = config.reject { |key, _value| MUTABLE_REVIEW_KEYS.include?(key.to_s) }
         Digest::SHA256.hexdigest(canonical_json(stable))
+      end
+
+      def review_affecting_changed?(existing, config, changed)
+        return false unless existing && changed
+
+        review_affecting_fingerprint_for(existing.raw_output || {}) != review_affecting_fingerprint_for(config)
+      end
+
+      def review_affecting_fingerprint_for(config)
+        stable = review_affecting_config(config)
+        Digest::SHA256.hexdigest(canonical_json(stable))
+      end
+
+      def review_affecting_config(config)
+        stable = config.reject { |key, _value| REVIEW_NEUTRAL_TOP_LEVEL_KEYS.include?(key.to_s) }
+        area = hash_fetch(stable, "area")
+        metadata = hash_fetch(stable, "metadata_json")
+
+        stable = stable.merge("area" => review_affecting_area(area)) if area.is_a?(Hash)
+        stable = stable.merge("metadata_json" => review_affecting_metadata(metadata)) if metadata.is_a?(Hash)
+        stable
+      end
+
+      def review_affecting_area(area)
+        area.reject { |key, _value| REVIEW_NEUTRAL_AREA_KEYS.include?(key.to_s) }
+      end
+
+      def review_affecting_metadata(metadata)
+        metadata.reject { |key, _value| key.to_s.start_with?("geometry_") }
+      end
+
+      def seed_review_override?(config)
+        PUBLISHABLE_REVIEW_STATUSES.include?(config["review_status"].to_s) &&
+          config["seed_review_override"].to_s != ""
       end
 
       def geometry_json_for(config)

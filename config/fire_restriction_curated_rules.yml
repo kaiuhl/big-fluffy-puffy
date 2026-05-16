@@ -387,6 +387,7 @@ localized_rules:
     source_title: Wilderness Connect Mount Hood Wilderness regulations
     confidence: 0.84
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -424,6 +425,7 @@ localized_rules:
     source_title: Wilderness Connect Mark O. Hatfield Wilderness regulations
     confidence: 0.84
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -535,6 +537,7 @@ localized_rules:
     source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
     confidence: 0.86
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -572,6 +575,7 @@ localized_rules:
     source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
     confidence: 0.88
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -607,6 +611,7 @@ localized_rules:
     source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
     confidence: 0.86
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -664,6 +669,7 @@ localized_rules:
     source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
     confidence: 0.88
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -722,6 +728,7 @@ localized_rules:
     source_title: Eagle Cap Wilderness regulations
     confidence: 0.88
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -885,6 +892,7 @@ localized_rules:
     source_title: Gifford Pinchot wilderness regulations
     confidence: 0.82
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
@@ -944,6 +952,7 @@ localized_rules:
     source_title: Gifford Pinchot and Wenatchee wilderness camping and campfire restrictions order
     confidence: 0.84
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"

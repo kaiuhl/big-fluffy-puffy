@@ -1,4 +1,6 @@
 require "digest"
+require "tempfile"
+require "yaml"
 require_relative "../../spec_helper"
 
 RSpec.describe "fire restriction database integration", :db do
@@ -144,6 +146,35 @@ RSpec.describe "fire restriction database integration", :db do
     expect(trinity_detail.fetch(:localized_restrictions)).to be_empty
   end
 
+  it "preserves accepted review state for seed-reviewed geometry-only upgrades" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    base_config = localized_rule_config(
+      area_description: "Approximate buffer around the NHD lake centroid.",
+      geometry_source_type: "derived_nhd_centroid_buffer",
+      metadata_json: {"geometry_strategy" => "derived_nhd_centroid_buffer"}
+    )
+    upgraded_config = localized_rule_config(
+      area_description: "Approximate buffer around the NHD lake polygon.",
+      geometry_source_type: "derived_nhd_waterbody_buffer",
+      metadata_json: {"geometry_strategy" => "derived_nhd_waterbody_buffer"},
+      seed_review_override: "geometry_source_upgrade_2026_05_16"
+    )
+
+    seed_curated_config(base_config)
+    rule = BFP::FireRestrictions::LocalizedFireUseRule.first(slug: "mt-hood-test-lake-buffer")
+    expect(rule.review_status).to eq("accepted")
+
+    counts = seed_curated_config(upgraded_config)
+    rule.refresh
+
+    expect(counts[:changed_rules]).to eq(0)
+    expect(rule.review_status).to eq("accepted")
+    expect(rule.restriction_area.geometry_source_type).to eq("derived_nhd_waterbody_buffer")
+    expect(rule.review_notes).to be_nil
+  end
+
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"
@@ -192,6 +223,63 @@ RSpec.describe "fire restriction database integration", :db do
       content_changed: true,
       metadata_json: BFP::FireRestrictions::Jsonb.wrap({})
     )
+  end
+
+  def seed_curated_config(rule_config)
+    Tempfile.create(["localized-rules", ".yml"]) do |file|
+      file.write({"localized_rules" => [rule_config]}.to_yaml)
+      file.flush
+      return BFP::FireRestrictions::CuratedRuleSeeder.new(path: file.path, now: Time.utc(2026, 5, 16)).seed
+    end
+  end
+
+  def localized_rule_config(area_description:, geometry_source_type:, metadata_json:, seed_review_override: nil)
+    config = {
+      "slug" => "mt-hood-test-lake-buffer",
+      "land_unit_slug" => "mt-hood",
+      "title" => "Test lake campfire buffer",
+      "origin" => "curated",
+      "status" => "year_round",
+      "campfire_policy" => "prohibited",
+      "duration_type" => "permanent",
+      "affected_area" => "Test Lake",
+      "summary" => "Campfires are prohibited within the test lake buffer.",
+      "evidence_quotes" => ["Campfires are prohibited within the test lake buffer."],
+      "source_url" => "https://www.fs.usda.gov/r06/mthood/fire",
+      "source_title" => "Mt. Hood fire information",
+      "confidence" => 0.9,
+      "review_status" => "accepted",
+      "published_at" => "2026-05-16T00:00:00Z",
+      "last_reviewed_at" => "2026-05-16T00:00:00Z",
+      "next_review_due_on" => "2027-05-16",
+      "metadata_json" => metadata_json,
+      "area" => {
+        "slug" => "mt-hood-test-lake-buffer",
+        "name" => "Test lake buffer",
+        "area_type" => "named_area",
+        "area_description" => area_description,
+        "geometry_source_type" => geometry_source_type,
+        "geometry_json" => test_polygon,
+        "geometry_provenance_json" => {"geometry_accuracy" => "approximate"}
+      }
+    }
+    config["seed_review_override"] = seed_review_override if seed_review_override
+    config
+  end
+
+  def test_polygon
+    {
+      "type" => "Polygon",
+      "coordinates" => [
+        [
+          [-121.8, 45.3],
+          [-121.79, 45.3],
+          [-121.79, 45.31],
+          [-121.8, 45.31],
+          [-121.8, 45.3]
+        ]
+      ]
+    }
   end
 
   def fixture_html_for(land_unit)
