@@ -67,12 +67,15 @@ module BFP
         items = visible_items
         return "" if items.empty?
 
+        detail = summary
+
         <<~HTML
           <span
             class="fire-use-sparkline"
             style="--fire-use-count: #{items.length}; --fire-use-width: #{chart_width(items.length)}px;"
             role="img"
-            aria-label="#{h(aria_label)}">
+            title="#{h(detail)}"
+            aria-label="#{h(aria_label(detail))}">
             #{items.map { |item| point_markup(item) }.join}
           </span>
         HTML
@@ -184,12 +187,8 @@ module BFP
           !["prohibited", "unknown"].include?(normalized_policy(policy))
       end
 
-      def aria_label
-        descriptions = visible_items.map do |item|
-          "#{item.fetch(:aria_label)} #{policy_phrase(item, policy_for(item))}"
-        end
-
-        "Fire use: #{descriptions.join(", ")}"
+      def aria_label(detail)
+        "Fire use: #{detail}"
       end
 
       def join_labels(labels)

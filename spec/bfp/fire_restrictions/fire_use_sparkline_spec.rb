@@ -28,7 +28,8 @@ RSpec.describe BFP::FireRestrictions::FireUseSparkline do
     expect(html).to include(">Gas stoves</span>")
     expect(html).to include(">Solid fuel stoves</span>")
     expect(html).not_to include(">Alcohol stoves</span>")
-    expect(html).to include("aria-label=\"Fire use: campfires prohibited, gas stoves allowed with shutoff valve, charcoal prohibited, solid fuel stoves prohibited, wood stoves prohibited\"")
+    expect(html).to include('title="Campfires prohibited. Gas stoves allowed with shutoff valve. Alcohol stoves unknown. Charcoal, solid fuel stoves, and wood stoves prohibited."')
+    expect(html).to include('aria-label="Fire use: Campfires prohibited. Gas stoves allowed with shutoff valve. Alcohol stoves unknown. Charcoal, solid fuel stoves, and wood stoves prohibited."')
   end
 
   it "summarizes the user-facing takeaway without appending shutoff rules to prohibited fuels" do

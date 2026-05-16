@@ -716,19 +716,9 @@ h1 {
 .fire-use-profile {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
+  gap: 0;
   min-width: 0;
   max-width: 330px;
-}
-
-.fire-use-summary {
-  margin: 0;
-  min-width: 0;
-  max-width: 100%;
-  color: var(--near-black);
-  font-size: inherit;
-  font-weight: 500;
-  line-height: inherit;
 }
 
 .fire-use-chart {
@@ -744,6 +734,7 @@ h1 {
   gap: 7px;
   width: min(100%, var(--fire-use-width));
   max-width: 100%;
+  cursor: help;
 }
 
 .fire-use-point-allowed {
@@ -799,7 +790,7 @@ h1 {
 }
 
 .fire-use-label {
-  color: var(--spark-label);
+  color: var(--mid-gray);
   font-size: 0.5rem;
   font-weight: 900;
   line-height: 1.05;
