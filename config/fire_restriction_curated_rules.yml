@@ -21,13 +21,31 @@ localized_rules:
     source_title: Central Cascades Wilderness fire prohibition order
     confidence: 0.9
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: deschutes-central-cascades-above-5700-ft
+      name: Deschutes Central Cascades wilderness above 5700 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Deschutes portions of Mount Jefferson, Mount Washington, and Three Sisters wilderness areas above 5700 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/deschutes-central-cascades-above-5700-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/144510
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 5700
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
-      geometry_review_note: Elevation-derived polygons are not generated yet.
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
 
   - slug: willamette-central-cascades-5700-ft-fire-prohibition
     land_unit_slug: willamette
@@ -51,13 +69,31 @@ localized_rules:
     source_title: Central Cascades Wilderness fire prohibition order
     confidence: 0.9
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: willamette-central-cascades-above-5700-ft
+      name: Willamette Central Cascades wilderness above 5700 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Willamette portions of Mount Jefferson, Mount Washington, and Three Sisters wilderness areas above 5700 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/willamette-central-cascades-above-5700-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/144510
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 5700
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
-      geometry_review_note: Elevation-derived polygons are not generated yet.
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
 
   - slug: deschutes-diamond-peak-6000-ft-fire-prohibition
     land_unit_slug: deschutes
@@ -81,12 +117,31 @@ localized_rules:
     source_title: Central Cascades Wilderness fire prohibition order
     confidence: 0.9
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: deschutes-diamond-peak-above-6000-ft
+      name: Deschutes Diamond Peak Wilderness above 6000 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Deschutes portion of Diamond Peak Wilderness above 6000 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/deschutes-diamond-peak-above-6000-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/144510
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 6000
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
 
   - slug: willamette-diamond-peak-6000-ft-fire-prohibition
     land_unit_slug: willamette
@@ -110,12 +165,31 @@ localized_rules:
     source_title: Central Cascades Wilderness fire prohibition order
     confidence: 0.9
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: willamette-diamond-peak-above-6000-ft
+      name: Willamette Diamond Peak Wilderness above 6000 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Willamette portion of Diamond Peak Wilderness above 6000 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/willamette-diamond-peak-above-6000-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/144510
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 6000
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
 
   - slug: deschutes-mt-jefferson-washington-lake-basins-fire-prohibition
     land_unit_slug: deschutes
@@ -515,12 +589,31 @@ localized_rules:
     source_title: Okanogan-Wenatchee wilderness fire restrictions always in effect
     confidence: 0.9
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-alpine-lakes-above-5000-ft
+      name: Okanogan-Wenatchee Alpine Lakes Wilderness above 5000 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Okanogan-Wenatchee portion of Alpine Lakes Wilderness above 5000 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-alpine-lakes-above-5000-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/fire/info/wilderness-area-fire-restrictions-always-effect
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 5000
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
 
   - slug: okanogan-wenatchee-alpine-lakes-named-lakes-campfire-prohibition
     land_unit_slug: okanogan-wenatchee
@@ -846,12 +939,31 @@ localized_rules:
     source_title: Olympic National Forest wilderness regulations
     confidence: 0.86
     review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: olympic-wilderness-above-3500-ft
+      name: Olympic National Forest wilderness above 3500 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for Olympic National Forest wilderness areas above 3500 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/olympic-wilderness-above-3500-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/olympic/wilderness
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 3500
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: derived_dem_elevation_pending
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
       stove_review_note: Page resolves open fires and wood-burning stoves, not gas/liquid stove policy.
 
   - slug: gifford-pinchot-mt-adams-high-country-campfire-prohibition

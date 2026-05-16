@@ -21,6 +21,9 @@ module BFP
         geometry_source_type
       ]).freeze
       REVIEW_NEUTRAL_AREA_KEYS = %w[
+        slug
+        name
+        area_type
         area_description
         geometry_path
         geometry_json
@@ -30,6 +33,7 @@ module BFP
         geometry_acquired_at
         geometry_provenance
         geometry_provenance_json
+        active
       ].freeze
       PUBLISHABLE_REVIEW_STATUSES = %w[accepted auto_accepted].freeze
 
@@ -208,7 +212,14 @@ module BFP
         area = hash_fetch(stable, "area")
         metadata = hash_fetch(stable, "metadata_json")
 
-        stable = stable.merge("area" => review_affecting_area(area)) if area.is_a?(Hash)
+        if area.is_a?(Hash)
+          review_area = review_affecting_area(area)
+          stable = if review_area.empty?
+            stable.reject { |key, _value| key.to_s == "area" }
+          else
+            stable.merge("area" => review_area)
+          end
+        end
         stable = stable.merge("metadata_json" => review_affecting_metadata(metadata)) if metadata.is_a?(Hash)
         stable
       end

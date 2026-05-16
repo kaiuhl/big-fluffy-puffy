@@ -175,6 +175,37 @@ RSpec.describe "fire restriction database integration", :db do
     expect(rule.review_notes).to be_nil
   end
 
+  it "preserves accepted review state when adding derived geometry to a reviewed text-only rule" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    text_only_config = localized_rule_config(
+      area_description: "Text-only area.",
+      geometry_source_type: "none",
+      metadata_json: {"geometry_strategy" => "derived_dem_elevation_pending"},
+      include_area: false
+    )
+    mapped_config = localized_rule_config(
+      area_description: "Approximate DEM-derived elevation mask.",
+      geometry_source_type: "derived_dem_elevation",
+      metadata_json: {"geometry_strategy" => "derived_dem_elevation"},
+      seed_review_override: "elevation_geometry_upgrade_2026_05_16"
+    )
+
+    seed_curated_config(text_only_config)
+    rule = BFP::FireRestrictions::LocalizedFireUseRule.first(slug: "mt-hood-test-lake-buffer")
+    expect(rule.review_status).to eq("accepted")
+    expect(rule.restriction_area).to be_nil
+
+    counts = seed_curated_config(mapped_config)
+    rule.refresh
+
+    expect(counts[:changed_rules]).to eq(0)
+    expect(rule.review_status).to eq("accepted")
+    expect(rule.restriction_area.geometry_source_type).to eq("derived_dem_elevation")
+    expect(rule.review_notes).to be_nil
+  end
+
   def prepare_fire_restriction_database
     require_relative "../../../config/boot"
     require "sequel/extensions/migration"
@@ -233,7 +264,7 @@ RSpec.describe "fire restriction database integration", :db do
     end
   end
 
-  def localized_rule_config(area_description:, geometry_source_type:, metadata_json:, seed_review_override: nil)
+  def localized_rule_config(area_description:, geometry_source_type:, metadata_json:, seed_review_override: nil, include_area: true)
     config = {
       "slug" => "mt-hood-test-lake-buffer",
       "land_unit_slug" => "mt-hood",
@@ -252,8 +283,10 @@ RSpec.describe "fire restriction database integration", :db do
       "published_at" => "2026-05-16T00:00:00Z",
       "last_reviewed_at" => "2026-05-16T00:00:00Z",
       "next_review_due_on" => "2027-05-16",
-      "metadata_json" => metadata_json,
-      "area" => {
+      "metadata_json" => metadata_json
+    }
+    if include_area
+      config["area"] = {
         "slug" => "mt-hood-test-lake-buffer",
         "name" => "Test lake buffer",
         "area_type" => "named_area",
@@ -262,7 +295,7 @@ RSpec.describe "fire restriction database integration", :db do
         "geometry_json" => test_polygon,
         "geometry_provenance_json" => {"geometry_accuracy" => "approximate"}
       }
-    }
+    end
     config["seed_review_override"] = seed_review_override if seed_review_override
     config
   end
