@@ -1147,3 +1147,500 @@ localized_rules:
       order_number: 06-03-01-24-03
       stove_review_note: Tablet/cube fuel is mapped to solid_fuel_stove_policy allowed; wood-burning stove policy remains prohibited.
       geometry_review_note: Official exhibits describe and map Areas Three and Mount Margaret Backcountry, but BFP has not digitized them yet.
+
+  - slug: deschutes-wilderness-water-trail-setback-campfire-prohibition
+    land_unit_slug: deschutes
+    title: Deschutes wilderness water and trail campfire setback
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 100 feet slope distance of any permanent lake, stream, spring, pond, or system trail in Deschutes National Forest wilderness areas
+    summary: Campfires are prohibited within 100 feet slope distance of permanent water sources and system trails in Deschutes National Forest wilderness areas.
+    evidence_quotes:
+      - Building, maintaining, attending, or using a campfire within 100 foot slope distance
+    source_url: https://www.fs.usda.gov/r06/deschutes/wilderness
+    source_title: Deschutes National Forest wilderness regulations
+    confidence: 0.82
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_hydro_trail_buffer_pending
+      geometry_review_note: Needs NHD water, spring points, and official trail buffers clipped to Deschutes wilderness boundaries.
+
+  - slug: fremont-winema-gearhart-blue-lake-campfire-prohibition
+    land_unit_slug: fremont-winema
+    title: Gearhart Mountain Blue Lake campfire setback
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 200 feet of the high-water line around Blue Lake in Gearhart Mountain Wilderness
+    summary: Campfires are prohibited within 200 feet of the high-water line around Blue Lake in Gearhart Mountain Wilderness.
+    evidence_quotes:
+      - No campfires within 200 feet of the high-water line around Blue Lake.
+    source_url: https://www.fs.usda.gov/r06/fremont-winema/wilderness
+    source_title: Fremont-Winema National Forest wilderness regulations
+    confidence: 0.86
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: fremont-winema-gearhart-blue-lake-200-foot-campfire-buffer
+      name: Gearhart Mountain Blue Lake 200-foot campfire buffer
+      area_type: named_area
+      area_description: Approximate 200-foot buffer around the NHD Blue Lake waterbody polygon.
+      geometry_path: data/fire_restrictions/localized_geometries/fremont-winema-gearhart-blue-lake-200-foot-campfire-buffer.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/fremont-winema/wilderness
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_waterbody_buffer
+      geometry_warning: Approximate buffer around selected NHD lake polygon, not a surveyed closure boundary.
+
+  - slug: fremont-winema-sky-lakes-water-setback-fire-prohibition
+    land_unit_slug: fremont-winema
+    title: Sky Lakes Wilderness water setback fire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Within 100 feet of a lake and 50 feet of a stream or spring in Sky Lakes Wilderness on the Fremont-Winema National Forest
+    summary: Campsites and fires are prohibited within 100 feet of a lake and 50 feet of a stream or spring in Sky Lakes Wilderness.
+    evidence_quotes:
+      - Campsites and fires prohibited within 100 feet of a lake, 50 feet of a stream or spring.
+    source_url: https://www.fs.usda.gov/r06/fremont-winema/wilderness
+    source_title: Fremont-Winema National Forest wilderness regulations
+    confidence: 0.8
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_hydro_buffer_pending
+      geometry_review_note: Needs NHD lake, stream, and spring buffers clipped to Sky Lakes Wilderness and Fremont-Winema boundaries.
+
+  - slug: mt-baker-snoqualmie-alpine-lakes-4000-ft-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Alpine Lakes Wilderness campfire prohibition above 4000 feet
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    wood_stove_policy: prohibited
+    duration_type: permanent
+    affected_area: Alpine Lakes Wilderness above 4000 feet on the Mt. Baker-Snoqualmie National Forest
+    summary: Campfires are prohibited above 4000 feet in the Mt. Baker-Snoqualmie portion of Alpine Lakes Wilderness.
+    evidence_quotes:
+      - Mt. Baker Snoqualmie National Forest Above 4,000 feet elevation
+    source_url: https://www.fs.usda.gov/sites/nfs/files/r06/okanogan-wenatchee/publication/alerts/Alpine%20Lakes%20Wilderness%20Restrictions%20CO%20%2306-17-1994-001.pdf
+    source_title: Alpine Lakes Wilderness entry and use restrictions order
+    confidence: 0.88
+    review_status: accepted
+    seed_review_override: elevation_geometry_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-baker-snoqualmie-alpine-lakes-above-4000-ft
+      name: Mt. Baker-Snoqualmie Alpine Lakes Wilderness above 4000 feet
+      area_type: wilderness
+      area_description: Approximate PRISM 800m DEM-derived elevation mask for the Mt. Baker-Snoqualmie portion of Alpine Lakes Wilderness above 4000 feet.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-baker-snoqualmie-alpine-lakes-above-4000-ft.geojson
+      geometry_source_type: derived_dem_elevation
+      geometry_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_elevation_band_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/sites/nfs/files/r06/okanogan-wenatchee/publication/alerts/Alpine%20Lakes%20Wilderness%20Restrictions%20CO%20%2306-17-1994-001.pdf
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        elevation_source_url: https://prism.oregonstate.edu/downloads/data/PRISM_us_dem_800m_bil.zip
+        elevation_threshold_ft: 4000
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_dem_elevation
+      geometry_warning: Approximate 800m DEM-derived planning geometry, not a surveyed legal order boundary.
+
+  - slug: mt-baker-snoqualmie-mt-baker-trail-corridor-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Mt. Baker Wilderness trail-corridor campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    duration_type: permanent
+    affected_area: Within one mile of listed Mt. Baker Wilderness trails including Lake Ann, Heliotrope Ridge, High Divide, Skyline Divide, Yellow Aster, Ptarmigan Ridge, and related corridors
+    summary: Campfires are prohibited within one mile of listed Mt. Baker Wilderness trails; gas stoves are excepted.
+    evidence_quotes:
+      - No campfires (except gas stoves) within one mile of the following trails
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/mt-baker-wilderness
+    source_title: Mt. Baker Wilderness regulations
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_trail_segment_buffer_pending
+      geometry_review_note: Needs official trail segment geometry and one-mile buffers clipped to Mt. Baker Wilderness.
+
+  - slug: mt-baker-snoqualmie-glacier-peak-image-byrne-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Glacier Peak Image Lake and Lake Byrne campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    duration_type: permanent
+    affected_area: Within 1/4 mile slope distance of Image Lake and Lake Byrne in Glacier Peak Wilderness
+    summary: Campfires are prohibited within 1/4 mile slope distance of Image Lake and Lake Byrne in the Mt. Baker-Snoqualmie portion of Glacier Peak Wilderness.
+    evidence_quotes:
+      - 1/4 mile slope distance of Image and Lake Byrne.
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/glacier-peak-wilderness-mt-baker-snoqualmie
+    source_title: Glacier Peak Wilderness Mt. Baker-Snoqualmie regulations
+    confidence: 0.88
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-baker-snoqualmie-glacier-peak-quarter-mile-image-byrne-lakes
+      name: Glacier Peak Image Lake and Lake Byrne 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around NHD waterbody polygons for Image Lake and Lake Byrne.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-baker-snoqualmie-glacier-peak-quarter-mile-image-byrne-lakes.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/mbs/recreation/glacier-peak-wilderness-mt-baker-snoqualmie
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_waterbody_buffer
+      geometry_warning: Approximate buffers around selected NHD lake polygons, not surveyed closure boundaries.
+
+  - slug: mt-baker-snoqualmie-henry-jackson-west-side-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Henry M. Jackson west-side campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    duration_type: permanent
+    affected_area: Within 1/4 mile of Goat Lake, Glacier Basin Trail, Silver Lake, Upper Twin Lake, and Lower Twin Lake in Henry M. Jackson Wilderness
+    summary: Campfires are prohibited within 1/4 mile of listed Henry M. Jackson Wilderness west-side lakes and Glacier Basin Trail; the generated map currently covers the lake buffers only.
+    evidence_quotes:
+      - Using a fire or campfire, except for self-contained, carry-in devices such as stoves, is prohibited within 1/4 mile of the following locations
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/henry-m-jackson-wilderness-mt-baker-snoqualmie
+    source_title: Henry M. Jackson Wilderness Mt. Baker-Snoqualmie regulations
+    confidence: 0.88
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-baker-snoqualmie-henry-jackson-quarter-mile-named-lakes
+      name: Henry M. Jackson west-side named lake 1/4-mile campfire buffers
+      area_type: named_area
+      area_description: Approximate 1/4-mile buffers around NHD waterbody polygons for Goat Lake, Silver Lake, Upper Twin Lake, and Lower Twin Lake. Glacier Basin Trail is not represented.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-baker-snoqualmie-henry-jackson-quarter-mile-named-lakes.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/mbs/recreation/henry-m-jackson-wilderness-mt-baker-snoqualmie
+        review_note: Generated geometry is partial; Glacier Basin Trail needs an official trail segment buffer.
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_waterbody_buffer_partial
+      geometry_warning: Approximate lake buffers only; Glacier Basin Trail corridor is not mapped.
+
+  - slug: mt-baker-snoqualmie-boulder-river-campfire-prohibitions
+    land_unit_slug: mt-baker-snoqualmie
+    title: Boulder River Wilderness campfire prohibitions
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Bandana Lake, Saddle Lake, the Three Fingers Trail corridor from Saddle Lake, and Goat Flats in Boulder River Wilderness
+    summary: Campfires are prohibited within 200 feet of Bandana and Saddle Lakes, within 1/4 mile of Three Fingers Trail from Saddle Lake, and in Goat Flats; the generated map currently covers the lake buffers only.
+    evidence_quotes:
+      - Campfires are prohibited within 200 feet slope distance of Bandanaor Saddle Lakes
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/boulder-river-wilderness
+    source_title: Boulder River Wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-baker-snoqualmie-boulder-river-200-foot-bandana-saddle-lakes
+      name: Boulder River Bandana and Saddle Lakes 200-foot campfire buffers
+      area_type: named_area
+      area_description: Approximate 200-foot buffers around NHD Bandana Lake and Saddle Lake waterbody polygons. Three Fingers Trail and Goat Flats are not represented.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-baker-snoqualmie-boulder-river-200-foot-bandana-saddle-lakes.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/mbs/recreation/boulder-river-wilderness
+        review_note: Generated geometry is partial; Three Fingers Trail and Goat Flats need official/manual geometry.
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_waterbody_buffer_partial
+      geometry_warning: Approximate lake buffers only; Three Fingers Trail and Goat Flats are not mapped.
+
+  - slug: mt-baker-snoqualmie-clearwater-summit-lake-basin-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Clearwater Wilderness Summit Lake Basin campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    duration_type: permanent
+    affected_area: Summit Lake Basin in Clearwater Wilderness
+    summary: Campfires are prohibited within Summit Lake Basin in Clearwater Wilderness, except for self-contained carry-in stoves.
+    evidence_quotes:
+      - Campfires prohibited within Summit Lake Basin, except self contained, carry-in devices such as stoves.
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/clearwater-wilderness
+    source_title: Clearwater Wilderness regulations
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_lake_basin_pending
+      geometry_review_note: Summit Lake Basin needs official/manual basin geometry before mapping.
+
+  - slug: mt-baker-snoqualmie-noisy-diobsud-watson-lakes-campfire-prohibition
+    land_unit_slug: mt-baker-snoqualmie
+    title: Noisy-Diobsud Watson Lakes campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    duration_type: permanent
+    affected_area: Watson Lakes in Noisy-Diobsud Wilderness
+    summary: Campfires are prohibited at Watson Lakes in Noisy-Diobsud Wilderness.
+    evidence_quotes:
+      - Campfires prohibited at Watson Lakes
+    source_url: https://www.fs.usda.gov/r06/mbs/recreation/noisy-diobsud-wilderness
+    source_title: Noisy-Diobsud Wilderness regulations
+    confidence: 0.86
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: named_area_manual_review
+      geometry_review_note: Source says at Watson Lakes without a distance; avoid mapping until an official basin/campsite boundary is available.
+
+  - slug: okanogan-wenatchee-glacier-peak-holden-lyman-campfire-prohibition
+    land_unit_slug: okanogan-wenatchee
+    title: Glacier Peak Holden and Lyman Lakes campfire buffers
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    alcohol_stove_policy: allowed
+    duration_type: permanent
+    affected_area: Within 200 feet slope distance of Holden Lake and Lyman Lake in Glacier Peak Wilderness
+    summary: Campfires are prohibited within 200 feet slope distance of Holden Lake and Lyman Lake in the Okanogan-Wenatchee portion of Glacier Peak Wilderness.
+    evidence_quotes:
+      - 200 feet slope distance of Holden and Lyman Lake
+    source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee
+    source_title: Glacier Peak Wilderness Okanogan-Wenatchee regulations
+    confidence: 0.88
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    area:
+      slug: okanogan-wenatchee-glacier-peak-200-foot-holden-lyman-lakes
+      name: Glacier Peak Holden and Lyman Lakes 200-foot campfire buffers
+      area_type: named_area
+      area_description: Approximate 200-foot buffers around NHD waterbody polygons for Holden Lake and Lyman Lake.
+      geometry_path: data/fire_restrictions/localized_geometries/okanogan-wenatchee-glacier-peak-200-foot-holden-lyman-lakes.geojson
+      geometry_source_type: derived_nhd_waterbody_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_localized_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: derived_nhd_waterbody_buffer
+      geometry_warning: Approximate buffers around selected NHD lake polygons, not surveyed closure boundaries.
+
+  - slug: rogue-river-siskiyou-ashland-watershed-fire-camping-prohibition
+    land_unit_slug: rogue-river-siskiyou
+    title: Ashland Municipal Watershed camping and fire prohibition
+    origin: curated
+    status: partial
+    campfire_policy: prohibited
+    charcoal_policy: prohibited
+    gas_stove_policy: prohibited
+    liquid_fuel_stove_policy: prohibited
+    alcohol_stove_policy: prohibited
+    solid_fuel_stove_policy: prohibited
+    wood_stove_policy: prohibited
+    duration_type: temporary
+    effective_start: "2023-06-21"
+    effective_end: "2028-07-01"
+    affected_area: Ashland Watershed Closure Area on the Siskiyou Mountains Ranger District of the Rogue River-Siskiyou National Forest
+    summary: Camping and building, maintaining, attending, or using a fire, campfire, or stove fire are prohibited in the Ashland Watershed Closure Area while the order is active.
+    evidence_quotes:
+      - Building, maintaining, attending or using a fire, campfire, or stove fire.
+    source_url: https://www.fs.usda.gov/r06/rogue-siskiyou/alerts/ashland-municipal-watershed-camping-and-fire-prohibition
+    source_title: Ashland Municipal Watershed Camping and Fire Prohibition
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2028-06-01"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 06-10-20-23-52
+      date_note: Alert metadata lists July 21, 2028, but the order text terminates July 1, 2028 unless rescinded.
+      geometry_review_note: Official Exhibit A and legal descriptions exist, but BFP has not digitized the watershed closure area yet.
+
+  - slug: klamath-devils-punchbowl-wood-fire-prohibition
+    land_unit_slug: klamath
+    title: Devil's Punchbowl wood fire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    wood_stove_policy: prohibited
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2026-04-07"
+    effective_end: "2028-04-07"
+    affected_area: Devil's Punchbowl Campfire Prohibition Area in Section 6, Township 16 North, Range 5 East, HBM, Siskiyou Wilderness
+    summary: Wood fires are prohibited in the Devil's Punchbowl Campfire Prohibition Area; pressurized liquid or gas devices with shutoff valves may be used with a valid California Campfire Permit.
+    evidence_quotes:
+      - Building, maintaining, attending, or using a wood fire for any purpose within the Devil’s Punchbowl Campfire Prohibition Area
+    source_url: https://www.fs.usda.gov/r05/klamath/alerts/wilderness-area-restrictions-siskiyou-marble-mountain-and-russian-wilderness
+    source_title: Klamath wilderness area restrictions
+    confidence: 0.9
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2028-03-01"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 05-05-00-26-01
+      geometry_review_note: Needs PLSS Section 6 T16N R5E HBM geometry clipped to Klamath/Siskiyou Wilderness and QA against the official map.
+
+  - slug: shasta-trinity-mt-shasta-wilderness-campfire-prohibition
+    land_unit_slug: shasta-trinity
+    title: Mt. Shasta Wilderness campfire prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2024-11-09"
+    effective_end: "2026-11-08"
+    affected_area: Mt. Shasta Wilderness Area on the Shasta-Trinity National Forest
+    summary: Campfires are not permitted anywhere within Mt. Shasta Wilderness; portable gas, jellied petroleum, or pressurized liquid fuel stoves with shutoff valves may be used with a valid California Campfire Permit.
+    evidence_quotes:
+      - Campfires are not permitted anywhere within the Mt. Shasta Wilderness Area.
+    source_url: https://www.fs.usda.gov/r05/shasta-trinity/alerts/mt-shasta-wilderness-area-restrictions
+    source_title: Mt. Shasta Wilderness Area Restrictions
+    confidence: 0.94
+    review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_16
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-10-08"
+    area:
+      slug: shasta-trinity-mt-shasta-wilderness
+      name: Mt. Shasta Wilderness
+      area_type: wilderness
+      area_description: Mt. Shasta Wilderness polygon from the USFS EDW wilderness boundary, clipped to the Shasta-Trinity National Forest boundary.
+      geometry_path: data/fire_restrictions/localized_geometries/shasta-trinity-mt-shasta-wilderness.geojson
+      geometry_source_type: usfs_edw_wilderness
+      geometry_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+      geometry_external_id: "281"
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: source
+        generated_by: scripts/fire_restrictions/generate_wilderness_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r05/shasta-trinity/alerts/mt-shasta-wilderness-area-restrictions
+        wilderness_boundary_status: Provisional, Subject to Change
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: usfs_edw_wilderness
+      geometry_review_note: USFS EDW labels the wilderness boundary as provisional, subject to change.
+
+  - slug: shasta-trinity-panther-basin-fire-camping-prohibition
+    land_unit_slug: shasta-trinity
+    title: Panther Basin fire and camping prohibition
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    gas_stove_policy: allowed_with_shutoff_valve
+    liquid_fuel_stove_policy: allowed_with_shutoff_valve
+    alcohol_stove_policy: allowed_with_shutoff_valve
+    stove_shutoff_valve_required: true
+    duration_type: temporary
+    effective_start: "2024-08-12"
+    effective_end: "2026-08-12"
+    affected_area: Panther Basin area below Mount Shasta as described in Exhibit A and shown on Exhibit C
+    summary: Camping and building, maintaining, attending, or using a fire, campfire, or stove fire are prohibited in Panther Basin except for portable gas, jellied petroleum, or pressurized liquid fuel stoves with shutoff valves.
+    evidence_quotes:
+      - Building, maintaining, attending, or using a fire, campfire, or stove fire, except a portable stove using gas, jellied petroleum or pressurized liquid fuel, with a shut off valve within the Panther Basin area
+    source_url: https://www.fs.usda.gov/r05/shasta-trinity/alerts/panther-basin-and-panther-meadows-restrictions
+    source_title: Panther Basin and Panther Meadows Restrictions
+    confidence: 0.84
+    review_status: needs_review
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2026-06-15"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_order_map_pending
+      order_number: 14-24-10
+      date_note: Alert metadata lists August 14 dates, while embedded order text says August 12, 2024 through August 12, 2026.
+      review_note: Needs human/date review and overlap review against the broader Mt. Shasta Wilderness campfire prohibition.

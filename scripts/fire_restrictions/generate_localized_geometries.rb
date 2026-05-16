@@ -17,6 +17,67 @@ BUFFER_RESOLUTION = 12
 
 GROUPS = [
   {
+    slug: "fremont-winema-gearhart-blue-lake-200-foot-campfire-buffer",
+    title: "Gearhart Mountain Blue Lake 200-foot campfire buffer",
+    source_url: "https://www.fs.usda.gov/r06/fremont-winema/wilderness",
+    radius_miles: 0.0378788,
+    bbox: [-120.93, 42.45, -120.75, 42.6],
+    center: [-120.84, 42.52],
+    lakes: [
+      "Blue Lake"
+    ]
+  },
+  {
+    slug: "mt-baker-snoqualmie-glacier-peak-quarter-mile-image-byrne-lakes",
+    title: "Glacier Peak Image Lake and Lake Byrne 1/4-mile campfire buffers",
+    source_url: "https://www.fs.usda.gov/r06/mbs/recreation/glacier-peak-wilderness-mt-baker-snoqualmie",
+    radius_miles: 0.25,
+    bbox: [-121.35, 48.0, -120.9, 48.28],
+    center: [-121.12, 48.15],
+    lakes: [
+      "Image Lake",
+      "Lake Byrne"
+    ]
+  },
+  {
+    slug: "okanogan-wenatchee-glacier-peak-200-foot-holden-lyman-lakes",
+    title: "Glacier Peak Holden and Lyman Lakes 200-foot campfire buffers",
+    source_url: "https://www.fs.usda.gov/r06/okanogan-wenatchee/recreation/glacier-peak-wilderness-okanogan-wenatchee",
+    radius_miles: 0.0378788,
+    bbox: [-121.0, 48.12, -120.75, 48.28],
+    center: [-120.88, 48.21],
+    lakes: [
+      "Holden Lake",
+      "Lyman Lake"
+    ]
+  },
+  {
+    slug: "mt-baker-snoqualmie-henry-jackson-quarter-mile-named-lakes",
+    title: "Henry M. Jackson west-side named lake 1/4-mile campfire buffers",
+    source_url: "https://www.fs.usda.gov/r06/mbs/recreation/henry-m-jackson-wilderness-mt-baker-snoqualmie",
+    radius_miles: 0.25,
+    bbox: [-121.5, 47.88, -121.25, 48.08],
+    center: [-121.37, 47.98],
+    lakes: [
+      {name: "Goat Lake", aliases: ["Goat Lake"], center: [-121.3508, 48.0167]},
+      {name: "Silver Lake", aliases: ["Silver Lake"], center: [-121.4083, 47.9732]},
+      {name: "Upper Twin Lake", aliases: ["Twin Lakes"], center: [-121.3773, 47.9533]},
+      {name: "Lower Twin Lake", aliases: ["Twin Lakes"], center: [-121.3768, 47.9494]}
+    ]
+  },
+  {
+    slug: "mt-baker-snoqualmie-boulder-river-200-foot-bandana-saddle-lakes",
+    title: "Boulder River Bandana and Saddle Lakes 200-foot campfire buffers",
+    source_url: "https://www.fs.usda.gov/r06/mbs/recreation/boulder-river-wilderness",
+    radius_miles: 0.0378788,
+    bbox: [-121.85, 48.12, -121.68, 48.24],
+    center: [-121.76, 48.18],
+    lakes: [
+      "Bandana Lake",
+      "Saddle Lake"
+    ]
+  },
+  {
     slug: "wallowa-whitman-eagle-cap-quarter-mile-named-lakes",
     title: "Eagle Cap named lake 1/4-mile campfire buffers",
     source_url: "https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness",
@@ -108,7 +169,8 @@ GROUPS = [
     bbox: [-121.35, 47.8, -120.25, 48.65],
     center: [-120.85, 48.2],
     lakes: [
-      {name: "Ice Lakes", aliases: ["Ice Lakes", "Ice Lake", "Upper Ice Lake", "Lower Ice Lake"]}
+      {name: "Upper Ice Lake", aliases: ["Ice Lakes", "Ice Lake", "Upper Ice Lake", "Lower Ice Lake"], center: [-120.7954, 48.1318]},
+      {name: "Lower Ice Lake", aliases: ["Ice Lakes", "Ice Lake", "Upper Ice Lake", "Lower Ice Lake"], center: [-120.7837, 48.1333]}
     ]
   },
   {
@@ -209,6 +271,12 @@ def lake_aliases(lake)
   return [lake] unless lake.is_a?(Hash)
 
   lake.fetch(:aliases, [lake.fetch(:name)])
+end
+
+def lake_center(lake, group)
+  return group.fetch(:center) unless lake.is_a?(Hash)
+
+  lake.fetch(:center, group.fetch(:center))
 end
 
 def coordinate_pairs(value, pairs = [])
@@ -338,7 +406,7 @@ def generated_feature(group)
 
   group.fetch(:lakes).each do |lake|
     features = dedupe_features(lake_aliases(lake).flat_map { |name| query_waterbody(name, group.fetch(:bbox)) })
-    best = best_feature(features, group.fetch(:center))
+    best = best_feature(features, lake_center(lake, group))
 
     if best
       feature, center = best

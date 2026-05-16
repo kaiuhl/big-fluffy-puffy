@@ -3,7 +3,7 @@
   "properties": {
     "slug": "gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes",
     "title": "William O. Douglas Dewey Lakes 1/4-mile campfire buffer",
-    "generated_at": "2026-05-16T20:49:03Z",
+    "generated_at": "2026-05-16T21:34:18Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,

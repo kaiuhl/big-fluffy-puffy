@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-hood-burnt-lake-half-mile-campfire-buffer",
     "title": "Burnt Lake 1/2-mile campfire buffer",
-    "generated_at": "2026-05-16T20:49:02Z",
+    "generated_at": "2026-05-16T21:34:17Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.5,

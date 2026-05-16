@@ -85,9 +85,9 @@ RSpec.describe "fire restriction database integration", :db do
 
     counts = BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
 
-    expect(counts[:rules]).to eq(35)
-    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(32)
-    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(3)
+    expect(counts[:rules]).to eq(50)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(46)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(4)
 
     detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("wallowa-whitman")
     eagle_cap = detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "wallowa-whitman-eagle-cap-named-lakes-campfire-prohibition" }
@@ -136,14 +136,30 @@ RSpec.describe "fire restriction database integration", :db do
     siuslaw_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("siuslaw")
     expect(siuslaw_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("siuslaw-snowy-plover-dry-sand-burning-prohibition")
 
+    baker_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("mt-baker-snoqualmie")
+    alpine_lakes = baker_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "mt-baker-snoqualmie-alpine-lakes-4000-ft-campfire-prohibition" }
+    expect(alpine_lakes).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_dem_elevation"
+    )
+
+    shasta_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("shasta-trinity")
+    mt_shasta = shasta_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "shasta-trinity-mt-shasta-wilderness-campfire-prohibition" }
+    expect(mt_shasta).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "usfs_edw_wilderness"
+    )
+
     map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "wallowa-whitman").geojson
     localized_feature = map.fetch(:features).find { |feature| feature.dig(:properties, :kind) == "localized_restriction" }
 
     expect(localized_feature.dig(:geometry, "type")).to eq("MultiPolygon")
     expect(localized_feature.dig(:properties, :geometry_is_approximate)).to be(true)
 
-    trinity_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("klamath")
-    expect(trinity_detail.fetch(:localized_restrictions)).to be_empty
+    klamath_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("klamath")
+    expect(klamath_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("klamath-devils-punchbowl-wood-fire-prohibition")
   end
 
   it "preserves accepted review state for seed-reviewed geometry-only upgrades" do

@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-hood-wahtum-lake-200-foot-campfire-buffer",
     "title": "Wahtum Lake 200-foot campfire buffer",
-    "generated_at": "2026-05-16T20:49:02Z",
+    "generated_at": "2026-05-16T21:34:18Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.0378788,
