@@ -20,7 +20,12 @@ module BFP
       end
 
       def policy_label(value)
-        labelize(value.to_s.empty? ? "unknown" : value.to_s)
+        case value.to_s.empty? ? "unknown" : value.to_s
+        when "fire_pan_required"
+          "Fire pan required"
+        else
+          labelize(value.to_s.empty? ? "unknown" : value.to_s)
+        end
       end
 
       def stove_policy_label(value, shutoff_required: nil)
@@ -30,6 +35,8 @@ module BFP
           "Allowed with shutoff valve"
         when "developed_sites_only"
           "Developed sites only"
+        when "fire_pan_required"
+          "Fire pan required"
         else
           labelize(policy)
         end

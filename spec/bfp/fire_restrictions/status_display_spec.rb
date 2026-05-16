@@ -28,6 +28,16 @@ RSpec.describe BFP::FireRestrictions::StatusDisplay do
         described_class.stove_policy_label("allowed_with_shutoff_valve")
       ).to eq("Allowed with shutoff valve")
     end
+
+    it "labels fire-pan requirements clearly" do
+      expect(described_class.stove_policy_label("fire_pan_required")).to eq("Fire pan required")
+    end
+  end
+
+  describe ".policy_label" do
+    it "labels fire-pan campfire requirements clearly" do
+      expect(described_class.policy_label("fire_pan_required")).to eq("Fire pan required")
+    end
   end
 
   describe ".duration_label" do

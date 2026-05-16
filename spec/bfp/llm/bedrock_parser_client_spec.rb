@@ -119,8 +119,9 @@ RSpec.describe BFP::LLM::BedrockParserClient do
       confidence
       needs_review_reasons
     ])
+    expect(rule_properties.fetch("campfire_policy").fetch("enum")).to include("fire_pan_required")
     expect(rule_properties.fetch("charcoal_policy").fetch("enum")).to include("prohibited")
-    expect(rule_properties.fetch("gas_stove_policy").fetch("enum")).to include("allowed_with_shutoff_valve")
+    expect(rule_properties.fetch("gas_stove_policy").fetch("enum")).to include("allowed_with_shutoff_valve", "fire_pan_required")
     expect(rule_properties.fetch("alcohol_stove_policy").fetch("enum")).to include("prohibited")
     expect(rule_properties.fetch("duration_type").fetch("enum")).to eq(%w[unknown permanent seasonal temporary incident])
     expect(rule_properties.fetch("area_type").fetch("enum")).to include("wilderness", "corridor", "incident_area")
@@ -135,6 +136,7 @@ RSpec.describe BFP::LLM::BedrockParserClient do
     system_prompt = request_body_for(client).fetch("system")
     expect(system_prompt).to include("camping/backpacking fire-use")
     expect(system_prompt).to include("gas, liquid-fuel, alcohol, solid fuel/tablet, and wood/biomass stoves")
+    expect(system_prompt).to include("fire_pan_required")
     expect(system_prompt).to include("shutoff valve")
     expect(system_prompt).to include("Exclude chainsaws, welding, industrial IFPL, generators, off-road travel")
     expect(system_prompt).to include("Only include localized_rules entries for active localized camping/backpacking fire-use restrictions")

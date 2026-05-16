@@ -31,6 +31,7 @@ module BFP
         - Evidence quotes must be exact short spans from the supplied text.
         - Scope is camping/backpacking fire-use: campfires, charcoal or wood fires, and cooking or heating stoves used for camping/backpacking.
         - Include charcoal restrictions and stove restrictions for gas, liquid-fuel, alcohol, solid fuel/tablet, and wood/biomass stoves, including shutoff valve requirements.
+        - Use campfire_policy "fire_pan_required" when open fires are allowed only in a fire pan or equivalent contained device.
         - Exclude chainsaws, welding, industrial IFPL, generators, off-road travel, and other industrial or motorized-use rules unless the text directly ties them to camping/backpacking fire-use.
         - Restrictive statuses require prohibition, restriction, order, closure, or Stage 1/Stage 2 evidence.
         - A "none" status requires explicit "no restrictions", "lifted", "rescinded", or equivalent evidence.

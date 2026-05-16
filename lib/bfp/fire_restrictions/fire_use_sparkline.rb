@@ -181,7 +181,7 @@ module BFP
         case normalized_policy(policy)
         when "allowed", "allowed_with_shutoff_valve"
           "allowed"
-        when "developed_sites_only"
+        when "developed_sites_only", "fire_pan_required"
           "limited"
         when "prohibited"
           "prohibited"
@@ -200,6 +200,8 @@ module BFP
           "allowed with shutoff valve"
         when "developed_sites_only"
           shutoff_required_for?(item, policy) ? "limited to developed sites with shutoff valve" : "limited to developed sites"
+        when "fire_pan_required"
+          "allowed only with a fire pan"
         when "prohibited"
           "prohibited"
         else

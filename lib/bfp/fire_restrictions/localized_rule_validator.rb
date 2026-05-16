@@ -4,8 +4,8 @@ module BFP
   module FireRestrictions
     class LocalizedRuleValidator
       STATUS_VALUES = %w[unknown advisory partial stage_1 stage_2 full closure year_round].freeze
-      CAMPFIRE_POLICY_VALUES = %w[unknown allowed developed_sites_only prohibited propane_allowed stoves_only].freeze
-      STOVE_POLICY_VALUES = %w[unknown allowed prohibited developed_sites_only allowed_with_shutoff_valve].freeze
+      CAMPFIRE_POLICY_VALUES = %w[unknown allowed developed_sites_only fire_pan_required prohibited propane_allowed stoves_only].freeze
+      STOVE_POLICY_VALUES = %w[unknown allowed fire_pan_required prohibited developed_sites_only allowed_with_shutoff_valve].freeze
       DURATION_TYPE_VALUES = %w[unknown permanent seasonal temporary incident].freeze
       AREA_TYPE_VALUES = %w[
         unknown

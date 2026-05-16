@@ -32,4 +32,11 @@ RSpec.describe BFP::FireRestrictions::FireUseSparkline do
       "Campfires prohibited. Gas stoves allowed with shutoff valve. Alcohol stoves unknown. Charcoal, solid fuel stoves, and wood stoves prohibited."
     )
   end
+
+  it "treats fire-pan requirements as limited campfire use" do
+    html = described_class.render(rule.merge(campfire_policy: "fire_pan_required"))
+
+    expect(html).to include("fire-use-point-limited")
+    expect(described_class.summary(rule.merge(campfire_policy: "fire_pan_required"))).to start_with("Campfires allowed only with a fire pan.")
+  end
 end

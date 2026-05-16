@@ -85,8 +85,8 @@ RSpec.describe "fire restriction database integration", :db do
 
     counts = BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
 
-    expect(counts[:rules]).to eq(50)
-    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(46)
+    expect(counts[:rules]).to eq(53)
+    expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "accepted").count).to eq(49)
     expect(BFP::FireRestrictions::LocalizedFireUseRule.where(review_status: "needs_review").count).to eq(4)
 
     detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("wallowa-whitman")
@@ -135,6 +135,13 @@ RSpec.describe "fire restriction database integration", :db do
 
     siuslaw_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("siuslaw")
     expect(siuslaw_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("siuslaw-snowy-plover-dry-sand-burning-prohibition")
+
+    umatilla_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("umatilla")
+    fire_pan_rule = umatilla_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "umatilla-wallowa-grande-ronde-firepan-requirement" }
+    expect(fire_pan_rule).to include(
+      campfire_policy: "fire_pan_required",
+      charcoal_policy: "fire_pan_required"
+    )
 
     baker_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("mt-baker-snoqualmie")
     alpine_lakes = baker_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "mt-baker-snoqualmie-alpine-lakes-4000-ft-campfire-prohibition" }

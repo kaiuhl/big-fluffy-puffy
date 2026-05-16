@@ -1644,3 +1644,82 @@ localized_rules:
       order_number: 14-24-10
       date_note: Alert metadata lists August 14 dates, while embedded order text says August 12, 2024 through August 12, 2026.
       review_note: Needs human/date review and overlap review against the broader Mt. Shasta Wilderness campfire prohibition.
+
+  - slug: rogue-river-siskiyou-kalmiopsis-illinois-river-firepan-requirement
+    land_unit_slug: rogue-river-siskiyou
+    title: Kalmiopsis Illinois River fire-pan requirement
+    origin: curated
+    status: year_round
+    campfire_policy: fire_pan_required
+    duration_type: permanent
+    affected_area: Illinois River Wild and Scenic corridor within Kalmiopsis Wilderness
+    summary: Open fires in the Illinois River Wild and Scenic corridor within Kalmiopsis Wilderness must be built in a firepan or similar device that contains the fire and residue.
+    evidence_quotes:
+      - Prohibits building, maintaining, attending or using an open fire except in a firepan or similar device
+    source_url: https://www.fs.usda.gov/r06/rogue-siskiyou/recreation/kalmiopsis-wilderness
+    source_title: Kalmiopsis Wilderness regulations
+    confidence: 0.84
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_wild_scenic_corridor_pending
+      geometry_review_note: Needs official Illinois River Wild and Scenic corridor geometry clipped to Kalmiopsis Wilderness.
+
+  - slug: umatilla-wallowa-grande-ronde-firepan-requirement
+    land_unit_slug: umatilla
+    title: Wallowa and Grande Ronde River open-fire fire-pan requirement
+    origin: curated
+    status: year_round
+    campfire_policy: fire_pan_required
+    charcoal_policy: fire_pan_required
+    duration_type: permanent
+    affected_area: Wallowa and Grande Ronde River corridor between Minam, Oregon, and Heller Bar, Washington
+    summary: Open fires in the Wallowa and Grande Ronde River corridor must be contained in a fire pan, and ash and charcoal must be packed out.
+    evidence_quotes:
+      - All open fires (unless prohibited during high fire danger) must be contained in a fire pan
+    source_url: https://www.fs.usda.gov/r06/umatilla/recreation/wallowagrande-ronde-river
+    source_title: Umatilla National Forest Wallowa/Grande Ronde River
+    confidence: 0.82
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_wild_scenic_corridor_pending
+      geometry_review_note: Needs official Wallowa/Grande Ronde river corridor geometry and land-unit intersection before mapping.
+
+  - slug: wallowa-whitman-hells-canyon-snake-river-seasonal-fire-restriction
+    land_unit_slug: wallowa-whitman
+    title: Hells Canyon Snake River annual fire restriction
+    origin: curated
+    status: year_round
+    campfire_policy: prohibited
+    charcoal_policy: fire_pan_required
+    gas_stove_policy: allowed
+    liquid_fuel_stove_policy: allowed
+    wood_stove_policy: allowed
+    duration_type: seasonal
+    season_start_month: 6
+    season_start_day: 1
+    season_end_month: 9
+    season_end_day: 30
+    affected_area: Within 1/4 mile of the Snake River between Hells Canyon Dam and the Oregon-Washington border in Hells Canyon National Recreation Area
+    summary: From June 1 through September 30, fire, campfire, and stove fire are prohibited within 1/4 mile of the Snake River between Hells Canyon Dam and the Oregon-Washington border, with exemptions for charcoal in a firepan, liquid petroleum or LPG fuel, and properly equipped wood stoves.
+    evidence_quotes:
+      - It is prohibited to build, maintain, attend, or use a fire, campfire, or stove fire within a ¼ mile of the Snake River
+    source_url: https://www.fs.usda.gov/r06/wallowa-whitman/newsroom/releases/hells-canyon-national-recreation-area-annual-fire
+    source_title: Hells Canyon National Recreation Area annual fire restrictions
+    confidence: 0.88
+    review_status: accepted
+    published_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-16T00:00:00Z"
+    next_review_due_on: "2027-05-16"
+    metadata_json:
+      checked_on: "2026-05-16"
+      geometry_strategy: official_river_corridor_buffer_pending
+      geometry_review_note: Needs official Snake River corridor or repeatable river-mile segment geometry buffered 1/4 mile.
+      stove_review_note: Wood stove exemption requires a five-foot chimney and spark arresting screen; the current data model only records wood stoves as allowed.
