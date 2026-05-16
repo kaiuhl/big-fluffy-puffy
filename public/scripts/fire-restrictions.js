@@ -1,6 +1,5 @@
 (function () {
   var DEFAULT_FIT_MAX_ZOOM = 8;
-  var DEFAULT_FIT_ZOOM_OFFSET = 1;
 
   function normalize(value) {
     return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -126,11 +125,25 @@
     }[status] || "#8b8b8b";
   }
 
-  function addBaseMap(map) {
+  function addBaseMap(map, baseMap) {
+    if (baseMap === "osm") {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      return;
+    }
+
     L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 16,
       attribution: 'Tiles: <a href="https://www.usgs.gov/programs/national-geospatial-program/national-map">USGS The National Map</a>'
     }).addTo(map);
+  }
+
+  function fitZoomOffset(value) {
+    var offset = parseInt(value || "0", 10);
+
+    return Number.isNaN(offset) || offset < 1 ? 0 : offset;
   }
 
   function ringToLatLngs(ring) {
@@ -257,9 +270,10 @@
     var map = L.map(container, {
       scrollWheelZoom: false
     }).setView([43.9, -121.9], 6);
+    var zoomOffset = fitZoomOffset(container.dataset.mapFitZoomOffset);
 
     enableShapeDoubleClickZoom(map, container);
-    addBaseMap(map);
+    addBaseMap(map, container.dataset.mapBasemap);
 
     fetch(container.dataset.mapEndpoint || "/api/fire-restrictions/map")
       .then(function (response) {
@@ -315,7 +329,7 @@
           }
         }).addTo(map);
 
-        fitMapToLayer(map, boundsLayer);
+        fitMapToLayer(map, boundsLayer, zoomOffset);
 
         setStatus("Map showing " + forestCount(features.length) + ".");
       })
@@ -364,7 +378,7 @@
     });
   }
 
-  function fitMapToLayer(map, layer) {
+  function fitMapToLayer(map, layer, zoomOffset) {
     var bounds = layer.getBounds();
     var fitQueued = false;
     var attempts = 0;
@@ -389,10 +403,11 @@
 
       attempts = 0;
       map.fitBounds(bounds, {
+        animate: false,
         maxZoom: DEFAULT_FIT_MAX_ZOOM,
         padding: [18, 18]
       });
-      zoomInAfterFit(map);
+      zoomMapAfterFit(map, zoomOffset);
     }
 
     function queueFit() {
@@ -410,7 +425,9 @@
     window.addEventListener("resize", queueFit);
   }
 
-  function zoomInAfterFit(map) {
+  function zoomMapAfterFit(map, zoomOffset) {
+    if (!zoomOffset) return;
+
     var currentZoom = map.getZoom();
     var mapMaxZoom = map.getMaxZoom();
 
@@ -419,7 +436,7 @@
     }
 
     var targetZoom = Math.min(
-      currentZoom + DEFAULT_FIT_ZOOM_OFFSET,
+      currentZoom + zoomOffset,
       DEFAULT_FIT_MAX_ZOOM,
       mapMaxZoom
     );
