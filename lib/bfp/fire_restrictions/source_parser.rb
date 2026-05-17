@@ -3,12 +3,27 @@ require "digest"
 require_relative "auto_review_policy"
 require_relative "extractors/nps_alerts_extractor"
 require_relative "localized_rule_validator"
+require_relative "models"
 
 module BFP
   module FireRestrictions
     class SourceParser
       PRIMARY_MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
       ESCALATION_MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+      NPS_BACKCOUNTRY_FIRE_RESTRICTIONS = {
+        "mount-rainier-wilderness-regulations" => {
+          pattern: /following items or activities are prohibited on the trails and in the backcountry of Mount Rainier National Park:\s*Fire \(white gas, iso-butane cartridge, alcohol stoves are okay\. No bio-fuel stoves; i\.e\., those that burn twigs, sticks, cones, etc\.\)/i,
+          evidence_quote: "following items or activities are prohibited on the trails and in the backcountry of Mount Rainier National Park: Fire (white gas, iso-butane cartridge, alcohol stoves are okay. No bio-fuel stoves; i.e., those that burn twigs, sticks, cones, etc.)",
+          affected_area: "trails and backcountry",
+          summary: "Fires are prohibited on Mount Rainier trails and in the backcountry; white gas, iso-butane cartridge, and alcohol stoves are allowed."
+        },
+        "crater-lake-backcountry-faq" => {
+          pattern: /Campfires are prohibited in the park's backcountry/i,
+          evidence_quote: "Campfires are prohibited in the park's backcountry.",
+          affected_area: "park backcountry",
+          summary: "Campfires are prohibited in Crater Lake's backcountry; fuel-canister and liquid-fuel camp stoves are permitted."
+        }
+      }.freeze
 
       def initialize(parser_client: BFP::LLM::ParserClient.build, validator: ObservationValidator.new, localized_rule_validator: LocalizedRuleValidator.new, auto_review_policy: AutoReviewPolicy.new)
         @parser_client = parser_client
@@ -424,7 +439,8 @@ module BFP
 
       def apply_structural_overrides(result, text, source)
         result = result.dup
-        apply_current_pur_override(result, text, source)
+        result = apply_current_pur_override(result, text, source)
+        apply_nps_backcountry_fire_override(result, text, source)
       end
 
       def apply_current_pur_override(result, text, source)
@@ -452,6 +468,37 @@ module BFP
 
       def ignorable_current_pur_reason?(reason)
         reason.to_s.match?(/Seasonal Restrictions|Phase A|campfire policy|effective dates|template|informational page/i)
+      end
+
+      def apply_nps_backcountry_fire_override(result, text, source)
+        return result unless source.respond_to?(:authority)
+        return result unless source.respond_to?(:source_type)
+        return result unless source.respond_to?(:slug)
+        return result unless source.authority == "official_nps"
+        return result unless source.source_type == "nps_fire_page"
+
+        restriction = NPS_BACKCOUNTRY_FIRE_RESTRICTIONS[source.slug.to_s]
+        return result unless restriction
+        return result unless text.match?(restriction.fetch(:pattern))
+
+        result.merge(
+          "status" => "year_round",
+          "campfire_policy" => "prohibited",
+          "fire_danger_rating" => nil,
+          "ifpl_level" => nil,
+          "effective_start" => nil,
+          "effective_end" => nil,
+          "order_number" => nil,
+          "affected_area" => restriction.fetch(:affected_area),
+          "summary" => restriction.fetch(:summary),
+          "evidence_quotes" => [restriction.fetch(:evidence_quote)],
+          "confidence" => [result["confidence"].to_f, 0.95].max,
+          "needs_review_reasons" => Array(result["needs_review_reasons"]).reject { |reason| ignorable_nps_backcountry_reason?(reason) }
+        )
+      end
+
+      def ignorable_nps_backcountry_reason?(reason)
+        reason.to_s.match?(/LLM parsing is disabled or unavailable|campfire policy|effective dates|permanent|backcountry/i)
       end
 
       def parse_error_result(error, model_id)

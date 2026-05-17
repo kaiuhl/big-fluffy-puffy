@@ -90,6 +90,45 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(normalized["needs_review_reasons"]).to be_empty
   end
 
+  it "normalizes Mount Rainier's official backcountry fire rule without LLM parsing" do
+    result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
+    source = nps_source("mount-rainier-wilderness-regulations")
+    text = <<~TEXT
+      The following items or activities are prohibited on the trails and in the backcountry of Mount Rainier National Park:
+      Fire (white gas, iso-butane cartridge, alcohol stoves are okay. No bio-fuel stoves; i.e., those that burn twigs, sticks, cones, etc.)
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "year_round",
+      "campfire_policy" => "prohibited",
+      "affected_area" => "trails and backcountry"
+    )
+    expect(normalized["confidence"]).to eq(0.95)
+    expect(normalized["needs_review_reasons"]).to be_empty
+  end
+
+  it "normalizes Crater Lake's official backcountry campfire rule without LLM parsing" do
+    result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
+    source = nps_source("crater-lake-backcountry-faq")
+
+    normalized = parser.send(
+      :apply_structural_overrides,
+      result,
+      "Campfires are prohibited in the park's backcountry. Backpacking stoves or camp stoves that utilize fuel canisters and/or canisters of liquid fuel are permitted.",
+      source
+    )
+
+    expect(normalized).to include(
+      "status" => "year_round",
+      "campfire_policy" => "prohibited",
+      "affected_area" => "park backcountry"
+    )
+    expect(normalized["evidence_quotes"]).to eq(["Campfires are prohibited in the park's backcountry."])
+    expect(normalized["needs_review_reasons"]).to be_empty
+  end
+
   it "marks parser results with only localized rules as localized observations" do
     result = parser_result("partial", confidence: 0.8).merge(
       "campfire_policy" => "unknown",
@@ -220,6 +259,15 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
       name: "Willamette Fire Info",
       url: "https://example.test/fire",
       metadata: metadata
+    )
+  end
+
+  def nps_source(slug)
+    Struct.new(:source_type, :id, :authority, :slug, keyword_init: true).new(
+      source_type: "nps_fire_page",
+      id: 2,
+      authority: "official_nps",
+      slug: slug
     )
   end
 
