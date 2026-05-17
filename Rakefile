@@ -248,6 +248,20 @@ namespace :places do
     puts "Imported #{counts[:places]} places and #{counts[:names]} names from #{counts[:datasets]} place datasets."
   end
 
+  desc "Import and resolve one configured place dataset by slug"
+  task :refresh_dataset, [:dataset_slug] do |_task, args|
+    load_places
+
+    slug = args[:dataset_slug].to_s
+    raise "Usage: rake places:refresh_dataset[dataset_slug]" if slug.empty?
+
+    counts = BFP::Places::Importer.new.import(dataset_slugs: [slug])
+    puts "Imported #{counts[:places]} places and #{counts[:names]} names from #{counts[:datasets]} place datasets."
+
+    resolve_counts = BFP::Places::Resolver.new.resolve(dataset_slug: slug)
+    puts "Resolved #{resolve_counts[:land_unit_matches]} land-unit matches and #{resolve_counts[:localized_rule_matches]} localized rule matches."
+  end
+
   desc "Seed BFP-curated destinations and localized restriction areas"
   task :seed_manual do
     load_places

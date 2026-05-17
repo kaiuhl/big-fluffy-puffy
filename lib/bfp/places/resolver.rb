@@ -10,16 +10,16 @@ module BFP
         @now = now
       end
 
-      def resolve
+      def resolve(dataset_slug: nil)
         counts = {land_unit_matches: 0, localized_rule_matches: 0}
+        scoped_places = places(dataset_slug: dataset_slug)
 
         BFP.db.transaction do
-          PlaceLandUnitMatch.dataset.delete
-          PlaceLocalizedRuleMatch.dataset.delete
+          reset_matches(scoped_places, scoped: !dataset_slug.to_s.empty?)
           land_unit_match_rows = []
           localized_rule_match_rows = []
 
-          places.each do |place|
+          scoped_places.each do |place|
             place_geometry = place_geometry_for(place)
             point = Geometry.point_for(place)
             place_bounds = Geometry.bounds_for_place(place)
@@ -54,8 +54,27 @@ module BFP
 
       private
 
-      def places
-        Place.where(active: true).all
+      def places(dataset_slug: nil)
+        dataset = PlaceDataset.first(slug: dataset_slug) unless dataset_slug.to_s.empty?
+        return [] if dataset_slug.to_s != "" && !dataset
+
+        scope = Place.where(active: true)
+        scope = scope.where(source_dataset_id: dataset.id) if dataset
+        scope.all
+      end
+
+      def reset_matches(scoped_places, scoped:)
+        unless scoped
+          PlaceLandUnitMatch.dataset.delete
+          PlaceLocalizedRuleMatch.dataset.delete
+          return
+        end
+
+        place_ids = scoped_places.map(&:id)
+        return if place_ids.empty?
+
+        PlaceLandUnitMatch.where(place_id: place_ids).delete
+        PlaceLocalizedRuleMatch.where(place_id: place_ids).delete
       end
 
       def boundary_geometries

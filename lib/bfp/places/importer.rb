@@ -38,12 +38,15 @@ module BFP
         @cache_dir = cache_dir
       end
 
-      def import
+      def import(dataset_slugs: nil)
         config = YAML.load_file(@path)
         counts = {datasets: 0, places: 0, names: 0}
+        selected_slugs = Array(dataset_slugs).compact.map(&:to_s)
 
         BFP.db.transaction do
           Array(config.fetch("datasets")).each do |dataset_config|
+            next unless selected_slugs.empty? || selected_slugs.include?(dataset_config.fetch("slug"))
+
             dataset = upsert_dataset(dataset_config)
             counts[:datasets] += 1
             next unless dataset_config.fetch("enabled", false)

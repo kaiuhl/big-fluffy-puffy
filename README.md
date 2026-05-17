@@ -84,6 +84,7 @@ bundle exec rake db:migrate
 bundle exec rake que:migrate
 bundle exec rake fire:seed
 bundle exec rake places:refresh
+bundle exec rake 'places:refresh_dataset[usfs-campgrounds]'
 bundle exec rake fire:poll_due
 bundle exec rake fire:review:candidates
 bundle exec rake 'fire:review:forest[willamette]'
