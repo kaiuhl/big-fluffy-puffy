@@ -36,6 +36,7 @@ module BFP
         derived_nhd_centroid_buffer
         derived_nhd_waterbody_buffer
         derived_gnis_feature_buffer
+        affected_area_envelope
         derived_dem_elevation
         derived_usfs_trail_boundary_polygon
         official_order_map_pending

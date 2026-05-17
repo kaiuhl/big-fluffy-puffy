@@ -1,12 +1,12 @@
 # Fire Restriction Localized Review Inventory
 
-Checked date: 2026-05-16.
+Checked date: 2026-05-16. Mt. Hood affected-area envelope update: 2026-05-17.
 
 ## Scope
 
 This inventory supports `config/fire_restriction_curated_rules.yml`, a seed data file for localized camping and backpacking fire-use restrictions that are too specific to publish as forestwide status. Official Forest Service sources were used for accepted Forest Service orders and recreation pages. Mt. Hood wilderness-detail rows use Wilderness Connect pages that the official Mt. Hood fire page links as its year-round wilderness fire-regulation detail source.
 
-The seed uses static generated or digitized geometry only where the rule shape can be represented from an official geodata source with clear provenance. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Elevation rules, trail-bounded areas, lake basins, and order-exhibit areas stay unmapped until a repeatable derivation, official map exhibit, or official GIS layer is available. The Willamette Mt. Jefferson/Mt. Washington lake-basin row is mapped because the order defines those named lake basins as 1/4-mile high-water buffers.
+The seed uses static generated or digitized geometry where the rule shape can be represented from an official geodata source, a repeatable derivation, an official map exhibit, or a clearly labeled affected-area envelope. Current generated lake-buffer shapes are approximate buffers around official NHD waterbody polygons. Exact legal boundaries are preferred, but inexact geometry is acceptable when it helps users identify the relevant named place and the rule details explain the narrower restriction. For example, a named meadow/cove envelope can represent a rule whose text applies only to tree-covered islands inside that meadow, provided the provenance says the polygon is not the exact tree-island boundary. The Willamette Mt. Jefferson/Mt. Washington lake-basin row is mapped because the order defines those named lake basins as 1/4-mile high-water buffers.
 
 ## Seed Summary
 
@@ -14,11 +14,12 @@ The seed uses static generated or digitized geometry only where the rule shape c
 - High-confidence accepted rules: 49
 - Needs-review rules: 4
 - Primary `source_url` values: 39
-- Generated localized GeoJSON files: 27
+- Generated localized GeoJSON files: 28
 - Approximate NHD waterbody-buffer polygons generated: 81
 - Approximate GNIS named-feature buffers generated: 2
 - Approximate USFS trail/boundary polygons generated: 1
-- Checked date embedded in metadata: 2026-05-16
+- Approximate affected-area envelopes generated: 3
+- Primary checked date embedded in metadata: 2026-05-16; Mt. Hood affected-area envelope update checked on 2026-05-17
 
 ## Generated Geometry
 
@@ -26,12 +27,17 @@ Generated files live in `data/fire_restrictions/localized_geometries/` and are c
 
 ```sh
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_localized_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_point_buffer_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_affected_area_envelopes.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_trail_boundary_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_elevation_band_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_wilderness_geometries.rb
 ```
 
-The generator uses RGeo/GEOS and requires the GEOS system library. Docker installs `libgeos-dev` for parity with local generation.
+The generators use RGeo/GEOS and require the GEOS system library. Docker installs `libgeos-dev` for parity with local generation.
 
-Generated geometries are intentionally labeled `derived_nhd_waterbody_buffer` with `geometry_accuracy: approximate`.
-They are good enough to show "roughly where this named lake buffer is" and not good enough to treat as official legal boundaries.
+Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`, with `geometry_accuracy: approximate`.
+They are good enough to show "roughly where this named restriction is" and not good enough to treat as official legal boundaries.
 The Jefferson Park and Waldo Lake island GeoJSON files in the same directory are exceptions: they are hand-digitized `source_pdf_map` polygons from official PDF map exhibits or USGS GeoPDF quadrangles.
 
 Generated coverage:
@@ -44,7 +50,8 @@ Generated coverage:
 | Okanogan-Wenatchee Glacier Peak Ice Lakes | 1 | none | 1/2-mile approximate buffer |
 | Okanogan-Wenatchee William O. Douglas named lakes | 2 | none | 1/4-mile approximate buffers |
 | Gifford Pinchot Goat Rocks named lakes | 2 | none | Partial geometry only; Snowgrass Flats and Dana Yelverton Shelter are not represented |
-| Mt. Hood Ramona Falls and McNeil Point | 2 | none | 500-foot GNIS named-feature point buffers; other Mount Hood Wilderness meadow/island/Paradise Park language is not represented |
+| Mt. Hood Ramona Falls and McNeil Point | 2 | none | 500-foot GNIS named-feature point buffers; retained as an exact-buffer source artifact |
+| Mt. Hood Wilderness named-area envelopes | 3 envelopes plus 2 explicit buffers | none | Affected-area envelopes for Elk Cove, Elk Meadows, and Paradise Park plus the exact Ramona/McNeil buffers; Elk Cove/Elk Meadows details still limit the rule to tree-covered islands |
 | Mt. Hood Burnt Lake | 1 | none | 1/2-mile approximate buffer |
 | Mt. Hood Wahtum Lake | 1 | none | 200-foot approximate buffer |
 | Gifford Pinchot William O. Douglas Dewey Lakes | 1 | none | 1/4-mile approximate buffer |
@@ -120,7 +127,7 @@ Primary sources:
 
 Decision notes:
 
-- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers. The Mount Hood Wilderness named-area row now also maps the explicit 500-foot Ramona Falls and McNeil Point buffers from the current Timberline Trail #600 guide using approximate GNIS point buffers.
+- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers. The Mount Hood Wilderness named-area row maps the explicit 500-foot Ramona Falls and McNeil Point buffers plus broader affected-area envelopes for Elk Cove, Elk Meadows, and Paradise Park from the current Timberline Trail #600 guide. Elk Cove and Elk Meadows remain broader display polygons whose rule details carry the narrower tree-covered-island restriction.
 - Bull Run, Cedar Creek, Beachie/Lionshead, Mount St. Helens, and snowy plover rows are closure/status rows. Where access is prohibited, BFP marks campfire policy as prohibited and records that the campfire policy is inferred from the active access closure rather than from a campfire-only order.
 - Beachie/Lionshead is active on the checked date but expires on 2026-05-21; it is due for immediate post-expiration review.
 - Waldo Lake islands are mapped from official USGS 1997 Waldo Lake and Waldo Mountain GeoPDF quadrangles because the Forest Service recreation page gives the day-use/campfire rule but does not publish machine-readable island boundaries. The geometry represents primary mapped island landforms and remains approximate.
@@ -282,8 +289,8 @@ Related official URLs captured in metadata or review notes:
 - Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD waterbody buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
-- Mt. Hood: Wilderness Connect is used for Burnt Lake and Mark O. Hatfield rows because the official Mt. Hood fire page links it as a detail source for year-round wilderness fire rules. The Mount Hood Wilderness named-area row uses the current official Timberline Trail #600 guide for the explicit Ramona Falls/McNeil Point buffer text and retains Wilderness Connect as prior-source provenance.
-- Mt. Hood: The Mount Hood Wilderness named-area geometry is partial. Meadows, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park remain unmapped until official polygons or repeatable boundary data are available.
+- Mt. Hood: Wilderness Connect is used for Burnt Lake and Mark O. Hatfield rows because the official Mt. Hood fire page links it as a detail source for year-round wilderness fire rules. The Mount Hood Wilderness named-area row uses the current official Timberline Trail #600 guide for the Ramona Falls/McNeil Point buffer text, Elk Cove/Elk Meadows tree-covered-island text, and Paradise Park text; it retains Wilderness Connect as prior-source provenance.
+- Mt. Hood: The Mount Hood Wilderness named-area geometry uses an affected-area envelope for Elk Cove, Elk Meadows, and Paradise Park because exact tree-island and Paradise Park boundary polygons were not available. The public details must preserve the narrower text restriction.
 - Mt. Hood: Mark O. Hatfield Wilderness crosses Mt. Hood and Columbia River Gorge administration. BFP should add a Columbia River Gorge land unit before these rules can be assigned perfectly.
 - Mt. Hood: Eagle Creek Trail needs official trail-segment geometry and a 1000-foot buffer clipped to the described endpoints before mapping.
 - Mt. Hood: Bull Run and Sportsman's Park need official exhibit geometry digitized before mapping.

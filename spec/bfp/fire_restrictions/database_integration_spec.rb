@@ -148,10 +148,11 @@ RSpec.describe "fire restriction database integration", :db do
     expect(mt_hood_named).to include(
       campfire_policy: "prohibited",
       mapped: true,
-      geometry_source_type: "derived_gnis_feature_buffer"
+      geometry_source_type: "affected_area_envelope"
     )
     expect(mt_hood_named.dig(:geometry_provenance, "selected_features")).to include("Ramona Falls", "McNeil Point")
-    expect(mt_hood_named.dig(:geometry_provenance, "geometry_coverage")).to eq("partial_explicit_500_foot_buffers")
+    expect(mt_hood_named.dig(:geometry_provenance, "affected_area_envelopes")).to include("Elk Cove", "Elk Meadows", "Paradise Park")
+    expect(mt_hood_named.dig(:geometry_provenance, "geometry_coverage")).to eq("affected_area_envelope")
 
     gifford_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("gifford-pinchot")
     mt_adams = gifford_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "gifford-pinchot-mt-adams-high-country-campfire-prohibition" }

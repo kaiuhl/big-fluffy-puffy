@@ -8,6 +8,7 @@ Generate them with:
 ```sh
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_localized_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_point_buffer_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_affected_area_envelopes.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_trail_boundary_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_elevation_band_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_wilderness_geometries.rb
@@ -24,8 +25,12 @@ waterbody-buffer pattern, with `select_all_features` for Tenas Lakes so every
 matching NHD polygon in the lake cluster is buffered.
 
 `mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer.geojson` uses the
-GNIS point-buffer pattern for explicit 500-foot named-feature buffers. It does
-not attempt to map broader meadow, island, or Paradise Park language.
+GNIS point-buffer pattern for explicit 500-foot named-feature buffers.
+`mt-hood-wilderness-named-area-campfire-affected-area-envelopes.geojson`
+combines those explicit buffers with broader affected-area envelopes for Elk
+Cove, Elk Meadows, and Paradise Park. The Elk Cove and Elk Meadows polygons are
+not tree-island boundaries; they are named-place envelopes whose rule details
+carry the narrower legal restriction.
 
 `gifford-pinchot-mt-adams-high-country-campfire-prohibition-area.geojson` uses
 official USFS trail centerlines and the Gifford Pinchot/Yakama forest boundary,

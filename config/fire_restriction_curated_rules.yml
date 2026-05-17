@@ -495,8 +495,8 @@ localized_rules:
     status: year_round
     campfire_policy: prohibited
     duration_type: permanent
-    affected_area: Meadows, McNeil Point Shelter buffer, Ramona Falls buffer, Elk Cove and Elk Meadows tree-covered islands, and the Paradise Park PCT corridor in Mount Hood Wilderness
-    summary: Campfires are prohibited in several Mount Hood Wilderness meadows, waterfall/point buffers, tree-covered island areas, and Paradise Park. The mapped geometry covers only the explicit 500-foot Ramona Falls and McNeil Point buffers.
+    affected_area: Meadows, McNeil Point Shelter buffer, Ramona Falls buffer, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park in Mount Hood Wilderness
+    summary: Campfires are prohibited in several Mount Hood Wilderness meadows, waterfall/point buffers, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park. The mapped geometry combines the explicit 500-foot Ramona Falls and McNeil Point buffers with broader affected-area envelopes for Elk Cove, Elk Meadows, and Paradise Park.
     evidence_quotes:
       - Campfires are prohibited in these areas
       - Within 500 feet of Ramona Falls and McNeil Point
@@ -506,38 +506,48 @@ localized_rules:
     source_title: Mt. Hood Timberline Trail #600 Recreation Opportunity Guide
     confidence: 0.84
     review_status: accepted
-    seed_review_override: reviewed_partial_geometry_upgrade_2026_05_16
+    seed_review_override: reviewed_affected_area_envelope_2026_05_17
     published_at: "2026-05-16T00:00:00Z"
-    last_reviewed_at: "2026-05-16T00:00:00Z"
+    last_reviewed_at: "2026-05-17T00:00:00Z"
     next_review_due_on: "2027-05-16"
     area:
-      slug: mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer
-      name: Ramona Falls and McNeil Point 500-foot campfire buffers
+      slug: mt-hood-wilderness-named-area-campfire-affected-area-envelopes
+      name: Mount Hood Wilderness named-area campfire affected-area envelopes
       area_type: named_area
-      area_description: Approximate 500-foot buffers around official USGS GNIS named-feature points for Ramona Falls and McNeil Point. Mount Hood Wilderness meadows, Elk Cove/Elk Meadows tree-covered islands, and Paradise Park are not represented by this geometry.
-      geometry_path: data/fire_restrictions/localized_geometries/mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer.geojson
-      geometry_source_type: derived_gnis_feature_buffer
-      geometry_source_url: https://carto-wfs.nationalmap.gov/arcgis/rest/services/geonames/MapServer
-      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      area_description: Approximate affected-area envelopes for Mount Hood Wilderness named campfire prohibitions. The geometry includes 500-foot GNIS buffers around Ramona Falls and McNeil Point, a broad GNIS-derived Elk Cove envelope, and USFS trail-centerline envelopes for Elk Meadows and Paradise Park. The Elk Cove and Elk Meadows polygons are broader than the legal tree-covered-island restriction.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-hood-wilderness-named-area-campfire-affected-area-envelopes.geojson
+      geometry_source_type: affected_area_envelope
+      geometry_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_TrailNFSPublish_01/MapServer/0
+      geometry_acquired_at: "2026-05-17T00:00:00Z"
       geometry_provenance_json:
         geometry_accuracy: approximate
-        generated_by: scripts/fire_restrictions/generate_point_buffer_geometries.rb
+        generated_by: scripts/fire_restrictions/generate_affected_area_envelopes.rb
         official_rule_source_url: https://www.fs.usda.gov/media/234596
         official_trail_page_url: https://www.fs.usda.gov/r06/mthood/recreation/trails/timberline-trail-600
         linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+        gnis_source_url: https://carto-wfs.nationalmap.gov/arcgis/rest/services/geonames/MapServer
+        trail_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_TrailNFSPublish_01/MapServer/0
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
         selected_features:
           - Ramona Falls
           - McNeil Point
-        geometry_coverage: partial_explicit_500_foot_buffers
-        review_note: This geometry maps only the explicit 500-foot named-feature buffers; meadow, tree-covered island, and Paradise Park language still needs official polygons or repeatable boundary data.
+        affected_area_envelopes:
+          - Elk Cove
+          - Elk Meadows
+          - Paradise Park
+        selected_trails:
+          - Elk Meadows Perimeter Trail #645A
+          - Paradise Park Loop Trail #757
+        geometry_coverage: affected_area_envelope
+        review_note: This geometry maps the named places users need to recognize, not surveyed legal boundaries. Ramona Falls and McNeil Point are explicit 500-foot buffers; Elk Cove and Elk Meadows are broader envelopes where the actual campfire prohibition is limited to tree-covered islands; Paradise Park is mapped from its named loop trail envelope.
     metadata_json:
-      checked_on: "2026-05-16"
-      geometry_strategy: derived_gnis_feature_buffer_partial
+      checked_on: "2026-05-17"
+      geometry_strategy: affected_area_envelope
       linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
       prior_source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
-      geometry_review_note: The official Mt. Hood fire page links to year-round wilderness fire rules; the current Timberline Trail #600 guide provides the explicit Ramona Falls and McNeil Point 500-foot fire buffer text used for this partial geometry.
+      geometry_review_note: The official Mt. Hood fire page links to year-round wilderness fire rules; the current Timberline Trail #600 guide provides the named-area campfire restriction text. This geometry intentionally uses affected-area envelopes where the official text gives precise behavior restrictions but no exact tree-island or Paradise Park boundary polygon.
       excluded_subarea_rule: Burnt Lake is seeded separately with approximate lake-buffer geometry.
-      geometry_warning: Approximate buffers around selected GNIS named-feature points, not surveyed legal boundaries. Meadows, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park remain unmapped.
+      geometry_warning: Approximate affected-area envelopes, not surveyed legal boundaries. Elk Cove and Elk Meadows polygons are broader than the actual tree-covered-island restriction; the rule details describe the narrower restriction.
 
   - slug: mt-hood-burnt-lake-half-mile-campfire-prohibition
     land_unit_slug: mt-hood
