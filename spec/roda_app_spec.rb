@@ -40,6 +40,79 @@ RSpec.describe RodaApp do
     expect(JSON.parse(last_response.body)).to include("land_units")
   end
 
+  it "allows crawlers and advertises the sitemap" do
+    get "/robots.txt"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("User-agent: *")
+    expect(last_response.body).to include("Allow: /")
+    expect(last_response.body).to include("Sitemap: https://bigfluffypuffy.org/sitemap.xml")
+  end
+
+  it "serves a sitemap index for static and trip check sitemaps" do
+    allow_any_instance_of(described_class).to receive(:trip_check_sitemap_page_count).and_return(1)
+
+    get "/sitemap.xml"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/xml")
+    expect(last_response.body).to include("<sitemapindex")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/sitemaps/static.xml</loc>")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/sitemaps/trip-check-1.xml</loc>")
+  end
+
+  it "serves a static sitemap with the public pages and fire restriction pages" do
+    stub_fire_restriction_records(
+      [
+        restriction_record(slug: "mt-hood", name: "Mt. Hood National Forest", land_unit_url: "/fire-restrictions/mt-hood")
+      ]
+    )
+
+    get "/sitemaps/static.xml"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/xml")
+    expect(last_response.body).to include("<urlset")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/</loc>")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/fire-restrictions</loc>")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/fire-restrictions/mt-hood</loc>")
+  end
+
+  it "serves paged trip check sitemaps" do
+    allow_any_instance_of(described_class).to receive(:trip_check_sitemap_page_count).and_return(1)
+    allow_any_instance_of(described_class).to receive(:trip_check_sitemap_paths).with(page: 1).and_return(
+      ["/trip-check/burnt-lake", "/trip-check/wahtum-lake"]
+    )
+
+    get "/sitemaps/trip-check-1.xml"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/xml")
+    expect(last_response.body).to include("<urlset")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/trip-check/burnt-lake</loc>")
+    expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/trip-check/wahtum-lake</loc>")
+  end
+
+  it "renders Google Analytics only when a measurement id is configured" do
+    original = ENV["GOOGLE_ANALYTICS_MEASUREMENT_ID"]
+    ENV.delete("GOOGLE_ANALYTICS_MEASUREMENT_ID")
+
+    get "/"
+    expect(last_response.body).not_to include("googletagmanager.com")
+
+    ENV["GOOGLE_ANALYTICS_MEASUREMENT_ID"] = "G-TEST1234"
+    get "/"
+
+    expect(last_response.body).to include("https://www.googletagmanager.com/gtag/js?id=G-TEST1234")
+    expect(last_response.body).to include('gtag("config", "G-TEST1234");')
+  ensure
+    if original
+      ENV["GOOGLE_ANALYTICS_MEASUREMENT_ID"] = original
+    else
+      ENV.delete("GOOGLE_ANALYTICS_MEASUREMENT_ID")
+    end
+  end
+
   it "exposes place search suggestions" do
     allow_any_instance_of(described_class).to receive(:place_search_suggestions).with("Burnt", limit: 8).and_return(
       [

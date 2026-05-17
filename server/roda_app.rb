@@ -5,6 +5,7 @@ require_relative "helpers/places_helper"
 require_relative "routes/api"
 require_relative "routes/fire_restrictions"
 require_relative "routes/pages"
+require_relative "routes/site_meta"
 require_relative "routes/trip_checks"
 require "bfp/climate/low_sparkline"
 require "bfp/fire_restrictions/fire_use_sparkline"
@@ -74,6 +75,7 @@ class RodaApp < Roda
   include PlacesHelper
   include ApiRoutes
   include FireRestrictionsRoutes
+  include SiteMetaRoutes
   include TripCheckRoutes
   include PageRoutes
 
@@ -93,6 +95,7 @@ class RodaApp < Roda
     route_api(r)
     route_fire_restrictions(r)
     route_trip_checks(r)
+    route_site_meta(r)
     route_pages(r)
   end
 end

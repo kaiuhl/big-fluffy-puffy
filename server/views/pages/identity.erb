@@ -9,6 +9,7 @@
     <meta property="og:description" content="<%= h(page.fetch(:description)) %>">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <%= partial("shared/analytics") %>
   </head>
   <body>
     <div class="page">
