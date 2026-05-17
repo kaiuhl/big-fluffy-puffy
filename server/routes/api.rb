@@ -80,12 +80,14 @@ module ApiRoutes
   def json_response(payload, status: 200)
     response.status = status
     response["Content-Type"] = "application/json"
+    response["X-Robots-Tag"] = "noindex"
     JSON.generate(payload)
   end
 
   def geojson_response(payload, status: 200)
     response.status = status
     response["Content-Type"] = "application/geo+json"
+    response["X-Robots-Tag"] = "noindex"
     JSON.generate(payload)
   end
 end

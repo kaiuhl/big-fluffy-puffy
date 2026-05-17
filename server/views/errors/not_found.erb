@@ -3,7 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= h(title) %> | Big Fluffy Puffy</title>
+    <%= partial("shared/seo_meta",
+      title: "#{title} | Big Fluffy Puffy",
+      description: message,
+      canonical_path: "/",
+      robots: "noindex,follow"
+    ) %>
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <%= partial("shared/analytics") %>
   </head>

@@ -3,11 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trip Check Search | Big Fluffy Puffy</title>
-    <meta
-      name="description"
-      content="Search BFP's source-linked fire-use trip check."
-    >
+    <% page_title = "Trip Check Search | Big Fluffy Puffy" %>
+    <% page_description = "Search BFP's source-linked fire-use trip check for Pacific Northwest destinations." %>
+    <%= partial("shared/seo_meta",
+      title: page_title,
+      description: page_description,
+      canonical_path: "/trip-check",
+      robots: "noindex,follow",
+      structured_data: seo_graph(webpage_schema(path: "/trip-check", title: page_title, description: page_description))
+    ) %>
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <script src="<%= h(RodaApp::PLACE_SEARCH_JS_PATH) %>" defer></script>
     <%= partial("shared/analytics") %>

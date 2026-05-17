@@ -1,0 +1,17 @@
+    <title><%= h(title) %></title>
+    <% if description.to_s != "" %>
+      <meta name="description" content="<%= h(description) %>">
+      <meta property="og:description" content="<%= h(description) %>">
+    <% end %>
+    <% if defined?(robots) && robots.to_s != "" %>
+      <meta name="robots" content="<%= h(robots) %>">
+    <% end %>
+    <link rel="canonical" href="<%= h(canonical_url(canonical_path)) %>">
+    <meta property="og:title" content="<%= h(title) %>">
+    <meta property="og:type" content="<%= h(defined?(og_type) && og_type ? og_type : "website") %>">
+    <meta property="og:url" content="<%= h(canonical_url(canonical_path)) %>">
+    <meta property="og:site_name" content="Big Fluffy Puffy">
+    <meta name="twitter:card" content="summary">
+    <% if defined?(structured_data) && structured_data %>
+      <script type="application/ld+json"><%= json_ld(structured_data) %></script>
+    <% end %>

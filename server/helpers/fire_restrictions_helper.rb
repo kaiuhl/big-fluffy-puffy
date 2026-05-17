@@ -206,11 +206,6 @@ module FireRestrictionsHelper
     land_unit_count(count)
   end
 
-  def google_analytics_measurement_id
-    id = ENV["GOOGLE_ANALYTICS_MEASUREMENT_ID"].to_s.strip
-    id unless id.empty?
-  end
-
   def h(value)
     Rack::Utils.escape_html(value.to_s)
   end

@@ -278,6 +278,7 @@ module BFP
       def serialize_datasets(place)
         [place.source_dataset].compact.map do |dataset|
           {
+            slug: dataset.slug,
             name: dataset.name,
             license_name: dataset.license_name,
             license_url: dataset.license_url,

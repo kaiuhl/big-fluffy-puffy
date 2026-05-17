@@ -2,10 +2,18 @@ require "yaml"
 
 module SiteMetaRoutes
   SITEMAP_URL_LIMIT = 45_000
+  INDEXABLE_TRIP_CHECK_TYPES = %w[
+    campground
+    destination
+    lake
+    localized_restriction_area
+    trail
+    trailhead
+    wilderness
+  ].freeze
   SITEMAP_STATIC_PATHS = [
     {path: "/", priority: "1.0"},
     {path: "/fire-restrictions", priority: "0.9"},
-    {path: "/trip-check", priority: "0.8"},
     {path: "/why-fireless", priority: "0.5"},
     {path: "/about", priority: "0.5"},
     {path: "/contact", priority: "0.4"}
@@ -75,14 +83,27 @@ module SiteMetaRoutes
   end
 
   def fire_restriction_sitemap_entries
-    fire_restriction_sitemap_paths.map do |path|
-      {loc: canonical_url(path), changefreq: "daily", priority: "0.7"}
+    fire_restriction_records.filter_map do |record|
+      path = fire_restriction_sitemap_path(record)
+      next unless path
+
+      {
+        loc: canonical_url(path),
+        lastmod: sitemap_lastmod(checked_at_for(record, preferred_source(record))),
+        changefreq: "daily",
+        priority: "0.7"
+      }.compact
     end
   end
 
   def trip_check_sitemap_entries(page)
-    trip_check_sitemap_paths(page: page).map do |path|
-      {loc: canonical_url(path), changefreq: "weekly", priority: "0.7"}
+    trip_check_sitemap_rows(page: page).map do |row|
+      {
+        loc: canonical_url("/trip-check/#{row.fetch(:slug)}"),
+        lastmod: sitemap_lastmod(row[:updated_at]),
+        changefreq: "weekly",
+        priority: "0.7"
+      }.compact
     end
   end
 
@@ -95,24 +116,27 @@ module SiteMetaRoutes
   end
 
   def sitemap_url_xml(entry)
-    <<~XML
-      <url>
-        <loc>#{xml_escape(entry.fetch(:loc))}</loc>
-        <changefreq>#{xml_escape(entry.fetch(:changefreq))}</changefreq>
-        <priority>#{xml_escape(entry.fetch(:priority))}</priority>
-      </url>
-    XML
+    [
+      "  <url>",
+      "    <loc>#{xml_escape(entry.fetch(:loc))}</loc>",
+      ("    <lastmod>#{xml_escape(entry[:lastmod])}</lastmod>" if entry[:lastmod]),
+      "    <changefreq>#{xml_escape(entry.fetch(:changefreq))}</changefreq>",
+      "    <priority>#{xml_escape(entry.fetch(:priority))}</priority>",
+      "  </url>"
+    ].compact.join("\n") + "\n"
   end
 
-  def fire_restriction_sitemap_paths
-    fire_restriction_records.filter_map do |record|
-      record[:land_unit_url] || record[:forest_url] || ("/fire-restrictions/#{record[:slug]}" if record[:slug])
-    end
+  def fire_restriction_sitemap_path(record)
+    record[:land_unit_url] || record[:forest_url] || ("/fire-restrictions/#{record[:slug]}" if record[:slug])
+  end
+
+  def trip_check_sitemap_rows(page:)
+    offset = (page - 1) * SITEMAP_URL_LIMIT
+    active_trip_check_rows(limit: SITEMAP_URL_LIMIT, offset: offset)
   end
 
   def trip_check_sitemap_paths(page:)
-    offset = (page - 1) * SITEMAP_URL_LIMIT
-    active_trip_check_slugs(limit: SITEMAP_URL_LIMIT, offset: offset).map { |slug| "/trip-check/#{slug}" }
+    trip_check_sitemap_rows(page: page).map { |row| "/trip-check/#{row.fetch(:slug)}" }
   end
 
   def trip_check_sitemap_page(filename)
@@ -133,21 +157,41 @@ module SiteMetaRoutes
   def active_trip_check_slug_count
     require "bfp/places"
 
-    BFP::Places::Place.where(active: true).count
+    indexable_trip_check_places.count
   rescue Sequel::DatabaseError, LoadError
     manual_trip_check_slugs.length
   end
 
-  def active_trip_check_slugs(limit:, offset:)
+  def active_trip_check_rows(limit:, offset:)
     require "bfp/places"
+
+    indexable_trip_check_places
+      .order(:slug)
+      .limit(limit, offset)
+      .select(:slug, :updated_at)
+      .all
+      .map { |place| {slug: place.slug, updated_at: place.updated_at} }
+  rescue Sequel::DatabaseError, LoadError
+    (manual_trip_check_slugs.slice(offset, limit) || []).map { |slug| {slug: slug} }
+  end
+
+  def indexable_trip_check_places
+    require "bfp/places"
+
+    manual_dataset_ids = BFP::Places::PlaceDataset.where(slug: "bfp-manual").select(:id)
+    localized_place_ids = BFP::Places::PlaceLocalizedRuleMatch.select(:place_id)
+    land_unit_place_ids = BFP::Places::PlaceLandUnitMatch.select(:place_id)
 
     BFP::Places::Place
       .where(active: true)
-      .order(:slug)
-      .limit(limit, offset)
-      .select_map(:slug)
-  rescue Sequel::DatabaseError, LoadError
-    manual_trip_check_slugs.slice(offset, limit) || []
+      .where(
+        Sequel.|(
+          {source_dataset_id: manual_dataset_ids},
+          {id: localized_place_ids},
+          Sequel.&({place_type: INDEXABLE_TRIP_CHECK_TYPES}, {id: land_unit_place_ids})
+        )
+      )
+      .distinct
   end
 
   def manual_trip_check_slugs
@@ -160,16 +204,16 @@ module SiteMetaRoutes
     []
   end
 
-  def canonical_url(path)
-    normalized_path = path.to_s.start_with?("/") ? path.to_s : "/#{path}"
-    "#{canonical_site_url}#{normalized_path}"
-  end
+  def sitemap_lastmod(value)
+    return unless value
 
-  def canonical_site_url
-    host = ENV.fetch("CANONICAL_HOST", "bigfluffypuffy.org").to_s.strip
-    host = "bigfluffypuffy.org" if host.empty?
-    url = host.start_with?("http://", "https://") ? host : "https://#{host.sub(%r{\A/+}, "")}"
-    url.chomp("/")
+    if value.respond_to?(:iso8601)
+      value.iso8601.split("T").first
+    else
+      Time.parse(value.to_s).utc.iso8601.split("T").first
+    end
+  rescue ArgumentError
+    nil
   end
 
   def xml_escape(value)

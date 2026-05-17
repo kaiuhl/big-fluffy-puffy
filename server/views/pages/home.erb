@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Big Fluffy Puffy</title>
-    <meta
-      name="description"
-      content="Big Fluffy Puffy is a nonprofit building fireless camp culture in the Pacific Northwest."
-    >
+    <%= partial("shared/seo_meta",
+      title: "Big Fluffy Puffy",
+      description: "Big Fluffy Puffy is a nonprofit building fireless camp culture in the Pacific Northwest.",
+      canonical_path: "/",
+      structured_data: seo_graph(webpage_schema(path: "/", title: "Big Fluffy Puffy", description: "Big Fluffy Puffy is a nonprofit building fireless camp culture in the Pacific Northwest."))
+    ) %>
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <script src="<%= h(RodaApp::PLACE_SEARCH_JS_PATH) %>" defer></script>
     <%= partial("shared/analytics") %>

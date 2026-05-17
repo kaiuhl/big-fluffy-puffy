@@ -2,6 +2,7 @@ require_relative "../config/boot"
 require_relative "view_renderer"
 require_relative "helpers/fire_restrictions_helper"
 require_relative "helpers/places_helper"
+require_relative "helpers/seo_helper"
 require_relative "routes/api"
 require_relative "routes/fire_restrictions"
 require_relative "routes/pages"
@@ -73,6 +74,7 @@ class RodaApp < Roda
   include ViewRenderer
   include FireRestrictionsHelper
   include PlacesHelper
+  include SeoHelper
   include ApiRoutes
   include FireRestrictionsRoutes
   include SiteMetaRoutes

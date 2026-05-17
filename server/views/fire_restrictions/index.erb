@@ -3,11 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PNW Fire Restrictions | Big Fluffy Puffy</title>
-    <meta
-      name="description"
-      content="Pacific Northwest fire restriction status for Big Fluffy Puffy's launch market."
-    >
+    <% page_title = "PNW Fire Restrictions | Big Fluffy Puffy" %>
+    <% page_description = "Source-linked fire restriction and campfire status for Oregon, Washington, and Northern California forests and national parks." %>
+    <%= partial("shared/seo_meta",
+      title: page_title,
+      description: page_description,
+      canonical_path: "/fire-restrictions",
+      structured_data: seo_graph(
+        webpage_schema(path: "/fire-restrictions", title: page_title, description: page_description, breadcrumbs: true),
+        breadcrumb_schema(path: "/fire-restrictions", items: [{name: "Home", path: "/"}, {name: "Fire Restrictions", path: "/fire-restrictions"}])
+      )
+    ) %>
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <script src="/vendor/leaflet/leaflet.js" defer></script>

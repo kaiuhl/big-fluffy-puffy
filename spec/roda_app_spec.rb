@@ -20,6 +20,7 @@ RSpec.describe RodaApp do
     get "/api/version"
 
     expect(last_response).to be_ok
+    expect(last_response.headers.fetch("X-Robots-Tag")).to eq("noindex")
     expect(JSON.parse(last_response.body)).to include(
       "app" => "big-fluffy-puffy",
       "env" => "test"
@@ -46,7 +47,19 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("User-agent: *")
     expect(last_response.body).to include("Allow: /")
+    expect(last_response.body).to include("User-agent: OAI-SearchBot")
+    expect(last_response.body).to include("User-agent: Claude-SearchBot")
+    expect(last_response.body).to include("User-agent: Google-Extended")
     expect(last_response.body).to include("Sitemap: https://bigfluffypuffy.org/sitemap.xml")
+  end
+
+  it "serves an LLM-readable site summary" do
+    get "/llms.txt"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("# Big Fluffy Puffy")
+    expect(last_response.body).to include("not a government agency")
+    expect(last_response.body).to include("https://bigfluffypuffy.org/fire-restrictions")
   end
 
   it "serves a sitemap index for static and trip check sitemaps" do
@@ -76,12 +89,17 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/</loc>")
     expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/fire-restrictions</loc>")
     expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/fire-restrictions/mt-hood</loc>")
+    expect(last_response.body).to include("<lastmod>2026-05-03</lastmod>")
+    expect(last_response.body).not_to include("<loc>https://bigfluffypuffy.org/trip-check</loc>")
   end
 
   it "serves paged trip check sitemaps" do
     allow_any_instance_of(described_class).to receive(:trip_check_sitemap_page_count).and_return(1)
-    allow_any_instance_of(described_class).to receive(:trip_check_sitemap_paths).with(page: 1).and_return(
-      ["/trip-check/burnt-lake", "/trip-check/wahtum-lake"]
+    allow_any_instance_of(described_class).to receive(:trip_check_sitemap_rows).with(page: 1).and_return(
+      [
+        {slug: "burnt-lake", updated_at: Time.utc(2026, 5, 4, 12, 0, 0)},
+        {slug: "wahtum-lake", updated_at: Time.utc(2026, 5, 5, 12, 0, 0)}
+      ]
     )
 
     get "/sitemaps/trip-check-1.xml"
@@ -91,6 +109,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("<urlset")
     expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/trip-check/burnt-lake</loc>")
     expect(last_response.body).to include("<loc>https://bigfluffypuffy.org/trip-check/wahtum-lake</loc>")
+    expect(last_response.body).to include("<lastmod>2026-05-04</lastmod>")
   end
 
   it "renders Google Analytics only when a measurement id is configured" do
@@ -442,6 +461,8 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("Trip Check Search")
+    expect(last_response.body).to include('<meta name="robots" content="noindex,follow">')
+    expect(last_response.body).to include('<link rel="canonical" href="https://bigfluffypuffy.org/trip-check">')
     expect(last_response.body).to include("Burnt Lake")
     expect(last_response.body).to include("Wahtum Lake")
     expect(last_response.body).to include('href="/trip-check/burnt-lake"')
@@ -453,7 +474,10 @@ RSpec.describe RodaApp do
     get "/trip-check/burnt-lake"
 
     expect(last_response).to be_ok
-    expect(last_response.body).to include("Burnt Lake Trip Check")
+    expect(last_response.body).to include("Burnt Lake Fire Restrictions &amp; Campfire Trip Check")
+    expect(last_response.body).to include('<link rel="canonical" href="https://bigfluffypuffy.org/trip-check/burnt-lake">')
+    expect(last_response.body).to include("Source-linked campfire and fire-use trip check for Burnt Lake in Mt. Hood National Forest. No campfires.")
+    expect(last_response.body).not_to include('<meta name="robots" content="noindex,follow">')
     expect(last_response.body).to include("In <a href=\"/fire-restrictions/mt-hood\">Mt. Hood National Forest</a>")
     expect(last_response.body).not_to include('<p class="summary-kicker">Trip check answer</p>')
     expect(last_response.body).to include("No campfires.")
@@ -471,6 +495,23 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-focus-zoom="10"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
+  end
+
+  it "noindexes low-context trip check pages" do
+    payload = trip_check_payload.merge(
+      primary_forest: nil,
+      matched_land_units: [],
+      localized_restrictions: [],
+      forest_localized_restrictions: [],
+      datasets: [{slug: "gnis", name: "GNIS", license_name: "Public Domain", attribution_text: "USGS."}],
+      campfire_policy: "unknown"
+    )
+    allow_any_instance_of(described_class).to receive(:trip_check_detail).with("raw-place").and_return(payload)
+
+    get "/trip-check/raw-place"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include('<meta name="robots" content="noindex,follow">')
   end
 
   it "serves trip check map GeoJSON" do

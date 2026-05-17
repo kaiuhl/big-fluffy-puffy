@@ -1,0 +1,26 @@
+# Big Fluffy Puffy
+
+> Big Fluffy Puffy is a nonprofit web and data project for fireless outdoor culture in the Pacific Northwest.
+
+Big Fluffy Puffy publishes source-linked planning context for campfire and outdoor fire-use restrictions. It is not a government agency. Official land manager sources, posted signs, and current emergency orders control.
+
+The site focuses on Oregon, Washington, and Northern California forests and national parks. Fire restriction data combines monitored official sources, reviewed localized fire-use rules, approximate map geometry, and typical overnight low context.
+
+## Primary Pages
+
+- [Home](https://bigfluffypuffy.org/): Overview of the nonprofit and fireless camp culture mission.
+- [Fire Restrictions](https://bigfluffypuffy.org/fire-restrictions): Source-linked current status for monitored forests and parks.
+- [Sitemap](https://bigfluffypuffy.org/sitemap.xml): Sitemap index for crawlers.
+- [Robots](https://bigfluffypuffy.org/robots.txt): Crawler access policy.
+
+## Useful APIs
+
+- [Monitored Areas](https://bigfluffypuffy.org/api/fire-restrictions/forests): JSON status list for monitored forests and parks.
+- [Fire Restriction Map](https://bigfluffypuffy.org/api/fire-restrictions/map): GeoJSON map payload for monitored area status.
+- [Place Search](https://bigfluffypuffy.org/api/places/search?q=burnt%20lake): Destination search suggestions.
+
+## Interpretation Notes
+
+- "Unknown" means BFP has not published a confident claim. It does not mean campfires are allowed.
+- Approximate BFP map shapes are planning aids, not legal boundaries.
+- Source-linked trip checks are best used before a trip, then confirmed against official sources and posted signs.

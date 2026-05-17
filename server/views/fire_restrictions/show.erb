@@ -9,11 +9,18 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= h(forest.fetch(:name)) %> Fire Restrictions | Big Fluffy Puffy</title>
-    <meta
-      name="description"
-      content="Area-wide and localized camping fire-use restrictions for <%= h(forest.fetch(:name)) %>."
-    >
+    <% page_title = "#{forest.fetch(:name)} Fire Restrictions | Big Fluffy Puffy" %>
+    <% page_description = forest_restrictions_description(forest) %>
+    <% canonical_path = forest[:land_unit_url] || forest[:forest_url] || "/fire-restrictions/#{forest.fetch(:slug)}" %>
+    <%= partial("shared/seo_meta",
+      title: page_title,
+      description: page_description,
+      canonical_path: canonical_path,
+      structured_data: seo_graph(
+        webpage_schema(path: canonical_path, title: page_title, description: page_description, breadcrumbs: true),
+        breadcrumb_schema(path: canonical_path, items: [{name: "Home", path: "/"}, {name: "Fire Restrictions", path: "/fire-restrictions"}, {name: forest.fetch(:name), path: canonical_path}])
+      )
+    ) %>
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <script src="/vendor/leaflet/leaflet.js" defer></script>

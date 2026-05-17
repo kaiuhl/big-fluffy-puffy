@@ -3,11 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= h(page.fetch(:title)) %></title>
-    <meta name="description" content="<%= h(page.fetch(:description)) %>">
-    <meta property="og:title" content="<%= h(page.fetch(:title)) %>">
-    <meta property="og:description" content="<%= h(page.fetch(:description)) %>">
-    <meta property="og:type" content="website">
+    <%= partial("shared/seo_meta",
+      title: page.fetch(:title),
+      description: page.fetch(:description),
+      canonical_path: page.fetch(:current_path),
+      structured_data: seo_graph(
+        webpage_schema(path: page.fetch(:current_path), title: page.fetch(:title), description: page.fetch(:description), breadcrumbs: true),
+        breadcrumb_schema(path: page.fetch(:current_path), items: [{name: "Home", path: "/"}, {name: page.fetch(:kicker), path: page.fetch(:current_path)}])
+      )
+    ) %>
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <%= partial("shared/analytics") %>
   </head>
