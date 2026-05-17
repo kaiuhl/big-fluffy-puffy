@@ -10,12 +10,14 @@ The seed uses static generated or digitized geometry only where the rule shape c
 
 ## Seed Summary
 
-- Rules in seed file: 35
-- High-confidence accepted rules: 32
-- Needs-review rules: 3
-- Primary `source_url` values: 23
-- Generated localized GeoJSON files: 10
-- Approximate NHD waterbody-buffer polygons generated: 69
+- Rules in seed file: 53
+- High-confidence accepted rules: 49
+- Needs-review rules: 4
+- Primary `source_url` values: 39
+- Generated localized GeoJSON files: 27
+- Approximate NHD waterbody-buffer polygons generated: 81
+- Approximate GNIS named-feature buffers generated: 2
+- Approximate USFS trail/boundary polygons generated: 1
 - Checked date embedded in metadata: 2026-05-16
 
 ## Generated Geometry
@@ -42,9 +44,11 @@ Generated coverage:
 | Okanogan-Wenatchee Glacier Peak Ice Lakes | 1 | none | 1/2-mile approximate buffer |
 | Okanogan-Wenatchee William O. Douglas named lakes | 2 | none | 1/4-mile approximate buffers |
 | Gifford Pinchot Goat Rocks named lakes | 2 | none | Partial geometry only; Snowgrass Flats and Dana Yelverton Shelter are not represented |
+| Mt. Hood Ramona Falls and McNeil Point | 2 | none | 500-foot GNIS named-feature point buffers; other Mount Hood Wilderness meadow/island/Paradise Park language is not represented |
 | Mt. Hood Burnt Lake | 1 | none | 1/2-mile approximate buffer |
 | Mt. Hood Wahtum Lake | 1 | none | 200-foot approximate buffer |
 | Gifford Pinchot William O. Douglas Dewey Lakes | 1 | none | 1/4-mile approximate buffer |
+| Gifford Pinchot Mt. Adams high-country area | 1 polygon | none | Derived from official USFS trail centerlines, forest boundary, wilderness boundary, and checked against the official map exhibit |
 | Willamette Mt. Jefferson/Mt. Washington named lakes | 8 | none | 1/4-mile approximate buffers around Marion Lake, Lake Ann, Table Lake, Benson Lake, and four Tenas Lakes NHD polygons |
 
 ## Priority Coverage
@@ -116,7 +120,7 @@ Primary sources:
 
 Decision notes:
 
-- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers.
+- Mt. Hood's official fire page explicitly points users to year-round area-specific campfire restrictions. BFP captures the linked Mount Hood Wilderness and Mark O. Hatfield Wilderness rules, with Burnt Lake and Wahtum Lake mapped from approximate NHD waterbody buffers. The Mount Hood Wilderness named-area row now also maps the explicit 500-foot Ramona Falls and McNeil Point buffers from the current Timberline Trail #600 guide using approximate GNIS point buffers.
 - Bull Run, Cedar Creek, Beachie/Lionshead, Mount St. Helens, and snowy plover rows are closure/status rows. Where access is prohibited, BFP marks campfire policy as prohibited and records that the campfire policy is inferred from the active access closure rather than from a campfire-only order.
 - Beachie/Lionshead is active on the checked date but expires on 2026-05-21; it is due for immediate post-expiration review.
 - Waldo Lake islands are mapped from official USGS 1997 Waldo Lake and Waldo Mountain GeoPDF quadrangles because the Forest Service recreation page gives the day-use/campfire rule but does not publish machine-readable island boundaries. The geometry represents primary mapped island landforms and remains approximate.
@@ -227,7 +231,7 @@ Decision notes:
 
 - Mt. Adams, Goat Rocks named areas, and Tatoosh Lakes Basin have direct official evidence.
 - The seed uses the narrower Goat Rocks named prohibitions from the regulations/order rather than the broader recreation-page "No campfires" wording, because the broad wording conflicts with the narrower order text.
-- Mt. Adams is accepted as text-supported but uses `named_area_manual_review` because the boundary is described by trails and forest boundaries rather than coordinates.
+- Mt. Adams is accepted as text-supported and now has approximate generated geometry derived from official USFS Trail #2000, #114, and #9 centerlines, the Gifford Pinchot/Yakama forest boundary, and the Mount Adams Wilderness polygon, checked against the official Mt. Adams campfire restriction map exhibit.
 - Dewey Lakes is mapped as an approximate NHD waterbody buffer because the order states a 1/4-mile shoreline buffer. The generated shape buffers the NHD waterbody polygon, not an official legal exhibit.
 - Drift Creek Cove and Mount St. Helens are accepted as active temporary orders with official exhibit geometry pending.
 
@@ -239,6 +243,7 @@ Primary source URLs in the seed:
 - https://wilderness.net/visit-wilderness/?ID=374#area-management
 - https://www.fs.usda.gov/media/144510
 - https://www.fs.usda.gov/media/151852
+- https://www.fs.usda.gov/media/234596
 - https://www.fs.usda.gov/r05/klamath/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/shasta-trinity/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/sixrivers/alerts/trinity-wilderness-area-restrictions
@@ -262,6 +267,8 @@ Primary source URLs in the seed:
 Related official URLs captured in metadata or review notes:
 
 - https://www.fs.usda.gov/r06/mthood/fire
+- https://www.fs.usda.gov/r06/mthood/recreation/trails/timberline-trail-600
+- https://www.fs.usda.gov/media/202123
 - https://www.fs.usda.gov/r06/okanogan-wenatchee/alerts/campfire-and-camping-restrictions-henry-m-jackson-wilderness
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-goat-rocks
 - https://www.fs.usda.gov/r06/giffordpinchot/recreation/wilderness-tatoosh
@@ -275,7 +282,8 @@ Related official URLs captured in metadata or review notes:
 - Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD waterbody buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
-- Mt. Hood: Wilderness Connect is used for some Mt. Hood and Mark O. Hatfield rows because the official Mt. Hood fire page links it as the detail source for year-round wilderness fire rules. Keep that provenance visible.
+- Mt. Hood: Wilderness Connect is used for Burnt Lake and Mark O. Hatfield rows because the official Mt. Hood fire page links it as a detail source for year-round wilderness fire rules. The Mount Hood Wilderness named-area row uses the current official Timberline Trail #600 guide for the explicit Ramona Falls/McNeil Point buffer text and retains Wilderness Connect as prior-source provenance.
+- Mt. Hood: The Mount Hood Wilderness named-area geometry is partial. Meadows, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park remain unmapped until official polygons or repeatable boundary data are available.
 - Mt. Hood: Mark O. Hatfield Wilderness crosses Mt. Hood and Columbia River Gorge administration. BFP should add a Columbia River Gorge land unit before these rules can be assigned perfectly.
 - Mt. Hood: Eagle Creek Trail needs official trail-segment geometry and a 1000-foot buffer clipped to the described endpoints before mapping.
 - Mt. Hood: Bull Run and Sportsman's Park need official exhibit geometry digitized before mapping.
@@ -284,6 +292,6 @@ Related official URLs captured in metadata or review notes:
 - Willamette: Opal Creek page-level campfire-prohibition wording needs a clearer current order or official detail source before it should be seeded.
 - Siuslaw: Snowy plover beach restriction geometry is map/exhibit-derived and not yet digitized. General sand-camping and beach-fire FAQ guidance was not accepted as an active localized fire restriction.
 - Gifford Pinchot: Goat Rocks has broader "No campfires" wording on a recreation page and narrower named prohibitions in the regulations/order. The seed accepts only the narrower named restrictions. Generated geometry is partial for Goat Lake and Shoe Lake only.
-- Gifford Pinchot: Mt. Adams requires later manual geometry work because the official boundary is described by named trails and forest boundaries.
+- Gifford Pinchot: Mt. Adams is mapped as an approximate generated trail/boundary polygon. It should be treated as a planning shape checked against the official map exhibit, not a surveyed legal boundary.
 - Gifford Pinchot: Lewis River "No campfires" wording was not seeded because the audit did not find an active order/date with enough specificity.
 - Gifford Pinchot: Drift Creek Cove and Mount St. Helens exhibit maps are official but not yet digitized.

@@ -7,17 +7,31 @@ Generate them with:
 
 ```sh
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_localized_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_point_buffer_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_trail_boundary_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_elevation_band_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_wilderness_geometries.rb
 ```
 
-The generator uses RGeo/GEOS to buffer official NHD waterbody polygons. Current
-files are not legal closure boundaries. The app labels them as approximate and
-links back to the official rule source.
+The localized generators use RGeo/GEOS to derive approximate planning geometries
+from official source data: NHD waterbody polygons, USGS GNIS named-feature
+points, USFS EDW trail centerlines, USFS EDW forest boundaries, and USFS EDW
+wilderness polygons. Current files are not legal closure boundaries. The app
+labels them as approximate and links back to the official rule source.
 
 The Willamette Mt. Jefferson/Mt. Washington named-lake file uses that same NHD
 waterbody-buffer pattern, with `select_all_features` for Tenas Lakes so every
 matching NHD polygon in the lake cluster is buffered.
+
+`mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer.geojson` uses the
+GNIS point-buffer pattern for explicit 500-foot named-feature buffers. It does
+not attempt to map broader meadow, island, or Paradise Park language.
+
+`gifford-pinchot-mt-adams-high-country-campfire-prohibition-area.geojson` uses
+official USFS trail centerlines and the Gifford Pinchot/Yakama forest boundary,
+then clips the result to the official Mount Adams Wilderness polygon. It was
+checked against the official Mt. Adams campfire restriction map exhibit and
+remains approximate.
 
 The elevation-band generator uses USFS EDW wilderness boundaries, BFP's cached
 forest boundaries, and the PRISM 800m DEM cached by `scripts/climate/build_normals.py`.

@@ -144,7 +144,24 @@ RSpec.describe "fire restriction database integration", :db do
       geometry_source_type: "derived_nhd_waterbody_buffer"
     )
 
+    mt_hood_named = mt_hood_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "mt-hood-mount-hood-wilderness-named-area-campfire-prohibitions" }
+    expect(mt_hood_named).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_gnis_feature_buffer"
+    )
+    expect(mt_hood_named.dig(:geometry_provenance, "selected_features")).to include("Ramona Falls", "McNeil Point")
+    expect(mt_hood_named.dig(:geometry_provenance, "geometry_coverage")).to eq("partial_explicit_500_foot_buffers")
+
     gifford_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("gifford-pinchot")
+    mt_adams = gifford_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "gifford-pinchot-mt-adams-high-country-campfire-prohibition" }
+    expect(mt_adams).to include(
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_usfs_trail_boundary_polygon"
+    )
+    expect(mt_adams.dig(:geometry_provenance, "selected_trails")).to include("Pacific Crest Trail #2000", "Highline Trail #114", "Round-the-Mountain Trail #9")
+
     dewey_lakes = gifford_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "gifford-pinchot-william-o-douglas-dewey-lakes-campfire-prohibition" }
     expect(dewey_lakes).to include(
       campfire_policy: "prohibited",

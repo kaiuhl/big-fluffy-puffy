@@ -30,6 +30,11 @@ module BFP
         source_arcgis_feature
         geojson
         linked_map
+        derived_nhd_waterbody_buffer
+        derived_gnis_feature_buffer
+        derived_dem_elevation
+        derived_usfs_trail_boundary_polygon
+        usfs_edw_wilderness
       ].freeze
 
       LOCALIZED_RULE_SCHEMA = {

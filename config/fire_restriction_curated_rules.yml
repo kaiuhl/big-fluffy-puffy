@@ -496,22 +496,48 @@ localized_rules:
     campfire_policy: prohibited
     duration_type: permanent
     affected_area: Meadows, McNeil Point Shelter buffer, Ramona Falls buffer, Elk Cove and Elk Meadows tree-covered islands, and the Paradise Park PCT corridor in Mount Hood Wilderness
-    summary: Campfires are prohibited in several Mount Hood Wilderness meadows, waterfall/shelter buffers, tree-covered island areas, and the described Paradise Park PCT corridor.
+    summary: Campfires are prohibited in several Mount Hood Wilderness meadows, waterfall/point buffers, tree-covered island areas, and Paradise Park. The mapped geometry covers only the explicit 500-foot Ramona Falls and McNeil Point buffers.
     evidence_quotes:
-      - Campfires are prohibited
-    source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
-    source_title: Wilderness Connect Mount Hood Wilderness regulations
+      - Campfires are prohibited in these areas
+      - Within 500 feet of Ramona Falls and McNeil Point
+      - Within the tree covered island in Elk Cove and Elk Meadows
+      - Within Paradise Park
+    source_url: https://www.fs.usda.gov/media/234596
+    source_title: Mt. Hood Timberline Trail #600 Recreation Opportunity Guide
     confidence: 0.84
     review_status: accepted
+    seed_review_override: reviewed_partial_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer
+      name: Ramona Falls and McNeil Point 500-foot campfire buffers
+      area_type: named_area
+      area_description: Approximate 500-foot buffers around official USGS GNIS named-feature points for Ramona Falls and McNeil Point. Mount Hood Wilderness meadows, Elk Cove/Elk Meadows tree-covered islands, and Paradise Park are not represented by this geometry.
+      geometry_path: data/fire_restrictions/localized_geometries/mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer.geojson
+      geometry_source_type: derived_gnis_feature_buffer
+      geometry_source_url: https://carto-wfs.nationalmap.gov/arcgis/rest/services/geonames/MapServer
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_point_buffer_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/media/234596
+        official_trail_page_url: https://www.fs.usda.gov/r06/mthood/recreation/trails/timberline-trail-600
+        linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
+        selected_features:
+          - Ramona Falls
+          - McNeil Point
+        geometry_coverage: partial_explicit_500_foot_buffers
+        review_note: This geometry maps only the explicit 500-foot named-feature buffers; meadow, tree-covered island, and Paradise Park language still needs official polygons or repeatable boundary data.
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: named_area_manual_review
+      geometry_strategy: derived_gnis_feature_buffer_partial
       linked_from_source_url: https://www.fs.usda.gov/r06/mthood/fire
-      geometry_review_note: The official Mt. Hood fire page links to Wilderness Connect for these year-round wilderness fire rules; named buffers and corridor segments need manual or official GIS geometry.
+      prior_source_url: https://wilderness.net/visit-wilderness/?ID=374#area-management
+      geometry_review_note: The official Mt. Hood fire page links to year-round wilderness fire rules; the current Timberline Trail #600 guide provides the explicit Ramona Falls and McNeil Point 500-foot fire buffer text used for this partial geometry.
       excluded_subarea_rule: Burnt Lake is seeded separately with approximate lake-buffer geometry.
+      geometry_warning: Approximate buffers around selected GNIS named-feature points, not surveyed legal boundaries. Meadows, Elk Cove and Elk Meadows tree-covered islands, and Paradise Park remain unmapped.
 
   - slug: mt-hood-burnt-lake-half-mile-campfire-prohibition
     land_unit_slug: mt-hood
@@ -1048,13 +1074,37 @@ localized_rules:
     source_title: Gifford Pinchot wilderness regulations
     confidence: 0.84
     review_status: accepted
+    seed_review_override: reviewed_trail_boundary_geometry_upgrade_2026_05_16
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: gifford-pinchot-mt-adams-high-country-campfire-prohibition-area
+      name: Mt. Adams high-country campfire prohibition area
+      area_type: wilderness
+      area_description: Approximate Mt. Adams Wilderness polygon bounded by Pacific Crest Trail #2000, Highline Trail #114, Round-the-Mountain Trail #9, and the Gifford Pinchot/Yakama forest boundary, clipped to the official Mount Adams Wilderness polygon.
+      geometry_path: data/fire_restrictions/localized_geometries/gifford-pinchot-mt-adams-high-country-campfire-prohibition-area.geojson
+      geometry_source_type: derived_usfs_trail_boundary_polygon
+      geometry_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_TrailNFSPublish_01/MapServer/0
+      geometry_acquired_at: "2026-05-16T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_trail_boundary_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/giffordpinchot/wilderness/wilderness-regulations
+        official_map_source_url: https://www.fs.usda.gov/media/202123
+        trail_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_TrailNFSPublish_01/MapServer/0
+        forest_boundary_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_ForestSystemBoundaries_01/MapServer/0
+        wilderness_source_url: https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_Wilderness_01/MapServer/0
+        selected_trails:
+          - "Pacific Crest Trail #2000"
+          - "Highline Trail #114"
+          - "Round-the-Mountain Trail #9"
+        geometry_coverage: official_map_trail_boundary_area
+        review_note: Derived from official USFS trail centerlines and boundaries and checked against the official Mt. Adams campfire restriction map exhibit.
     metadata_json:
       checked_on: "2026-05-16"
-      geometry_strategy: named_area_manual_review
-      geometry_review_note: Boundary is described by trails and forest boundary; exact polygon is pending.
+      geometry_strategy: derived_usfs_trail_boundary_polygon
+      geometry_warning: Approximate generated polygon from official trail centerlines and boundaries, not a surveyed legal closure boundary.
 
   - slug: gifford-pinchot-goat-rocks-named-campfire-prohibitions
     land_unit_slug: gifford-pinchot
