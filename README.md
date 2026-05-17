@@ -39,7 +39,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `auto_accept_observations`.
+Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `auto_accept_observations`. The `forests`/`forest` helper names are legacy aliases for monitored land units.
 
 After a Bedrock-backed parse run, use `llm_costs` to see captured token usage and an estimated per-run cost:
 
@@ -63,13 +63,14 @@ This is intentionally just the foundation:
 
 - `/health` returns a JSON health check.
 - `/api/version` returns a minimal API identity payload.
-- `/api/fire-restrictions/forests` returns the public fire-restriction status list.
-- `/api/fire-restrictions/forests/:slug` returns a per-forest fire-restriction detail payload.
+- `/api/fire-restrictions/land-units` returns the public fire-restriction status list.
+- `/api/fire-restrictions/land-units/:slug` returns a per-area fire-restriction detail payload.
+- `/api/fire-restrictions/forests` and `/api/fire-restrictions/forests/:slug` remain legacy aliases.
 - `/api/places/search?q=...` returns destination search suggestions for trip checks.
 - `/api/trip-check/:place_slug` returns a source-linked destination fire-use planning payload.
 - `/api/trip-check/:place_slug/map` returns trip-check map GeoJSON.
-- `/fire-restrictions` renders the public forest status table.
-- `/fire-restrictions/:slug` renders forest-wide and localized camping fire-use restrictions.
+- `/fire-restrictions` renders the public forest and park status table.
+- `/fire-restrictions/:slug` renders area-wide and localized camping fire-use restrictions.
 - `/trip-check?q=...` searches destinations and redirects or disambiguates.
 - `/trip-check/:place_slug` renders a destination fire-use trip check.
 - Bridgetown content lives in `src/`.
@@ -100,6 +101,9 @@ for product-priority destinations, then resolves active places against monitored
 forest and localized fire-use geometry.
 
 Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
+
+National Park Service alert sources use the free NPS Data API. Set `NPS_API_KEY`
+in local and production environments before polling `nps_alerts_api` sources.
 
 Run background workers explicitly when needed:
 

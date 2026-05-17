@@ -44,9 +44,7 @@ module BFP
         http.read_timeout = @timeout_seconds
 
         request = Net::HTTP::Get.new(uri)
-        request["User-Agent"] = USER_AGENT
-        request["Accept"] = "text/html,application/pdf,application/json;q=0.9,*/*;q=0.5"
-        apply_conditional_headers(request, source)
+        apply_request_headers(request, source)
 
         response = http.request(request)
         case response
@@ -74,6 +72,22 @@ module BFP
 
         request["If-None-Match"] = latest.etag if latest.etag
         request["If-Modified-Since"] = latest.last_modified if latest.last_modified
+      end
+
+      def apply_request_headers(request, source)
+        request["User-Agent"] = USER_AGENT
+        request["Accept"] = "text/html,application/pdf,application/json;q=0.9,*/*;q=0.5"
+        apply_nps_api_key(request, source)
+        apply_conditional_headers(request, source)
+      end
+
+      def apply_nps_api_key(request, source)
+        return unless source.source_type == "nps_alerts_api"
+
+        api_key = ENV["NPS_API_KEY"].to_s.strip
+        raise "NPS_API_KEY is required to fetch NPS alerts API sources." if api_key.empty?
+
+        request["X-Api-Key"] = api_key
       end
 
       def save_success(source, response, fetched_at, duration_ms)

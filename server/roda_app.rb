@@ -18,8 +18,8 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
-  SITE_CSS_PATH = "/styles/site.css?v=20260517-map-parts".freeze
-  FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260517-map-parts".freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260517-trip-check-page-9".freeze
+  FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260517-trip-check-page-3".freeze
   PLACE_SEARCH_JS_PATH = "/scripts/place-search.js?v=20260517-trip-check".freeze
 
   STATE_NAMES = {
@@ -52,12 +52,17 @@ class RodaApp < Roda
     "umpqua" => "or",
     "wallowa-whitman" => "or",
     "willamette" => "or",
+    "north-cascades" => "wa",
+    "mount-rainier" => "wa",
+    "olympic-national-park" => "wa",
+    "crater-lake" => "or",
     "klamath" => "ca",
     "six-rivers" => "ca",
     "shasta-trinity" => "ca",
     "mendocino" => "ca",
     "modoc" => "ca",
     "lassen" => "ca",
+    "lassen-volcanic" => "ca",
     "plumas" => "ca",
     "tahoe" => "ca",
     "eldorado" => "ca",

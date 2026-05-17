@@ -223,7 +223,7 @@ namespace :fire do
   end
 
   namespace :map do
-    desc "Refresh curated USFS forest boundary GeoJSON for the fire restrictions map"
+    desc "Refresh curated land-unit boundary GeoJSON for the fire restrictions map"
     task :refresh_boundaries do
       require_relative "config/boot"
       require "bfp/fire_restrictions/boundary_refresher"
@@ -256,12 +256,12 @@ namespace :places do
     puts "Seeded #{counts[:places]} manual places, #{counts[:localized_areas]} localized restriction areas, and #{counts[:names]} names."
   end
 
-  desc "Resolve places against monitored forests and localized restriction geometry"
+  desc "Resolve places against monitored land units and localized restriction geometry"
   task :resolve do
     load_places
 
     counts = BFP::Places::Resolver.new.resolve
-    puts "Resolved #{counts[:land_unit_matches]} forest matches and #{counts[:localized_rule_matches]} localized rule matches."
+    puts "Resolved #{counts[:land_unit_matches]} land-unit matches and #{counts[:localized_rule_matches]} localized rule matches."
   end
 
   desc "Import, seed, and resolve BFP place search data"

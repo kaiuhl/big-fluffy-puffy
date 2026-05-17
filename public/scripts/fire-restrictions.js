@@ -5,8 +5,8 @@
     return value.toLowerCase().replace(/\s+/g, " ").trim();
   }
 
-  function forestCount(count) {
-    return count + " " + (count === 1 ? "forest" : "forests");
+  function areaCount(count) {
+    return count + " " + (count === 1 ? "area" : "areas");
   }
 
   function localizedRestrictionCount(count) {
@@ -56,8 +56,8 @@
     if (!counter) return;
 
     counter.textContent = hasQuery
-      ? forestCount(visibleCount) + " of " + forestCount(totalCount)
-      : forestCount(totalCount);
+      ? areaCount(visibleCount) + " of " + areaCount(totalCount)
+      : areaCount(totalCount);
   }
 
   function setupFireRestrictionSearch() {
@@ -110,8 +110,8 @@
       });
 
       status.textContent = hasQuery
-        ? "Showing " + forestCount(visibleTotal) + " matching \"" + input.value.trim() + "\"."
-        : "Showing " + forestCount(sectionState.reduce(function (sum, state) {
+        ? "Showing " + areaCount(visibleTotal) + " matching \"" + input.value.trim() + "\"."
+        : "Showing " + areaCount(sectionState.reduce(function (sum, state) {
             return sum + state.total;
           }, 0)) + ".";
     }
@@ -124,6 +124,7 @@
     return {
       active: "#ff4b1f",
       boundary: "#3f5f52",
+      destination: "#050505",
       none: "#2f7f62",
       unknown: "#8b8b8b"
     }[status] || "#8b8b8b";
@@ -160,6 +161,10 @@
     return feature.properties && feature.properties.map_status === "boundary";
   }
 
+  function isTripCheckPlaceFeature(feature) {
+    return feature.properties && feature.properties.kind === "trip_check_place";
+  }
+
   function visibleMapFeatures(features) {
     return features.filter(function (feature) {
       return !isBoundaryFeature(feature);
@@ -194,7 +199,19 @@
       return localizedRestrictionCount(visibleCount) + " mapped of " + totalRestrictions + " total.";
     }
 
-    return "Map showing " + forestCount(visibleCount) + ".";
+    return "Map showing " + areaCount(visibleCount) + ".";
+  }
+
+  function focusMapOnWaypoint(map, container) {
+    var latitude = parseFloat(container.dataset.mapFocusLat || "");
+    var longitude = parseFloat(container.dataset.mapFocusLon || "");
+    var zoom = parseInt(container.dataset.mapFocusZoom || "8", 10);
+
+    if (Number.isNaN(latitude) || Number.isNaN(longitude)) return;
+
+    map.setView([latitude, longitude], Number.isNaN(zoom) ? 8 : zoom, {
+      animate: false
+    });
   }
 
   function boundaryMaskHoles(features) {
@@ -369,7 +386,7 @@
     }
 
     if (typeof L === "undefined" || typeof fetch === "undefined") {
-      setStatus("Map unavailable; forest list remains below.");
+      setStatus("Map unavailable; area list remains below.");
       return;
     }
 
@@ -392,7 +409,7 @@
         var features = Array.isArray(data.features) ? data.features : [];
 
         if (features.length === 0) {
-          setStatus("Map boundaries unavailable; forest list remains below.");
+          setStatus("Map boundaries unavailable; area list remains below.");
           return;
         }
 
@@ -418,6 +435,13 @@
               weight: 2
             };
           },
+          pointToLayer: function (feature, latlng) {
+            if (!isTripCheckPlaceFeature(feature)) return L.marker(latlng);
+
+            return L.marker(latlng, {
+              icon: tripCheckWaypointIcon()
+            });
+          },
           onEachFeature: function (feature, featureLayer) {
             featureLayer.bindPopup(popupContent(feature.properties || {}));
             featureLayer.on({
@@ -437,18 +461,22 @@
           }
         }).addTo(map);
 
-        fitMapToLayer(map, boundsLayer, zoomOffset);
+        fitMapToLayer(map, boundsLayer, zoomOffset, function () {
+          focusMapOnWaypoint(map, container);
+        });
 
         setStatus(mapStatusMessage(container, features));
       })
       .catch(function () {
-        setStatus("Map unavailable; forest list remains below.");
+        setStatus("Map unavailable; area list remains below.");
       });
   }
 
   function popupContent(properties) {
+    if (properties.kind === "trip_check_place") return tripCheckPlacePopupContent(properties);
+
     var sourceUrl = safeHttpUrl(properties.source_url);
-    var forestUrl = (properties.forest_url || "").toString();
+    var forestUrl = (properties.land_unit_url || properties.forest_url || "").toString();
     var sourceTitle = properties.source_title || "Source";
     var partName = properties.part_name || "";
     var title = partName || properties.name;
@@ -468,7 +496,7 @@
       ? '<p class="map-popup-source"><a href="' + escapeHtml(sourceUrl) + '" rel="noreferrer">View ' + escapeHtml(sourceTitle) + "</a></p>"
       : "";
     var forestLink = /^\/fire-restrictions\/[^/]+$/i.test(forestUrl)
-      ? '<p class="map-popup-source"><a href="' + escapeHtml(forestUrl) + '">Open forest page</a></p>'
+      ? '<p class="map-popup-source"><a href="' + escapeHtml(forestUrl) + '">Open area page</a></p>'
       : "";
 
     return [
@@ -489,6 +517,42 @@
     ].join("");
   }
 
+  function tripCheckWaypointIcon() {
+    return L.divIcon({
+      className: "trip-check-waypoint-icon",
+      html: '<span class="trip-check-waypoint-ring"></span><span class="trip-check-waypoint-dot"></span>',
+      iconAnchor: [14, 14],
+      iconSize: [28, 28],
+      popupAnchor: [0, -16]
+    });
+  }
+
+  function tripCheckPlacePopupContent(properties) {
+    var landUnitUrl = (properties.land_unit_url || properties.forest_url || "").toString();
+    var landUnitLabel = properties.land_unit_name || properties.forest_name || "";
+    var landUnitValue = /^\/fire-restrictions\/[^/]+$/i.test(landUnitUrl)
+      ? '<a href="' + escapeHtml(landUnitUrl) + '">' + escapeHtml(landUnitLabel) + "</a>"
+      : escapeHtml(landUnitLabel);
+    var locationParts = [
+      properties.county_name ? properties.county_name + " County" : "",
+      properties.map_name ? properties.map_name + " USGS quad" : ""
+    ].filter(Boolean);
+    var location = locationParts.length
+      ? '<p class="map-popup-place-meta">' + escapeHtml(locationParts.join(" / ")) + "</p>"
+      : "";
+    var forest = landUnitLabel
+      ? '<p class="map-popup-place-forest">In ' + landUnitValue + "</p>"
+      : "";
+
+    return [
+      '<div class="map-popup map-popup-place">',
+      "<strong>" + escapeHtml(properties.name) + "</strong>",
+      forest,
+      location,
+      "</div>"
+    ].join("");
+  }
+
   function afterLayout(callback) {
     if (typeof requestAnimationFrame !== "function") {
       setTimeout(callback, 0);
@@ -500,7 +564,7 @@
     });
   }
 
-  function fitMapToLayer(map, layer, zoomOffset) {
+  function fitMapToLayer(map, layer, zoomOffset, afterFit) {
     var bounds = layer.getBounds();
     var fitQueued = false;
     var attempts = 0;
@@ -530,6 +594,7 @@
         padding: [18, 18]
       });
       zoomMapAfterFit(map, zoomOffset);
+      if (typeof afterFit === "function") afterFit();
     }
 
     function queueFit() {

@@ -1,4 +1,5 @@
 require "date"
+require "bfp/fire_restrictions/forest_map_presenter"
 require "bfp/fire_restrictions/forest_status_presenter"
 require "bfp/fire_restrictions/status_display"
 
@@ -36,22 +37,26 @@ module BFP
         land_unit_matches = place.place_land_unit_matches_dataset.eager(:land_unit).all
         matched_rule_records = matched_localized_rule_records(place)
         forest_details = forest_details_for(land_unit_matches, matched_rule_records)
+        primary_forest_detail = forest_details.first
         active_rules = active_localized_rules(matched_rule_records, forest_details)
+        forest_rules = primary_forest_detail ? primary_forest_detail.fetch(:localized_restrictions, []) : active_rules
         fire_use = combined_fire_use(forest_details, active_rules)
         campfire_policy = fire_use.fetch(:campfire_policy, "unknown")
 
         {
           place: serialize_place(place),
-          verdict: verdict_for(campfire_policy, forest_details, active_rules),
+          verdict: verdict_for(place, campfire_policy, forest_details, active_rules),
           campfire_policy: campfire_policy,
           fire_use: fire_use,
+          primary_forest: primary_forest_detail&.fetch(:forest, nil),
           matched_land_units: serialize_land_unit_matches(land_unit_matches, forest_details),
           localized_restrictions: active_rules,
+          forest_localized_restrictions: forest_rules,
           datasets: serialize_datasets(place),
           official_sources: official_sources(forest_details, active_rules),
           confidence: confidence_for(place, land_unit_matches, active_rules),
           checked_at: checked_at_for(forest_details),
-          map: map_payload(place, active_rules)
+          map: map_payload(place, forest_rules)
         }
       rescue Sequel::DatabaseError
         nil
@@ -70,14 +75,22 @@ module BFP
       private
 
       def map_features(check)
-        features = []
+        features = forest_map_features(check)
         place = check.fetch(:place)
-        features << place_feature(place) if place[:latitude] && place[:longitude]
-        features.concat(localized_rule_features(check.fetch(:localized_restrictions)))
+        forest = check.fetch(:matched_land_units, []).first&.fetch(:forest, nil)
+        features << place_feature(place, forest) if place[:latitude] && place[:longitude]
         features
       end
 
-      def place_feature(place)
+      def forest_map_features(check)
+        forest_slug = check.dig(:primary_forest, :slug)
+        return localized_rule_features(check.fetch(:localized_restrictions)) unless forest_slug
+
+        map = BFP::FireRestrictions::ForestMapPresenter.new(slug: forest_slug).geojson
+        Array(map&.fetch(:features, []))
+      end
+
+      def place_feature(place, forest)
         {
           type: "Feature",
           geometry: {
@@ -87,12 +100,14 @@ module BFP
           properties: {
             kind: "trip_check_place",
             name: place.fetch(:name),
-            status: "destination",
-            campfire_policy: "unknown",
-            map_status: "unknown",
-            source_url: place[:source_url],
-            source_title: "Place source",
-            last_checked_label: "place match"
+            place_type: place[:place_type],
+            county_name: place[:county_name],
+            map_name: place[:map_name],
+            land_unit_name: forest&.fetch(:name, nil),
+            land_unit_url: forest&.fetch(:land_unit_url, nil) || forest&.fetch(:forest_url, nil),
+            forest_name: forest&.fetch(:name, nil),
+            forest_url: forest&.fetch(:forest_url, nil),
+            map_status: "destination"
           }
         }
       end
@@ -178,24 +193,24 @@ module BFP
           .max_by { |value| POLICY_PRIORITY.fetch(value, 0) } || "unknown"
       end
 
-      def verdict_for(campfire_policy, forest_details, rules)
+      def verdict_for(place, campfire_policy, forest_details, rules)
         if forest_details.empty?
           {
             tone: "unknown",
             headline: "Outside BFP's monitored fire-restriction area.",
-            detail: "BFP does not yet have a forest match for this place. Check the managing agency before you go."
+            detail: "BFP does not yet have a monitored land-unit match for this place. Check the managing agency before you go."
           }
         elsif rules.any? && campfire_policy == "prohibited"
           {
             tone: "active",
-            headline: "Campfires appear prohibited here.",
-            detail: "A matched localized fire-use rule applies to this destination. Use the official source and posted signs for exact boundaries."
+            headline: "Campfires aren't allowed.",
+            detail: "A local fire-use rule applies to #{place.name}. Use the official source and posted signs for exact boundaries."
           }
         elsif campfire_policy == "prohibited"
           {
             tone: "active",
-            headline: "Campfires appear prohibited in the matched forest.",
-            detail: "BFP found a published forest-wide restriction for this destination."
+            headline: "Campfires aren't allowed in the matched area.",
+            detail: "BFP found a published area-wide restriction for this destination."
           }
         elsif %w[developed_sites_only fire_pan_required allowed_with_shutoff_valve].include?(campfire_policy)
           {
@@ -226,6 +241,8 @@ module BFP
           latitude: place.latitude,
           longitude: place.longitude,
           state_code: place.state_code,
+          county_name: place.metadata["county_name"],
+          map_name: place.metadata["map_name"],
           source_url: place.source_url
         }
       end
@@ -298,14 +315,14 @@ module BFP
         forest_details.filter_map { |detail| detail.dig(:forest, :last_checked_at) }.max
       end
 
-      def map_payload(place, rules)
+      def map_payload(place, forest_rules)
         center = if [place.latitude, place.longitude].compact.length == 2
           [place.latitude, place.longitude]
         end
 
         {
           center: center,
-          localized_rule_count: rules.count { |rule| rule[:mapped] }
+          localized_rule_count: forest_rules.length
         }
       end
     end

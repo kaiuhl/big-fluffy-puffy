@@ -49,7 +49,10 @@ module BFP
           properties: {
             slug: record[:slug],
             name: record[:name],
+            land_unit_url: record[:land_unit_url] || record[:forest_url] || "/fire-restrictions/#{record[:slug]}",
             forest_url: record[:forest_url] || "/fire-restrictions/#{record[:slug]}",
+            unit_type: record[:unit_type],
+            agency: record[:agency],
             region_code: record[:region_code],
             status: record[:status],
             campfire_policy: StatusDisplay.campfire_policy(
@@ -89,7 +92,10 @@ module BFP
           "fs_fire_info_page" => 0,
           "fs_fire_page" => 1,
           "fs_alerts_page" => 2,
-          "fs_release_page" => 3
+          "fs_release_page" => 3,
+          "nps_fire_page" => 0,
+          "nps_alerts_api" => 1,
+          "nps_conditions_page" => 2
         }.fetch(source[:source_type].to_s, 9)
       end
 

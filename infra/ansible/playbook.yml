@@ -67,3 +67,13 @@
         mode: "0600"
       when: bfp_aws_secret_access_key is defined
       no_log: true
+
+    - name: Configure NPS Data API key
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_env_file }}"
+        regexp: "^NPS_API_KEY="
+        line: "NPS_API_KEY={{ bfp_nps_api_key }}"
+        create: true
+        mode: "0600"
+      when: bfp_nps_api_key is defined
+      no_log: true

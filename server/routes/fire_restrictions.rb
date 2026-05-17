@@ -2,8 +2,8 @@ module FireRestrictionsRoutes
   def route_fire_restrictions(r)
     r.on "fire-restrictions" do
       r.get String do |slug|
-        detail = forest_fire_restriction_detail(slug)
-        next html_response(render_view("errors/not_found", title: "Forest Not Found", message: "BFP does not track that active forest."), status: 404) unless detail
+        detail = land_unit_fire_restriction_detail(slug)
+        next html_response(render_view("errors/not_found", title: "Area Not Found", message: "BFP does not track that active forest or park."), status: 404) unless detail
 
         html_response(render_view("fire_restrictions/show", detail: detail))
       end

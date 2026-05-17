@@ -89,6 +89,16 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result).to be_valid
   end
 
+  it "accepts explicit NPS-style fire-ban-not-in-effect evidence" do
+    text = "As of October 1, 2025: A fire ban is NOT in effect for Mount Rainier National Park."
+    result = validate(
+      {"status" => "none", "campfire_policy" => "unknown", "evidence_quotes" => [text]},
+      text
+    )
+
+    expect(result).to be_valid
+  end
+
   it "accepts structured alerts-page evidence for no active forest fire restriction alerts" do
     text = "No active forest fire restriction alerts were listed in the Forest Alerts section."
     result = validate(

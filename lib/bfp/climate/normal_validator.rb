@@ -16,8 +16,8 @@ module BFP
         lines = []
         lines << "Dataset: #{dataset.slug}"
         lines << "Rows: #{rows.length}"
-        lines << "Active forests: #{active_land_units.length}"
-        lines << "Missing forest-months: #{missing_forest_months(active_land_units, rows).length}"
+        lines << "Active land units: #{active_land_units.length}"
+        lines << "Missing land-unit months: #{missing_forest_months(active_land_units, rows).length}"
 
         warnings = validation_warnings(active_land_units, rows)
         if warnings.empty?

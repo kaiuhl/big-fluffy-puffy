@@ -22,7 +22,7 @@
           <p class="kicker">Source monitor</p>
           <h1 id="restrictions-title">PNW Fire Restrictions</h1>
           <p>
-            Source-linked fire restriction status for Oregon, Washington, and Northern California.
+            Source-linked fire restriction status for Oregon, Washington, and Northern California forests and national parks.
             Big Fluffy Puffy is not a government agency; check the linked official source before you go.
           </p>
         </section>
@@ -41,15 +41,15 @@
           <section class="restrictions-summary" aria-label="Restriction summary">
             <% if active_count.zero? %>
               <p class="summary-kicker">Clear for now</p>
-              <p class="summary-statement">No published forest-wide restrictions right now.</p>
+              <p class="summary-statement">No published area-wide restrictions right now.</p>
               <p class="summary-detail">
-                <%= h(forest_count(none_count)) %> have published no-restriction status; <%= h(forest_count(unknown_count)) %> still need review.
+                <%= h(land_unit_count(none_count)) %> have published no-restriction status; <%= h(land_unit_count(unknown_count)) %> still need review.
               </p>
             <% else %>
               <p class="summary-kicker">Restriction watch</p>
-              <p class="summary-statement"><%= h(forest_count(active_count)) %> have published active restrictions.</p>
+              <p class="summary-statement"><%= h(land_unit_count(active_count)) %> have published active restrictions.</p>
               <p class="summary-detail">
-                <%= h(forest_count(none_count)) %> show no published restrictions; <%= h(forest_count(unknown_count)) %> still need review.
+                <%= h(land_unit_count(none_count)) %> show no published restrictions; <%= h(land_unit_count(unknown_count)) %> still need review.
               </p>
             <% end %>
           </section>
@@ -58,7 +58,7 @@
             <div class="restrictions-map-heading">
               <div>
                 <p class="summary-kicker">Map overview</p>
-                <h2 id="restrictions-map-title">Forest Status Map</h2>
+                <h2 id="restrictions-map-title">Area Status Map</h2>
               </div>
               <ul class="restrictions-map-legend" aria-label="Map legend">
                 <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Active restrictions</li>
@@ -72,31 +72,31 @@
               data-map-basemap="osm"
               data-map-endpoint="/api/fire-restrictions/map"
               role="img"
-              aria-label="Map of Pacific Northwest forest fire restriction statuses"
+              aria-label="Map of Pacific Northwest forest and park fire restriction statuses"
             ></div>
           </section>
 
           <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
-            <label id="restrictions-filter-label" for="restrictions-search">Search Forests</label>
+            <label id="restrictions-filter-label" for="restrictions-search">Search Forests and Parks</label>
             <input
               id="restrictions-search"
               name="q"
               type="search"
               autocomplete="off"
-              placeholder="Forest, state, source, policy"
+              placeholder="Forest, park, state, source, policy"
             >
             <p id="restrictions-filter-status" aria-live="polite">
-              Showing <%= h(forest_count(records.length)) %>.
+              Showing <%= h(land_unit_count(records.length)) %>.
             </p>
           </section>
 
           <div class="restrictions-sections">
             <% [
-              ["active-restrictions", "Active Restrictions", groups.fetch(:active), "active", "No published active forest-wide restrictions."],
-              ["no-restrictions", "No Published Restrictions", groups.fetch(:none), "none", "No forests have a published no-restrictions status yet."],
-              ["needs-review", "Needs Review / Unknown", groups.fetch(:unknown), "unknown", "All active forests have a published status."]
+              ["active-restrictions", "Active Restrictions", groups.fetch(:active), "active", "No published active area-wide restrictions."],
+              ["no-restrictions", "No Published Restrictions", groups.fetch(:none), "none", "No areas have a published no-restrictions status yet."],
+              ["needs-review", "Needs Review / Unknown", groups.fetch(:unknown), "unknown", "All active areas have a published status."]
             ].each do |id, title, section_records, tone, empty_message| %>
-              <% noun = section_records.length == 1 ? "forest" : "forests" %>
+              <% noun = section_records.length == 1 ? "area" : "areas" %>
               <section class="restrictions-section restrictions-section-<%= h(tone) %>" aria-labelledby="<%= h(id) %>">
                 <div class="restrictions-section-heading">
                   <h2 id="<%= h(id) %>"><%= h(title) %></h2>
@@ -112,7 +112,7 @@
                     <table class="restrictions-table">
                       <thead>
                         <tr>
-                          <th scope="col">Forest</th>
+                          <th scope="col">Area</th>
                           <th scope="col">Campfires</th>
                           <th scope="col"><%= h(climate_label) %></th>
                           <th scope="col">Source</th>
@@ -126,8 +126,8 @@
                           <% checked_at = checked_at_for(forest, source) %>
                           <tr>
                             <th scope="row">
-                              <span><a href="<%= h(forest[:forest_url] || "/fire-restrictions/#{forest[:slug]}") %>"><%= h(forest[:name]) %></a></span>
-                              <small><%= h(region_state_label(forest)) %></small>
+                              <span><a href="<%= h(forest[:land_unit_url] || forest[:forest_url] || "/fire-restrictions/#{forest[:slug]}") %>"><%= h(forest[:name]) %></a></span>
+                              <small><%= h([land_unit_type_label(forest), region_state_label(forest)].reject(&:empty?).join(" / ")) %></small>
                             </th>
                             <td data-label="Campfires"><%= h(labelize(campfire_policy_for(forest))) %></td>
                             <td data-label="<%= h(climate_label) %>">
@@ -157,7 +157,7 @@
                       </tbody>
                     </table>
                     <div class="empty-state empty-state-section restrictions-filter-empty" hidden>
-                      <p>No matching forests.</p>
+                      <p>No matching areas.</p>
                     </div>
                   <% end %>
                 </div>

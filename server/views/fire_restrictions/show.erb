@@ -3,6 +3,7 @@
 <% checked_at = checked_at_for(forest, source) %>
 <% climate_label = climate_low_column_label([forest]) %>
 <% rules = detail.fetch(:localized_restrictions) %>
+<% answer_statement = campfire_answer_statement(campfire_policy_for(forest)) %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -11,7 +12,7 @@
     <title><%= h(forest.fetch(:name)) %> Fire Restrictions | Big Fluffy Puffy</title>
     <meta
       name="description"
-      content="Forest-wide and localized camping fire-use restrictions for <%= h(forest.fetch(:name)) %>."
+      content="Area-wide and localized camping fire-use restrictions for <%= h(forest.fetch(:name)) %>."
     >
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
@@ -24,20 +25,18 @@
         <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
 
         <section class="restrictions-intro forest-restrictions-intro" aria-labelledby="forest-restrictions-title">
-          <p class="kicker">Forest monitor</p>
+          <p class="kicker">Source monitor</p>
           <h1 id="forest-restrictions-title"><%= h(forest.fetch(:name)) %></h1>
           <p>
-            Camping and backpacking fire-use status for this forest, with localized restrictions shown only when BFP has an active published rule.
+            Camping and backpacking fire-use status for this area, with localized restrictions shown only when BFP has an active published rule.
           </p>
         </section>
 
-        <section class="restrictions-summary forest-fire-use-summary" aria-label="Forest-wide fire use summary">
+        <section class="restrictions-summary forest-fire-use-summary restrictions-answer-summary" aria-label="Area-wide fire use summary">
           <div class="forest-summary-layout">
             <div class="forest-summary-primary">
-              <p class="summary-kicker">Forest-wide status</p>
               <p class="summary-statement">
-                <span>Campfires</span>
-                <strong><%= h(labelize(campfire_policy_for(forest))) %></strong>
+                <strong><%= h(answer_statement) %></strong>
               </p>
               <p class="summary-detail forest-summary-note"><%= h(restriction_note(forest)) %></p>
             </div>
@@ -110,7 +109,7 @@
             </div>
             <div class="restrictions-table-wrap">
               <div class="empty-state empty-state-section">
-                <p>No active localized camping fire-use restrictions are published by BFP for this forest. Confirm with the official source before you go.</p>
+                <p>No active localized camping fire-use restrictions are published by BFP for this area. Confirm with the official source before you go.</p>
               </div>
             </div>
           </section>

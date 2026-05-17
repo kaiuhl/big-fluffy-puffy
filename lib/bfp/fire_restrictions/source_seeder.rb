@@ -21,7 +21,7 @@ module BFP
             land_unit = upsert_land_unit(unit_config)
             counts[:land_units] += 1
 
-            (source_paths + unit_config.fetch("extra_source_paths", [])).each do |source_path|
+            generated_source_paths(unit_config, source_paths).each do |source_path|
               upsert_source(land_unit, source_from_path(unit_config, source_path, default_poll_interval))
               counts[:sources] += 1
             end
@@ -77,6 +77,11 @@ module BFP
         )
         source.save
         source
+      end
+
+      def generated_source_paths(unit_config, default_source_paths)
+        base_paths = unit_config.key?("source_paths") ? unit_config.fetch("source_paths") : default_source_paths
+        base_paths + unit_config.fetch("extra_source_paths", [])
       end
 
       def source_from_path(unit_config, source_path, default_poll_interval)

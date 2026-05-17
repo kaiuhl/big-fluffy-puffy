@@ -9,7 +9,11 @@ module BFP
         fs_alert_detail
         fs_fire_info_page
         fs_fire_page
+        nps_alerts_api
+        nps_conditions_page
+        nps_fire_page
       ].freeze
+      OFFICIAL_AUTHORITIES = %w[official_usfs official_nps].freeze
       ACTIVE_AUTO_STATUSES = %w[advisory closure full stage_1 stage_2 year_round].freeze
       HARD_REVIEW_REASON_PATTERNS = [
         /LLM parsing (failed|is disabled)/i,
@@ -62,7 +66,7 @@ module BFP
       end
 
       def official_auto_publish?(source:, context:)
-        return false unless source.authority == "official_usfs"
+        return false unless OFFICIAL_AUTHORITIES.include?(source.authority)
         return false unless OFFICIAL_AUTO_SOURCE_TYPES.include?(source.source_type)
         return false unless context.fetch(:hard_review_reasons).empty?
 

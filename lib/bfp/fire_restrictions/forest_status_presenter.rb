@@ -12,21 +12,25 @@ module BFP
         @rule_resolver = rule_resolver
       end
 
-      def forest(slug)
+      def land_unit(slug)
         land_unit = LandUnit.first(slug: slug.to_s, active: true)
         return unless land_unit
 
-        forest = @status_presenter.forest(slug)
-        return unless forest
+        record = @status_presenter.land_unit(slug)
+        return unless record
 
         {
-          forest: forest,
+          land_unit: record,
+          forest: record,
           localized_restrictions: localized_restrictions(land_unit),
-          map_endpoint: "/api/fire-restrictions/forests/#{land_unit.slug}/map"
+          map_endpoint: "/api/fire-restrictions/land-units/#{land_unit.slug}/map",
+          legacy_map_endpoint: "/api/fire-restrictions/forests/#{land_unit.slug}/map"
         }
       rescue Sequel::DatabaseError
         nil
       end
+
+      alias_method :forest, :land_unit
 
       private
 

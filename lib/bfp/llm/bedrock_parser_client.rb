@@ -36,7 +36,9 @@ module BFP
         - Restrictive statuses require prohibition, restriction, order, closure, or Stage 1/Stage 2 evidence.
         - A "none" status requires explicit "no restrictions", "lifted", "rescinded", or equivalent evidence.
         - Low fire danger, no featured alerts, or absence of a restriction is not enough by itself for "none".
-        - A generated Forest Alert Summary line saying no active forest fire restriction alerts were listed can support "none" for seasonal forest-wide public-use restrictions.
+        - A generated Forest Alert Summary line saying no active forest fire restriction alerts were listed can support "none" for seasonal USFS forest-wide public-use restrictions.
+        - A generated NPS Alert Summary saying no fire-related NPS alerts were returned is not enough by itself for "none"; use it only as context alongside explicit park fire-ban or restriction text.
+        - NPS alerts can support active restrictions only when the alert title or description explicitly states a current fire restriction, fire ban, campfire ban, or fire closure.
         - Ignore Alerts Key labels, Region Alerts, fireworks/explosives boilerplate, fire danger definitions, and unrelated road/camping/occupancy closures when deciding seasonal fire restriction status.
         - Keep the top-level fields focused on the current forest-wide or land-unit-wide camping/backpacking fire-use posture.
         - If an active camping/backpacking fire-use restriction is geographically limited, wilderness-only, corridor-only, incident-area-only, campground-only, or trail-specific, mark the top-level status partial and include the localized rule in localized_rules.

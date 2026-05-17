@@ -6,6 +6,24 @@ module ApiRoutes
       end
 
       r.on "fire-restrictions" do
+        r.get "land-units", String, "map" do |slug|
+          map = land_unit_fire_restriction_map(slug)
+          next json_response({error: "unknown land unit"}, status: 404) unless map
+
+          geojson_response(map)
+        end
+
+        r.get "land-units", String do |slug|
+          detail = land_unit_fire_restriction_detail(slug)
+          next json_response({error: "unknown land unit"}, status: 404) unless detail
+
+          json_response(detail)
+        end
+
+        r.get "land-units" do
+          json_response({land_units: fire_restriction_records})
+        end
+
         r.get "forests", String, "map" do |slug|
           map = forest_fire_restriction_map(slug)
           next json_response({error: "unknown forest"}, status: 404) unless map

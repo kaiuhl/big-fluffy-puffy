@@ -14,7 +14,7 @@ module FireRestrictionsHelper
   def fire_restriction_records
     require "bfp/fire_restrictions"
 
-    BFP::FireRestrictions::StatusPresenter.new.forests
+    BFP::FireRestrictions::StatusPresenter.new.land_units
   rescue Sequel::DatabaseError, LoadError
     []
   end
@@ -28,14 +28,22 @@ module FireRestrictionsHelper
   end
 
   def forest_fire_restriction_detail(slug)
+    land_unit_fire_restriction_detail(slug)
+  end
+
+  def land_unit_fire_restriction_detail(slug)
     require "bfp/fire_restrictions/forest_status_presenter"
 
-    BFP::FireRestrictions::ForestStatusPresenter.new.forest(slug)
+    BFP::FireRestrictions::ForestStatusPresenter.new.land_unit(slug)
   rescue Sequel::DatabaseError, LoadError
     nil
   end
 
   def forest_fire_restriction_map(slug)
+    land_unit_fire_restriction_map(slug)
+  end
+
+  def land_unit_fire_restriction_map(slug)
     require "bfp/fire_restrictions/forest_map_presenter"
 
     BFP::FireRestrictions::ForestMapPresenter.new(slug: slug).geojson
@@ -105,7 +113,10 @@ module FireRestrictionsHelper
       "fs_fire_info_page" => 0,
       "fs_fire_page" => 1,
       "fs_alerts_page" => 2,
-      "fs_release_page" => 3
+      "fs_release_page" => 3,
+      "nps_fire_page" => 0,
+      "nps_alerts_api" => 1,
+      "nps_conditions_page" => 2
     }.fetch(source[:source_type].to_s, 9)
   end
 
@@ -122,6 +133,23 @@ module FireRestrictionsHelper
       status: forest[:status],
       campfire_policy: forest[:campfire_policy]
     )
+  end
+
+  def campfire_answer_statement(policy, allowed_text: "Campfires allowed.")
+    case policy.to_s
+    when "prohibited"
+      "No campfires."
+    when "developed_sites_only"
+      "Campfires only in developed sites."
+    when "fire_pan_required"
+      "Fire pan required."
+    when "allowed_with_shutoff_valve"
+      "Campfires limited."
+    when "allowed"
+      allowed_text
+    else
+      "Campfire status unknown."
+    end
   end
 
   def restriction_note(forest)
@@ -164,8 +192,18 @@ module FireRestrictionsHelper
     value.to_s.tr("_", " ").split.map(&:capitalize).join(" ")
   end
 
+  def land_unit_type_label(unit)
+    agency = unit[:agency].to_s
+    type = labelize(unit[:unit_type])
+    [agency, type].reject(&:empty?).join(" ")
+  end
+
+  def land_unit_count(count)
+    "#{count} #{(count == 1) ? "area" : "areas"}"
+  end
+
   def forest_count(count)
-    "#{count} #{(count == 1) ? "forest" : "forests"}"
+    land_unit_count(count)
   end
 
   def h(value)

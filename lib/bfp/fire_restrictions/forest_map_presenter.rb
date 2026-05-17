@@ -17,7 +17,7 @@ module BFP
         detail = @forest_presenter.forest(@slug)
         return unless detail
 
-        forest = detail.fetch(:forest)
+        forest = detail[:land_unit] || detail.fetch(:forest)
         features = []
         boundary = boundary_feature(forest.fetch(:slug))
         features << map_boundary_feature(boundary, forest) if boundary
@@ -48,10 +48,13 @@ module BFP
           type: "Feature",
           geometry: feature.fetch("geometry"),
           properties: {
-            kind: "forest_boundary",
+            kind: "land_unit_boundary",
             slug: forest[:slug],
             name: forest[:name],
+            land_unit_url: forest[:land_unit_url] || forest[:forest_url],
             forest_url: forest[:forest_url],
+            unit_type: forest[:unit_type],
+            agency: forest[:agency],
             status: forest[:status],
             campfire_policy: forest[:campfire_policy],
             review_status: forest[:review_status],

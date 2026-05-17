@@ -298,6 +298,180 @@ land_units:
     official_url: https://www.fs.usda.gov/r05/plumas
     active: true
 
+  - slug: north-cascades
+    name: North Cascades National Park Service Complex
+    unit_type: national_park_complex
+    agency: NPS
+    region_code: PWR
+    market_bucket: core_pnw
+    official_url: https://www.nps.gov/noca
+    boundary_source_codes:
+      - NOCA
+      - ROLA
+      - LACH
+    source_paths: []
+    active: true
+    sources:
+      - slug: north-cascades-nps-alerts
+        name: NPS Active Alerts
+        source_type: nps_alerts_api
+        authority: official_nps
+        url: https://developer.nps.gov/api/v1/alerts?parkCode=NOCA,ROLA,LACH
+        parser_key: nps_alerts
+        metadata_json:
+          nps_park_codes:
+            - NOCA
+            - ROLA
+            - LACH
+      - slug: north-cascades-fire-closures
+        name: Fire Closures
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/noca/planyourvisit/fire-closures.htm
+        parser_key: nps_html
+      - slug: north-cascades-current-conditions
+        name: Current Conditions
+        source_type: nps_conditions_page
+        authority: official_nps
+        url: https://www.nps.gov/noca/planyourvisit/conditions.htm
+        parser_key: nps_html
+
+  - slug: mount-rainier
+    name: Mount Rainier National Park
+    unit_type: national_park
+    agency: NPS
+    region_code: PWR
+    market_bucket: core_pnw
+    official_url: https://www.nps.gov/mora
+    boundary_source_codes:
+      - MORA
+    source_paths: []
+    active: true
+    sources:
+      - slug: mount-rainier-nps-alerts
+        name: NPS Active Alerts
+        source_type: nps_alerts_api
+        authority: official_nps
+        url: https://developer.nps.gov/api/v1/alerts?parkCode=MORA
+        parser_key: nps_alerts
+        metadata_json:
+          nps_park_codes:
+            - MORA
+      - slug: mount-rainier-wildland-fire
+        name: Wildland Fire Information
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/mora/learn/news/fire.htm
+        parser_key: nps_html
+      - slug: mount-rainier-wilderness-regulations
+        name: Wilderness Guidelines and Regulations
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/mora/planyourvisit/wilderness-guidelines-and-regulations.htm
+        parser_key: nps_html
+
+  - slug: olympic-national-park
+    name: Olympic National Park
+    unit_type: national_park
+    agency: NPS
+    region_code: PWR
+    market_bucket: core_pnw
+    official_url: https://www.nps.gov/olym
+    boundary_source_codes:
+      - OLYM
+    source_paths: []
+    active: true
+    sources:
+      - slug: olympic-national-park-nps-alerts
+        name: NPS Active Alerts
+        source_type: nps_alerts_api
+        authority: official_nps
+        url: https://developer.nps.gov/api/v1/alerts?parkCode=OLYM
+        parser_key: nps_alerts
+        metadata_json:
+          nps_park_codes:
+            - OLYM
+      - slug: olympic-national-park-current-conditions
+        name: Current Conditions
+        source_type: nps_conditions_page
+        authority: official_nps
+        url: https://www.nps.gov/olym/planyourvisit/conditions.htm
+        parser_key: nps_html
+      - slug: olympic-national-park-wilderness-trip-planner
+        name: Wilderness Trip Planner
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/olym/planyourvisit/wilderness-trip-planner.htm
+        parser_key: nps_html
+
+  - slug: crater-lake
+    name: Crater Lake National Park
+    unit_type: national_park
+    agency: NPS
+    region_code: PWR
+    market_bucket: core_pnw
+    official_url: https://www.nps.gov/crla
+    boundary_source_codes:
+      - CRLA
+    source_paths: []
+    active: true
+    sources:
+      - slug: crater-lake-nps-alerts
+        name: NPS Active Alerts
+        source_type: nps_alerts_api
+        authority: official_nps
+        url: https://developer.nps.gov/api/v1/alerts?parkCode=CRLA
+        parser_key: nps_alerts
+        metadata_json:
+          nps_park_codes:
+            - CRLA
+      - slug: crater-lake-current-conditions
+        name: Current Conditions
+        source_type: nps_conditions_page
+        authority: official_nps
+        url: https://www.nps.gov/crla/planyourvisit/conditions.htm
+        parser_key: nps_html
+      - slug: crater-lake-backcountry-faq
+        name: Backcountry FAQ and Regulations
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/crla/planyourvisit/backcountry-faq.htm
+        parser_key: nps_html
+
+  - slug: lassen-volcanic
+    name: Lassen Volcanic National Park
+    unit_type: national_park
+    agency: NPS
+    region_code: PWR
+    market_bucket: northern_california
+    official_url: https://www.nps.gov/lavo
+    boundary_source_codes:
+      - LAVO
+    source_paths: []
+    active: true
+    sources:
+      - slug: lassen-volcanic-nps-alerts
+        name: NPS Active Alerts
+        source_type: nps_alerts_api
+        authority: official_nps
+        url: https://developer.nps.gov/api/v1/alerts?parkCode=LAVO
+        parser_key: nps_alerts
+        metadata_json:
+          nps_park_codes:
+            - LAVO
+      - slug: lassen-volcanic-current-conditions
+        name: Current Conditions
+        source_type: nps_conditions_page
+        authority: official_nps
+        url: https://www.nps.gov/lavo/planyourvisit/conditions.htm
+        parser_key: nps_html
+      - slug: lassen-volcanic-current-fire-activity
+        name: Current Wildfire Activity
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/lavo/learn/management/current-fire-acitivity.htm
+        parser_key: nps_html
+
   - slug: tahoe
     name: Tahoe National Forest
     unit_type: national_forest

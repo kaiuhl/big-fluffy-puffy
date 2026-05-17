@@ -8,7 +8,7 @@ module BFP
         @month = month
       end
 
-      def forests
+      def land_units
         land_units = LandUnit
           .where(active: true)
           .order(:market_bucket, :name)
@@ -21,7 +21,9 @@ module BFP
         []
       end
 
-      def forest(slug)
+      alias_method :forests, :land_units
+
+      def land_unit(slug)
         land_unit = LandUnit.first(slug: slug.to_s, active: true)
         return unless land_unit
 
@@ -30,6 +32,8 @@ module BFP
       rescue Sequel::DatabaseError
         nil
       end
+
+      alias_method :forest, :land_unit
 
       private
 
@@ -45,8 +49,10 @@ module BFP
         {
           slug: land_unit.slug,
           name: land_unit.name,
+          land_unit_url: "/fire-restrictions/#{land_unit.slug}",
           forest_url: "/fire-restrictions/#{land_unit.slug}",
           unit_type: land_unit.unit_type,
+          agency: land_unit.agency,
           market_bucket: land_unit.market_bucket,
           region_code: land_unit.region_code,
           status: status&.status || "unknown",

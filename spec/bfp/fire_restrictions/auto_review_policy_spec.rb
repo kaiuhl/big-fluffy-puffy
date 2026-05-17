@@ -17,6 +17,20 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
       end
     end.new(authority: "official_usfs", source_type: "fs_alerts_page")
   end
+  let(:official_nps_fire_source) do
+    Struct.new(:authority, :source_type, keyword_init: true) do
+      def metadata
+        {}
+      end
+    end.new(authority: "official_nps", source_type: "nps_fire_page")
+  end
+  let(:official_nps_alerts_source) do
+    Struct.new(:authority, :source_type, keyword_init: true) do
+      def metadata
+        {}
+      end
+    end.new(authority: "official_nps", source_type: "nps_alerts_api")
+  end
 
   it "auto-accepts validated high-confidence no-restriction observations from official fire pages" do
     result = parser_result("none", confidence: 0.95, reasons: ["Campfire policy not explicitly stated."])
@@ -117,6 +131,46 @@ RSpec.describe BFP::FireRestrictions::AutoReviewPolicy do
     )
 
     expect(status).to eq("auto_accepted")
+  end
+
+  it "auto-accepts high-confidence active restrictions from official NPS fire pages" do
+    result = parser_result(
+      "full",
+      confidence: 0.92
+    ).merge(
+      "evidence_quotes" => ["All campfires and charcoal fires are prohibited in Mount Rainier National Park."]
+    )
+    validation = validation_result(errors: [])
+
+    status = policy.review_status_for_result(
+      source: official_nps_fire_source,
+      result: result,
+      validation: validation,
+      reasons: [],
+      extracted_text: "All campfires and charcoal fires are prohibited in Mount Rainier National Park."
+    )
+
+    expect(status).to eq("auto_accepted")
+  end
+
+  it "does not auto-accept NPS alerts API none observations from absent-alert summaries alone" do
+    result = parser_result(
+      "none",
+      confidence: 0.95
+    ).merge(
+      "evidence_quotes" => ["No fire-related NPS alerts were returned by the NPS alerts API."]
+    )
+    validation = validation_result(errors: ["None status lacks explicit no-restrictions/lifted/rescinded evidence."])
+
+    status = policy.review_status_for_result(
+      source: official_nps_alerts_source,
+      result: result,
+      validation: validation,
+      reasons: validation.errors,
+      extracted_text: "No fire-related NPS alerts were returned by the NPS alerts API."
+    )
+
+    expect(status).to eq("needs_review")
   end
 
   it "auto-accepts official alerts pages when structured extraction shows no active forest fire restriction alerts" do

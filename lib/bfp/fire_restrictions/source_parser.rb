@@ -1,6 +1,7 @@
 require "date"
 require "digest"
 require_relative "auto_review_policy"
+require_relative "extractors/nps_alerts_extractor"
 require_relative "localized_rule_validator"
 
 module BFP
@@ -74,6 +75,7 @@ module BFP
 
       def extractor_for(content_type, final_url, source)
         return JsonExtractor.new if source.source_type == "arcgis_feature_layer"
+        return Extractors::NpsAlertsExtractor.new if source.source_type == "nps_alerts_api"
         return Extractors::PdfExtractor.new if content_type.to_s.include?("pdf") || final_url.to_s.end_with?(".pdf")
 
         Extractors::HtmlExtractor.new

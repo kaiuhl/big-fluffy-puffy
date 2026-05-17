@@ -33,6 +33,13 @@ RSpec.describe RodaApp do
     expect(JSON.parse(last_response.body)).to include("forests")
   end
 
+  it "exposes the canonical fire restriction land-units endpoint" do
+    get "/api/fire-restrictions/land-units"
+
+    expect(last_response).to be_ok
+    expect(JSON.parse(last_response.body)).to include("land_units")
+  end
+
   it "exposes place search suggestions" do
     allow_any_instance_of(described_class).to receive(:place_search_suggestions).with("Burnt", limit: 8).and_return(
       [
@@ -66,9 +73,9 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260517-map-parts"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260517-trip-check-page-9"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-map-parts"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -132,7 +139,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('id="restrictions-map"')
     expect(last_response.body).to include('data-map-basemap="osm"')
     expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/map"')
-    expect(last_response.body).to include("Forest Status Map")
+    expect(last_response.body).to include("Area Status Map")
     expect(last_response.body).not_to include("<th scope=\"col\">Status</th>")
     expect(last_response.body).to include('for="restrictions-search"')
     expect(last_response.body).to include('id="restrictions-filter-status"')
@@ -151,11 +158,11 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("Deschutes National Forest")
-    expect(last_response.body).to include("Forest-wide status")
+    expect(last_response.body).not_to include("Area-wide status")
     expect(last_response.body).to include('class="forest-summary-layout"')
     expect(last_response.body).to include('class="forest-summary-item forest-summary-item-climate"')
-    expect(last_response.body).to include("<span>Campfires</span>")
-    expect(last_response.body).to include("<strong>Developed Sites Only</strong>")
+    expect(last_response.body).not_to include("<span>Campfires</span>")
+    expect(last_response.body).to include("<strong>Campfires only in developed sites.</strong>")
     expect(last_response.body).to include("Seasonal / Current Orders")
     expect(last_response.body).to include("Permanent / Standing Rules")
     expect(last_response.body).to include("Jefferson Park")
@@ -169,7 +176,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Gas")
     expect(last_response.body).to include("allowed with shutoff valve")
     expect(last_response.body).not_to include("Stoves / Charcoal")
-    expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/forests/deschutes/map"')
+    expect(last_response.body).to include('data-map-endpoint="/api/fire-restrictions/land-units/deschutes/map"')
     expect(last_response.body).to include('data-map-fit-zoom-offset="1"')
     expect(last_response.body).to include('data-map-status-mode="localized-restrictions"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
@@ -181,7 +188,7 @@ RSpec.describe RodaApp do
     get "/fire-restrictions/unknown"
 
     expect(last_response.status).to eq(404)
-    expect(last_response.body).to include("Forest Not Found")
+    expect(last_response.body).to include("Area Not Found")
   end
 
   it "serves per-forest fire restriction detail JSON" do
@@ -193,10 +200,23 @@ RSpec.describe RodaApp do
     data = JSON.parse(last_response.body)
 
     expect(data.dig("forest", "slug")).to eq("deschutes")
+    expect(data.dig("land_unit", "slug")).to eq("deschutes")
     expect(data.fetch("localized_restrictions").first).to include(
       "title" => "Jefferson Park",
       "duration_type" => "permanent"
     )
+  end
+
+  it "serves canonical land-unit fire restriction detail JSON" do
+    stub_fire_restriction_detail("deschutes", forest_detail)
+
+    get "/api/fire-restrictions/land-units/deschutes"
+
+    expect(last_response).to be_ok
+    data = JSON.parse(last_response.body)
+
+    expect(data.dig("land_unit", "slug")).to eq("deschutes")
+    expect(data.fetch("map_endpoint")).to eq("/api/fire-restrictions/land-units/deschutes/map")
   end
 
   it "serves per-forest fire restriction map GeoJSON" do
@@ -220,6 +240,27 @@ RSpec.describe RodaApp do
     expect(JSON.parse(last_response.body).dig("features", 0, "properties", "kind")).to eq("localized_restriction")
   end
 
+  it "serves canonical per-land-unit fire restriction map GeoJSON" do
+    allow_any_instance_of(described_class).to receive(:land_unit_fire_restriction_map).with("deschutes").and_return(
+      {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {"type" => "Polygon", "coordinates" => []},
+            properties: {kind: "localized_restriction", name: "Jefferson Park"}
+          }
+        ]
+      }
+    )
+
+    get "/api/fire-restrictions/land-units/deschutes/map"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/geo+json")
+    expect(JSON.parse(last_response.body).dig("features", 0, "properties", "kind")).to eq("localized_restriction")
+  end
+
   it "renders region and state under the forest name and sorts by state then forest" do
     stub_fire_restriction_records(
       [
@@ -233,9 +274,9 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).not_to include("<th scope=\"col\">State</th>")
-    expect(last_response.body).to include("<small>R06 / Oregon</small>")
-    expect(last_response.body).to include("<small>R06 / Washington</small>")
-    expect(last_response.body).to include("<small>R05 / California</small>")
+    expect(last_response.body).to include("<small>USFS National Forest / R06 / Oregon</small>")
+    expect(last_response.body).to include("<small>USFS National Forest / R06 / Washington</small>")
+    expect(last_response.body).to include("<small>USFS National Forest / R05 / California</small>")
     expect(last_response.body).not_to include("restrictions-state-row")
     expect(last_response.body.index("Deschutes National Forest")).to be < last_response.body.index("Colville National Forest")
     expect(last_response.body.index("Colville National Forest")).to be < last_response.body.index("Modoc National Forest")
@@ -281,7 +322,7 @@ RSpec.describe RodaApp do
     get "/fire-restrictions"
 
     expect(last_response).to be_ok
-    expect(last_response.body).to include("No published forest-wide restrictions right now.")
+    expect(last_response.body).to include("No published area-wide restrictions right now.")
   end
 
   it "serves the initial landing page" do
@@ -340,14 +381,23 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("Burnt Lake Trip Check")
-    expect(last_response.body).to include("Campfires appear prohibited here.")
-    expect(last_response.body).to include("Fire Use")
-    expect(last_response.body).to include("Matched Context")
-    expect(last_response.body).to include("Localized Rules")
+    expect(last_response.body).to include("In <a href=\"/fire-restrictions/mt-hood\">Mt. Hood National Forest</a>")
+    expect(last_response.body).not_to include('<p class="summary-kicker">Trip check answer</p>')
+    expect(last_response.body).to include("No campfires.")
+    expect(last_response.body).to include("A local fire-use rule applies to Burnt Lake.")
+    expect(last_response.body).to include("Area-wide campfires")
+    expect(last_response.body).to include("<dd>Allowed</dd>")
+    expect(last_response.body).to include("Localized match")
+    expect(last_response.body).to include("1 rule")
+    expect(last_response.body).to include("Localized Rules At This Waypoint")
+    expect(last_response.body).to include("See all localized rules in Mt. Hood National Forest")
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Place data:")
     expect(last_response.body).to include('data-map-endpoint="/api/trip-check/burnt-lake/map"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-map-parts"')
+    expect(last_response.body).to include('data-map-focus-lat="45.35"')
+    expect(last_response.body).to include('data-map-focus-zoom="10"')
+    expect(last_response.body).to include('data-map-total-restrictions="2"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
   end
 
   it "serves trip check map GeoJSON" do
@@ -412,8 +462,13 @@ RSpec.describe RodaApp do
 
     expect(last_response).to be_ok
     expect(last_response.body).to include("--signal: #ff4b1f")
+    expect(last_response.body).to include("--restrictions-section-title-size")
     expect(last_response.body).to include(".restrictions-map-expanded")
     expect(last_response.body).to include(".restrictions-map-size-button")
+    expect(last_response.body).to include(".trip-check-waypoint-icon")
+    expect(last_response.body).to include(".map-popup-place")
+    expect(last_response.body).to include(".map-popup-place-forest")
+    expect(last_response.body).to include(".map-popup-place-meta")
     expect(last_response.body).to include("transition: height 160ms ease")
     expect(last_response.body).to include("stroke-width: 2.5")
   end
@@ -433,6 +488,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("DEFAULT_FIT_MAX_ZOOM = 8")
     expect(last_response.body).to include("animate: false")
     expect(last_response.body).to include("container.dataset.mapFitZoomOffset")
+    expect(last_response.body).to include("focusMapOnWaypoint")
+    expect(last_response.body).to include("container.dataset.mapFocusLat")
     expect(last_response.body).to include("fitZoomOffset")
     expect(last_response.body).to include("zoomMapAfterFit(map, zoomOffset)")
     expect(last_response.body).to include("currentZoom + zoomOffset")
@@ -463,6 +520,11 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("zoomMapAround(map, map.mouseEventToLatLng(event), event)")
     expect(last_response.body).to include("shapeRepeatedClickZoomHandler")
     expect(last_response.body).to include("point.distanceTo(lastClick.point) < 12")
+    expect(last_response.body).to include("isTripCheckPlaceFeature")
+    expect(last_response.body).to include("tripCheckWaypointIcon")
+    expect(last_response.body).to include("tripCheckPlacePopupContent")
+    expect(last_response.body).to include("USGS quad")
+    expect(last_response.body).to include("map-popup-place-forest")
     expect(last_response.body).to include("Boundary")
     expect(last_response.body).to include("Approximation shown on map. Read official sources and signs for exact boundaries.")
     expect(last_response.body).not_to include("DEFAULT_FIT_ZOOM_OFFSET")
@@ -491,13 +553,18 @@ RSpec.describe RodaApp do
 
   def stub_fire_restriction_detail(slug, detail)
     allow_any_instance_of(described_class).to receive(:forest_fire_restriction_detail).with(slug).and_return(detail)
+    allow_any_instance_of(described_class).to receive(:land_unit_fire_restriction_detail).with(slug).and_return(detail)
   end
 
   def restriction_record(overrides = {})
+    slug = overrides.fetch(:slug, "example")
     {
-      slug: "example",
+      slug: slug,
       name: "Example Forest",
+      land_unit_url: "/fire-restrictions/#{slug}",
+      forest_url: "/fire-restrictions/#{slug}",
       unit_type: "national_forest",
+      agency: "USFS",
       market_bucket: "oregon",
       region_code: "R6",
       status: "none",
@@ -572,17 +639,22 @@ RSpec.describe RodaApp do
   end
 
   def forest_detail
+    record = restriction_record(
+      slug: "deschutes",
+      name: "Deschutes National Forest",
+      forest_url: "/fire-restrictions/deschutes",
+      land_unit_url: "/fire-restrictions/deschutes",
+      status: "partial",
+      campfire_policy: "developed_sites_only",
+      review_status: "accepted",
+      climate_low_context: climate_context
+    )
+
     {
-      forest: restriction_record(
-        slug: "deschutes",
-        name: "Deschutes National Forest",
-        forest_url: "/fire-restrictions/deschutes",
-        status: "partial",
-        campfire_policy: "developed_sites_only",
-        review_status: "accepted",
-        climate_low_context: climate_context
-      ),
-      map_endpoint: "/api/fire-restrictions/forests/deschutes/map",
+      land_unit: record,
+      forest: record,
+      map_endpoint: "/api/fire-restrictions/land-units/deschutes/map",
+      legacy_map_endpoint: "/api/fire-restrictions/forests/deschutes/map",
       localized_restrictions: [
         {
           id: 12,
@@ -649,12 +721,14 @@ RSpec.describe RodaApp do
         latitude: 45.35,
         longitude: -121.8,
         state_code: "or",
+        county_name: "Clackamas",
+        map_name: "Bull Run Lake",
         source_url: "https://example.test/place"
       },
       verdict: {
         tone: "active",
-        headline: "Campfires appear prohibited here.",
-        detail: "A matched localized fire-use rule applies to this destination."
+        headline: "Campfires aren't allowed.",
+        detail: "A local fire-use rule applies to Burnt Lake."
       },
       campfire_policy: "prohibited",
       fire_use: {
@@ -666,6 +740,15 @@ RSpec.describe RodaApp do
         solid_fuel_stove_policy: "prohibited",
         wood_stove_policy: "prohibited"
       },
+      primary_forest: restriction_record(
+        slug: "mt-hood",
+        name: "Mt. Hood National Forest",
+        forest_url: "/fire-restrictions/mt-hood",
+        status: "none",
+        campfire_policy: "allowed",
+        source_url: "https://example.test/fire",
+        source_title: "Fire information"
+      ),
       matched_land_units: [
         {
           relationship: "contains_point",
@@ -688,6 +771,7 @@ RSpec.describe RodaApp do
           source_title: "Wilderness Connect"
         )
       ],
+      forest_localized_restrictions: forest_detail.fetch(:localized_restrictions),
       datasets: [
         {
           name: "BFP curated launch destinations",
@@ -700,7 +784,7 @@ RSpec.describe RodaApp do
       official_sources: [],
       confidence: 0.9,
       checked_at: "2026-05-03T05:00:00Z",
-      map: {center: [45.35, -121.8], localized_rule_count: 1}
+      map: {center: [45.35, -121.8], localized_rule_count: 2}
     }
   end
 end

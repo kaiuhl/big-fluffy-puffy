@@ -22,19 +22,24 @@ RSpec.describe "fire restriction source catalog" do
       umpqua
       wallowa-whitman
       willamette
+      north-cascades
+      mount-rainier
+      olympic-national-park
+      crater-lake
       klamath
       six-rivers
       shasta-trinity
       mendocino
       modoc
       lassen
+      lassen-volcanic
       plumas
     ]
   end
   let(:inactive_unit_slugs) { %w[tahoe eldorado lake-tahoe-basin] }
   let(:core_source_suffixes) { %w[fire fire-info alerts releases] }
 
-  it "tracks every active forest in the PNW and Northern California launch market" do
+  it "tracks every active forest and national park in the PNW and Northern California launch market" do
     active_slugs = units.select { |unit| unit.fetch("active", true) }.map { |unit| unit.fetch("slug") }
 
     expect(active_slugs).to match_array(active_unit_slugs)
@@ -54,8 +59,8 @@ RSpec.describe "fire restriction source catalog" do
     expect(source_slugs).to eq(source_slugs.uniq)
   end
 
-  it "gives every unit the core Forest Service source pages" do
-    units.each do |unit|
+  it "gives every Forest Service unit the core Forest Service source pages" do
+    usfs_units.each do |unit|
       aggregate_failures(unit.fetch("slug")) do
         source_slugs = generated_sources(unit).map { |source| source.fetch("slug") }
 
@@ -90,6 +95,35 @@ RSpec.describe "fire restriction source catalog" do
     expect(arcgis_sources).to all(satisfy { |source| source.dig("metadata_json", "auto_publish") == true })
   end
 
+  it "tracks the PNW national parks with NPS API alerts and official page sources" do
+    expect(nps_units.map { |unit| unit.fetch("slug") }).to match_array(
+      %w[
+        north-cascades
+        mount-rainier
+        olympic-national-park
+        crater-lake
+        lassen-volcanic
+      ]
+    )
+
+    nps_units.each do |unit|
+      sources = generated_sources(unit)
+      alert_source = sources.find { |source| source.fetch("source_type") == "nps_alerts_api" }
+
+      aggregate_failures(unit.fetch("slug")) do
+        expect(unit.fetch("source_paths")).to eq([])
+        expect(unit.fetch("agency")).to eq("NPS")
+        expect(unit.fetch("boundary_source_codes")).not_to be_empty
+        expect(alert_source).to include(
+          "authority" => "official_nps",
+          "parser_key" => "nps_alerts"
+        )
+        expect(alert_source.fetch("url")).to start_with("https://developer.nps.gov/api/v1/alerts?parkCode=")
+        expect(sources.count { |source| source.fetch("authority") == "official_nps" }).to be >= 3
+      end
+    end
+  end
+
   it "tracks Colville's maintained current fire restrictions page" do
     source = generated_sources(unit("colville")).find { |candidate| candidate.fetch("slug") == "colville-fire-restrictions" }
 
@@ -104,9 +138,17 @@ RSpec.describe "fire restriction source catalog" do
     units.find { |candidate| candidate.fetch("slug") == slug }
   end
 
+  def usfs_units
+    units.reject { |unit| unit.fetch("agency", "USFS") == "NPS" }
+  end
+
+  def nps_units
+    units.select { |unit| unit.fetch("agency", "USFS") == "NPS" }
+  end
+
   def generated_sources(unit_config)
     defaults = config.fetch("defaults")
-    default_paths = defaults.fetch("source_paths")
+    default_paths = unit_config.key?("source_paths") ? unit_config.fetch("source_paths") : defaults.fetch("source_paths")
     default_interval = defaults.fetch("poll_interval_minutes")
 
     path_sources = (default_paths + unit_config.fetch("extra_source_paths", [])).map do |source_path|

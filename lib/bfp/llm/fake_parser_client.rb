@@ -5,7 +5,7 @@ module BFP
         evidence = first_matching_sentence(text)
         lower = text.to_s.downcase
 
-        if lower.match?(/no public[- ]use restrictions|no fire restrictions|restrictions? (have been )?(lifted|rescinded|ended)|campfires? are allowed/)
+        if lower.match?(/no public[- ]use restrictions|no fire restrictions|fire ban is not in effect|restrictions? (have been )?(lifted|rescinded|ended)|campfires? are allowed/)
           result("none", "allowed", evidence, 0.93, model_id)
         elsif lower.match?(/stage\s*2|stage ii/)
           result("stage_2", "prohibited", evidence, 0.9, model_id)

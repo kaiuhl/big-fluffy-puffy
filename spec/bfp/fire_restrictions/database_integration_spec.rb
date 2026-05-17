@@ -339,6 +339,12 @@ RSpec.describe "fire restriction database integration", :db do
       .where(slug: "#{land_unit.slug}-fire-info")
       .first ||
       land_unit.restriction_sources_dataset
+        .where(source_type: "nps_fire_page")
+        .first ||
+      land_unit.restriction_sources_dataset
+        .where(source_type: "nps_conditions_page")
+        .first ||
+      land_unit.restriction_sources_dataset
         .where(source_type: "fs_fire_info_page")
         .first ||
       land_unit.restriction_sources_dataset.first
