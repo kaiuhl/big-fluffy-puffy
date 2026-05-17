@@ -5,6 +5,14 @@ require_relative "../../../lib/bfp/fire_restrictions/localized_rule_resolver"
 
 RSpec.describe BFP::FireRestrictions::Resolver do
   describe "#accepted_candidates" do
+    it "ranks official NPS fire sources ahead of alert and conditions fallbacks" do
+      precedence = described_class::SOURCE_PRECEDENCE
+
+      expect(precedence.fetch("nps_fire_page")).to be > precedence.fetch("nps_alerts_api")
+      expect(precedence.fetch("nps_alerts_api")).to be > precedence.fetch("nps_conditions_page")
+      expect(precedence.fetch("nps_fire_page")).to eq(precedence.fetch("fs_fire_page"))
+    end
+
     it "limits forestwide status candidates to forestwide or legacy null-scope observations" do
       db = Sequel.mock(host: :postgres, fetch: [])
       land_unit = Struct.new(:id, keyword_init: true).new(id: 7)
