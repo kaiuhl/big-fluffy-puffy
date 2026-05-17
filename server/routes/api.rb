@@ -28,6 +28,32 @@ module ApiRoutes
           geojson_response(fire_restriction_map)
         end
       end
+
+      r.on "places" do
+        r.get "search" do
+          limit = Integer(r.params.fetch("limit", 8))
+          limit = limit.clamp(1, 20)
+          json_response({places: place_search_suggestions(r.params["q"].to_s, limit: limit)})
+        rescue ArgumentError
+          json_response({places: place_search_suggestions(r.params["q"].to_s, limit: 8)})
+        end
+      end
+
+      r.on "trip-check" do
+        r.get String, "map" do |slug|
+          map = trip_check_map(slug)
+          next json_response({error: "unknown place"}, status: 404) unless map
+
+          geojson_response(map)
+        end
+
+        r.get String do |slug|
+          check = trip_check_detail(slug)
+          next json_response({error: "unknown place"}, status: 404) unless check
+
+          json_response(check)
+        end
+      end
     end
   end
 

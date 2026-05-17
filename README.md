@@ -65,18 +65,24 @@ This is intentionally just the foundation:
 - `/api/version` returns a minimal API identity payload.
 - `/api/fire-restrictions/forests` returns the public fire-restriction status list.
 - `/api/fire-restrictions/forests/:slug` returns a per-forest fire-restriction detail payload.
+- `/api/places/search?q=...` returns destination search suggestions for trip checks.
+- `/api/trip-check/:place_slug` returns a source-linked destination fire-use planning payload.
+- `/api/trip-check/:place_slug/map` returns trip-check map GeoJSON.
 - `/fire-restrictions` renders the public forest status table.
 - `/fire-restrictions/:slug` renders forest-wide and localized camping fire-use restrictions.
+- `/trip-check?q=...` searches destinations and redirects or disambiguates.
+- `/trip-check/:place_slug` renders a destination fire-use trip check.
 - Bridgetown content lives in `src/`.
 - Infrastructure scaffolding lives in `infra/`.
 - Fire-restriction ingestion jobs live in `jobs/`.
 
-Seed and run fire-restriction ingestion manually:
+Seed and run fire-restriction ingestion plus place search manually:
 
 ```sh
 bundle exec rake db:migrate
 bundle exec rake que:migrate
 bundle exec rake fire:seed
+bundle exec rake places:refresh
 bundle exec rake fire:poll_due
 bundle exec rake fire:review:candidates
 bundle exec rake 'fire:review:forest[willamette]'
@@ -87,6 +93,11 @@ bundle exec rake 'fire:review:accept[123]'
 bundle exec rake 'fire:review:reject[123,wrong source]'
 bundle exec rake fire:status:list
 ```
+
+`places:refresh` imports public-domain GNIS Oregon, Washington, and California
+Domestic Names ZIPs into `tmp/place_imports`, seeds a small BFP-curated catalog
+for product-priority destinations, then resolves active places against monitored
+forest and localized fire-use geometry.
 
 Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
 

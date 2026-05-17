@@ -233,3 +233,41 @@ namespace :fire do
     end
   end
 end
+
+namespace :places do
+  def load_places
+    require_relative "config/boot"
+    require "bfp/places"
+  end
+
+  desc "Import configured place datasets into Postgres"
+  task :import do
+    load_places
+
+    counts = BFP::Places::Importer.new.import
+    puts "Imported #{counts[:places]} places and #{counts[:names]} names from #{counts[:datasets]} place datasets."
+  end
+
+  desc "Seed BFP-curated destinations and localized restriction areas"
+  task :seed_manual do
+    load_places
+
+    counts = BFP::Places::ManualSeeder.new.seed
+    puts "Seeded #{counts[:places]} manual places, #{counts[:localized_areas]} localized restriction areas, and #{counts[:names]} names."
+  end
+
+  desc "Resolve places against monitored forests and localized restriction geometry"
+  task :resolve do
+    load_places
+
+    counts = BFP::Places::Resolver.new.resolve
+    puts "Resolved #{counts[:land_unit_matches]} forest matches and #{counts[:localized_rule_matches]} localized rule matches."
+  end
+
+  desc "Import, seed, and resolve BFP place search data"
+  task :refresh do
+    Rake::Task["places:import"].invoke
+    Rake::Task["places:seed_manual"].invoke
+    Rake::Task["places:resolve"].invoke
+  end
+end

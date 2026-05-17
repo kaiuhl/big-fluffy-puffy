@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trip Check Search | Big Fluffy Puffy</title>
+    <meta
+      name="description"
+      content="Search BFP's source-linked fire-use trip check."
+    >
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <script src="<%= h(RodaApp::PLACE_SEARCH_JS_PATH) %>" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <main class="restrictions-page trip-check-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+
+        <section class="restrictions-intro trip-check-intro" aria-labelledby="trip-check-search-title">
+          <p class="kicker">Trip check</p>
+          <h1 id="trip-check-search-title">Where are you going?</h1>
+          <form class="place-search-form place-search-form-large" action="/trip-check" method="get" data-place-search>
+            <label for="trip-check-place-search">Destination</label>
+            <div class="place-search-control">
+              <input
+                id="trip-check-place-search"
+                name="q"
+                type="search"
+                autocomplete="off"
+                value="<%= h(query) %>"
+                placeholder="Lake, trail, campground, wilderness"
+                data-place-search-input
+              >
+              <button type="submit">Check</button>
+            </div>
+            <div class="place-search-results" data-place-search-results hidden></div>
+          </form>
+        </section>
+
+        <section class="restrictions-section" aria-labelledby="trip-check-results-title">
+          <div class="restrictions-section-heading">
+            <h2 id="trip-check-results-title">Matches</h2>
+            <p class="restrictions-section-count"><%= h(results.length) %> <%= results.length == 1 ? "place" : "places" %></p>
+          </div>
+          <div class="restrictions-table-wrap">
+            <% if query.to_s.strip.empty? %>
+              <div class="empty-state empty-state-section">
+                <p>Search for a destination to start a source-linked trip check.</p>
+              </div>
+            <% elsif results.empty? %>
+              <div class="empty-state empty-state-section">
+                <p>No matching places yet.</p>
+              </div>
+            <% else %>
+              <table class="restrictions-table trip-check-results-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Place</th>
+                    <th scope="col">Context</th>
+                    <th scope="col">Rules</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% results.each do |place| %>
+                    <tr>
+                      <th scope="row">
+                        <span><a href="<%= h(place[:url]) %>"><%= h(place[:name]) %></a></span>
+                        <small><%= h(labelize(place[:place_type])) %></small>
+                      </th>
+                      <td data-label="Context"><%= h(place[:subtitle]) %></td>
+                      <td data-label="Rules"><%= h(place[:matched_rule_count]) %> matched</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,9 +1,11 @@
 require_relative "../config/boot"
 require_relative "view_renderer"
 require_relative "helpers/fire_restrictions_helper"
+require_relative "helpers/places_helper"
 require_relative "routes/api"
 require_relative "routes/fire_restrictions"
 require_relative "routes/pages"
+require_relative "routes/trip_checks"
 require "bfp/climate/low_sparkline"
 require "bfp/fire_restrictions/fire_use_sparkline"
 require "bfp/fire_restrictions/status_display"
@@ -18,6 +20,7 @@ class RodaApp < Roda
   ].freeze
   SITE_CSS_PATH = "/styles/site.css?v=20260517-map-parts".freeze
   FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260517-map-parts".freeze
+  PLACE_SEARCH_JS_PATH = "/scripts/place-search.js?v=20260517-trip-check".freeze
 
   STATE_NAMES = {
     "or" => "Oregon",
@@ -63,8 +66,10 @@ class RodaApp < Roda
 
   include ViewRenderer
   include FireRestrictionsHelper
+  include PlacesHelper
   include ApiRoutes
   include FireRestrictionsRoutes
+  include TripCheckRoutes
   include PageRoutes
 
   opts[:root] = BFP.root
@@ -82,6 +87,7 @@ class RodaApp < Roda
 
     route_api(r)
     route_fire_restrictions(r)
+    route_trip_checks(r)
     route_pages(r)
   end
 end

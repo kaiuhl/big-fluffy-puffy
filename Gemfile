@@ -16,6 +16,7 @@ gem "pdf-reader", "~> 2.14"
 gem "rake", "~> 13.2"
 gem "rgeo", "~> 3.0"
 gem "ffi-geos", "~> 2.5"
+gem "rubyzip", "~> 2.4"
 
 group :development, :test do
   gem "rspec", "~> 3.13"

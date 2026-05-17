@@ -1,0 +1,211 @@
+<% place = check.fetch(:place) %>
+<% verdict = check.fetch(:verdict) %>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= h(place.fetch(:name)) %> Trip Check | Big Fluffy Puffy</title>
+    <meta
+      name="description"
+      content="Source-linked fire-use trip check for <%= h(place.fetch(:name)) %>."
+    >
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <script src="/vendor/leaflet/leaflet.js" defer></script>
+    <script src="<%= h(RodaApp::FIRE_RESTRICTIONS_JS_PATH) %>" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <main class="restrictions-page trip-check-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+
+        <section class="restrictions-intro trip-check-intro" aria-labelledby="trip-check-title">
+          <p class="kicker">Trip check</p>
+          <h1 id="trip-check-title"><%= h(place.fetch(:name)) %></h1>
+          <p><%= h(labelize(place.fetch(:place_type))) %> fire-use planning signal from BFP's source monitor.</p>
+        </section>
+
+        <section class="restrictions-summary trip-check-verdict trip-check-verdict-<%= h(verdict.fetch(:tone)) %>" aria-label="Trip check verdict">
+          <p class="summary-kicker">Campfire signal</p>
+          <p class="summary-statement"><%= h(verdict.fetch(:headline)) %></p>
+          <p class="summary-detail"><%= h(verdict.fetch(:detail)) %></p>
+        </section>
+
+        <section class="restrictions-map-section" aria-labelledby="trip-map-title">
+          <div class="restrictions-map-heading">
+            <div>
+              <p class="summary-kicker">Map detail</p>
+              <h2 id="trip-map-title"><%= h(place.fetch(:name)) %> Map</h2>
+            </div>
+            <ul class="restrictions-map-legend" aria-label="Map legend">
+              <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Matched localized restriction</li>
+              <li><span class="map-legend-swatch map-legend-unknown" aria-hidden="true"></span>Destination point</li>
+            </ul>
+          </div>
+          <div
+            id="restrictions-map"
+            class="restrictions-map"
+            data-map-endpoint="/api/trip-check/<%= h(place.fetch(:slug)) %>/map"
+            data-map-fit-zoom-offset="1"
+            data-map-status-mode="localized-restrictions"
+            data-map-total-restrictions="<%= check.fetch(:localized_restrictions).length %>"
+            role="img"
+            aria-label="Map of <%= h(place.fetch(:name)) %> trip check context"
+          ></div>
+          <p id="restrictions-map-status" class="map-status" aria-live="polite"></p>
+        </section>
+
+        <section class="restrictions-section" aria-labelledby="trip-fire-use-title">
+          <div class="restrictions-section-heading">
+            <h2 id="trip-fire-use-title">Fire Use</h2>
+            <p class="restrictions-section-count">confidence <%= h(confidence_label(check.fetch(:confidence))) %></p>
+          </div>
+          <div class="restrictions-table-wrap">
+            <table class="restrictions-table trip-fire-use-table">
+              <thead>
+                <tr>
+                  <th scope="col">Use</th>
+                  <th scope="col">BFP Signal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% fire_use_rows(check.fetch(:fire_use)).each do |label, policy| %>
+                  <tr>
+                    <th scope="row"><span><%= h(label) %></span></th>
+                    <td data-label="BFP Signal"><%= h(stove_policy_label(policy)) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="restrictions-section" aria-labelledby="trip-context-title">
+          <div class="restrictions-section-heading">
+            <h2 id="trip-context-title">Matched Context</h2>
+            <p class="restrictions-section-count"><%= h(check.fetch(:matched_land_units).length) %> <%= check.fetch(:matched_land_units).length == 1 ? "forest" : "forests" %></p>
+          </div>
+          <div class="restrictions-table-wrap">
+            <% if check.fetch(:matched_land_units).empty? %>
+              <div class="empty-state empty-state-section">
+                <p>No monitored forest boundary matched this place yet.</p>
+              </div>
+            <% else %>
+              <table class="restrictions-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Forest</th>
+                    <th scope="col">Campfires</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Checked</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% check.fetch(:matched_land_units).each do |match| %>
+                    <% forest = match.fetch(:forest) %>
+                    <tr>
+                      <th scope="row">
+                        <span><a href="<%= h(forest[:forest_url]) %>"><%= h(forest[:name]) %></a></span>
+                        <small><%= h(labelize(match[:relationship])) %></small>
+                      </th>
+                      <td data-label="Campfires"><%= h(policy_label(forest[:campfire_policy])) %></td>
+                      <td data-label="Source">
+                        <% if forest[:source_url] %>
+                          <a href="<%= h(forest[:source_url]) %>" rel="noreferrer"><%= h(forest[:source_title] || "Official source") %></a>
+                        <% else %>
+                          Not checked yet
+                        <% end %>
+                      </td>
+                      <td data-label="Checked">
+                        <% if forest[:last_checked_at] %>
+                          <time datetime="<%= h(forest[:last_checked_at]) %>"><%= h(date_label(forest[:last_checked_at])) %></time>
+                        <% else %>
+                          not checked
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="restrictions-section" aria-labelledby="trip-local-rules-title">
+          <div class="restrictions-section-heading">
+            <h2 id="trip-local-rules-title">Localized Rules</h2>
+            <p class="restrictions-section-count"><%= h(check.fetch(:localized_restrictions).length) %> matched</p>
+          </div>
+          <div class="restrictions-table-wrap">
+            <% if check.fetch(:localized_restrictions).empty? %>
+              <div class="empty-state empty-state-section">
+                <p>No active localized camping fire-use rule is matched to this place yet.</p>
+              </div>
+            <% else %>
+              <table class="restrictions-table localized-restrictions-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Area</th>
+                    <th scope="col">Fire Use</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% check.fetch(:localized_restrictions).each do |rule| %>
+                    <% fire_use = fire_use_profile(rule) %>
+                    <tr>
+                      <th scope="row">
+                        <span><%= h(rule[:title]) %></span>
+                        <small><%= h(rule[:affected_area] || "Localized area") %></small>
+                      </th>
+                      <td data-label="Fire Use">
+                        <div class="fire-use-profile">
+                          <span class="fire-use-chart"><%= fire_use.render %></span>
+                        </div>
+                      </td>
+                      <td data-label="Duration"><%= h(duration_label(rule)) %></td>
+                      <td data-label="Source">
+                        <% if rule[:source_url] %>
+                          <a href="<%= h(rule[:source_url]) %>" rel="noreferrer"><%= h(rule[:source_title] || "Source") %></a>
+                        <% else %>
+                          Not checked yet
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="restrictions-trust" aria-labelledby="trip-check-trust-title">
+          <p class="summary-kicker">How to read this</p>
+          <h2 id="trip-check-trust-title">Source-linked, not official</h2>
+          <div class="restrictions-trust-grid">
+            <p>Place matches are planning context, not surveyed legal boundaries.</p>
+            <p>Approximate BFP shapes help identify relevant areas; official sources and posted signs control.</p>
+            <p>Unknown means BFP has not published a claim yet. It does not mean campfires are allowed.</p>
+          </div>
+        </section>
+
+        <% unless check.fetch(:datasets).empty? %>
+          <section class="trip-check-attribution" aria-label="Place data attribution">
+            <% check.fetch(:datasets).each do |dataset| %>
+              <p>
+                Place data: <%= h(dataset[:attribution_text] || dataset[:name]) %>
+                <% if dataset[:license_url] %>
+                  <a href="<%= h(dataset[:license_url]) %>" rel="noreferrer"><%= h(dataset[:license_name]) %></a>
+                <% else %>
+                  <%= h(dataset[:license_name]) %>
+                <% end %>
+              </p>
+            <% end %>
+          </section>
+        <% end %>
+      </main>
+    </div>
+  </body>
+</html>

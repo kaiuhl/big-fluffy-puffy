@@ -9,6 +9,7 @@
       content="Big Fluffy Puffy is a nonprofit building fireless camp culture in the Pacific Northwest."
     >
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <script src="<%= h(RodaApp::PLACE_SEARCH_JS_PATH) %>" defer></script>
   </head>
   <body>
     <div class="page">
@@ -30,7 +31,21 @@
               <p class="supporting-copy">
                 We advocate for a simple shift outside: carry enough warmth to enjoy the night without a wood fire. Better insulation, better habits, fewer ignition points. The fuller site is coming soon.
               </p>
-              <p class="status">More soon</p>
+              <form class="place-search-form" action="/trip-check" method="get" data-place-search>
+                <label for="home-place-search">Where are you going?</label>
+                <div class="place-search-control">
+                  <input
+                    id="home-place-search"
+                    name="q"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="Burnt Lake, Eagle Creek, Jefferson Park"
+                    data-place-search-input
+                  >
+                  <button type="submit">Check</button>
+                </div>
+                <div class="place-search-results" data-place-search-results hidden></div>
+              </form>
             </div>
           </div>
         </section>

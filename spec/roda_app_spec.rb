@@ -33,6 +33,31 @@ RSpec.describe RodaApp do
     expect(JSON.parse(last_response.body)).to include("forests")
   end
 
+  it "exposes place search suggestions" do
+    allow_any_instance_of(described_class).to receive(:place_search_suggestions).with("Burnt", limit: 8).and_return(
+      [
+        {
+          slug: "burnt-lake",
+          name: "Burnt Lake",
+          place_type: "lake",
+          subtitle: "Lake / Mt. Hood National Forest / Oregon",
+          latitude: 45.35,
+          longitude: -121.8,
+          matched_land_units: [{slug: "mt-hood", name: "Mt. Hood National Forest"}],
+          matched_rule_count: 1,
+          url: "/trip-check/burnt-lake"
+        }
+      ]
+    )
+
+    get "/api/places/search?q=Burnt"
+
+    expect(last_response).to be_ok
+    data = JSON.parse(last_response.body)
+    expect(data.dig("places", 0, "name")).to eq("Burnt Lake")
+    expect(data.dig("places", 0, "url")).to eq("/trip-check/burnt-lake")
+  end
+
   it "serves the fire restrictions page shell" do
     get "/fire-restrictions"
 
@@ -271,7 +296,79 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/about"')
     expect(last_response.body).to include('href="/contact"')
     expect(last_response.body).to include('class="site-brand site-brand-active" href="/" aria-current="page"')
+    expect(last_response.body).to include('action="/trip-check"')
+    expect(last_response.body).to include("Where are you going?")
+    expect(last_response.body).to include('src="/scripts/place-search.js?v=20260517-trip-check"')
     expect(last_response.body).not_to include(">Home</a>")
+  end
+
+  it "renders trip check search disambiguation" do
+    allow_any_instance_of(described_class).to receive(:trip_check_search_results).with("lake", limit: 8).and_return(
+      [
+        {
+          slug: "burnt-lake",
+          name: "Burnt Lake",
+          place_type: "lake",
+          subtitle: "Lake / Mt. Hood National Forest / Oregon",
+          matched_rule_count: 1,
+          url: "/trip-check/burnt-lake"
+        },
+        {
+          slug: "wahtum-lake",
+          name: "Wahtum Lake",
+          place_type: "lake",
+          subtitle: "Lake / Mt. Hood National Forest / Oregon",
+          matched_rule_count: 1,
+          url: "/trip-check/wahtum-lake"
+        }
+      ]
+    )
+
+    get "/trip-check?q=lake"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Trip Check Search")
+    expect(last_response.body).to include("Burnt Lake")
+    expect(last_response.body).to include("Wahtum Lake")
+    expect(last_response.body).to include('href="/trip-check/burnt-lake"')
+  end
+
+  it "renders a trip check page" do
+    allow_any_instance_of(described_class).to receive(:trip_check_detail).with("burnt-lake").and_return(trip_check_payload)
+
+    get "/trip-check/burnt-lake"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Burnt Lake Trip Check")
+    expect(last_response.body).to include("Campfires appear prohibited here.")
+    expect(last_response.body).to include("Fire Use")
+    expect(last_response.body).to include("Matched Context")
+    expect(last_response.body).to include("Localized Rules")
+    expect(last_response.body).to include("Source-linked, not official")
+    expect(last_response.body).to include("Place data:")
+    expect(last_response.body).to include('data-map-endpoint="/api/trip-check/burnt-lake/map"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-map-parts"')
+  end
+
+  it "serves trip check map GeoJSON" do
+    allow_any_instance_of(described_class).to receive(:trip_check_map).with("burnt-lake").and_return(
+      {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {type: "Point", coordinates: [-121.8, 45.35]},
+            properties: {kind: "trip_check_place", name: "Burnt Lake"}
+          }
+        ]
+      }
+    )
+
+    get "/api/trip-check/burnt-lake/map"
+
+    expect(last_response).to be_ok
+    expect(last_response.content_type).to include("application/geo+json")
+    expect(JSON.parse(last_response.body).dig("features", 0, "properties", "name")).to eq("Burnt Lake")
   end
 
   it "serves simple public identity pages" do
@@ -377,6 +474,15 @@ RSpec.describe RodaApp do
     expect(last_response.body).not_to include('color: isBoundary ? "#000000" : color')
     expect(last_response.body).not_to include("dashArray: isBoundary")
     expect(last_response.body).not_to include("climate_low_context")
+  end
+
+  it "serves the place search script" do
+    get "/scripts/place-search.js"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("setupPlaceSearch")
+    expect(last_response.body).to include("/api/places/search")
+    expect(last_response.body).to include("data-place-search-results")
   end
 
   def stub_fire_restriction_records(records)
@@ -531,6 +637,70 @@ RSpec.describe RodaApp do
           effective_end: "2026-09-01"
         }
       ]
+    }
+  end
+
+  def trip_check_payload
+    {
+      place: {
+        slug: "burnt-lake",
+        name: "Burnt Lake",
+        place_type: "lake",
+        latitude: 45.35,
+        longitude: -121.8,
+        state_code: "or",
+        source_url: "https://example.test/place"
+      },
+      verdict: {
+        tone: "active",
+        headline: "Campfires appear prohibited here.",
+        detail: "A matched localized fire-use rule applies to this destination."
+      },
+      campfire_policy: "prohibited",
+      fire_use: {
+        campfire_policy: "prohibited",
+        gas_stove_policy: "allowed_with_shutoff_valve",
+        liquid_fuel_stove_policy: "allowed_with_shutoff_valve",
+        alcohol_stove_policy: "unknown",
+        charcoal_policy: "prohibited",
+        solid_fuel_stove_policy: "prohibited",
+        wood_stove_policy: "prohibited"
+      },
+      matched_land_units: [
+        {
+          relationship: "contains_point",
+          confidence: 0.98,
+          forest: restriction_record(
+            slug: "mt-hood",
+            name: "Mt. Hood National Forest",
+            forest_url: "/fire-restrictions/mt-hood",
+            status: "none",
+            campfire_policy: "allowed",
+            source_url: "https://example.test/fire",
+            source_title: "Fire information"
+          )
+        }
+      ],
+      localized_restrictions: [
+        forest_detail.fetch(:localized_restrictions).first.merge(
+          title: "Burnt Lake half-mile campfire prohibition",
+          affected_area: "At and within 1/2 mile of Burnt Lake",
+          source_title: "Wilderness Connect"
+        )
+      ],
+      datasets: [
+        {
+          name: "BFP curated launch destinations",
+          license_name: "BFP curated",
+          license_url: nil,
+          attribution_text: "Curated by Big Fluffy Puffy.",
+          source_url: nil
+        }
+      ],
+      official_sources: [],
+      confidence: 0.9,
+      checked_at: "2026-05-03T05:00:00Z",
+      map: {center: [45.35, -121.8], localized_rule_count: 1}
     }
   end
 end

@@ -238,6 +238,7 @@ GEM
       rubocop-ast (>= 1.47.1, < 2.0)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
+    rubyzip (2.4.1)
     samovar (2.4.1)
       console (~> 1.0)
       mapping (~> 1.0)
@@ -304,6 +305,7 @@ DEPENDENCIES
   rgeo (~> 3.0)
   roda (~> 3.102)
   rspec (~> 3.13)
+  rubyzip (~> 2.4)
   sequel (~> 5.103)
   standard (~> 1.43)
 

@@ -1,0 +1,177 @@
+datasets:
+  - slug: gnis
+    name: USGS Geographic Names Information System
+    source_url: https://www.usgs.gov/us-board-on-geographic-names/download-gnis-data
+    license_name: Public Domain
+    license_url: https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits
+    attribution_text: Geographic names from the U.S. Geological Survey Geographic Names Information System.
+    enabled: true
+    format: zip
+    zip_glob: "**/*.txt"
+    col_sep: "|"
+    data_urls:
+      - https://prd-tnm.s3.amazonaws.com/StagedProducts/GeographicNames/DomesticNames/DomesticNames_OR_Text.zip
+      - https://prd-tnm.s3.amazonaws.com/StagedProducts/GeographicNames/DomesticNames/DomesticNames_WA_Text.zip
+      - https://prd-tnm.s3.amazonaws.com/StagedProducts/GeographicNames/DomesticNames/DomesticNames_CA_Text.zip
+    feature_class_filter:
+      - Arch
+      - Area
+      - Arroyo
+      - Bar
+      - Basin
+      - Bay
+      - Beach
+      - Bench
+      - Bend
+      - Canal
+      - Cape
+      - Cave
+      - Cliff
+      - Crater
+      - Crossing
+      - Falls
+      - Flat
+      - Forest
+      - Gap
+      - Glacier
+      - Gut
+      - Harbor
+      - Island
+      - Isthmus
+      - Lake
+      - Lava
+      - Levee
+      - Locale
+      - Park
+      - Pillar
+      - Plain
+      - Range
+      - Rapids
+      - Reserve
+      - Reservoir
+      - Ridge
+      - Sea
+      - Slope
+      - Spring
+      - Stream
+      - Summit
+      - Swamp
+      - Trail
+      - Valley
+      - Woods
+    mapping:
+      external_id:
+        - feature_id
+        - FEATURE_ID
+      name:
+        - feature_name
+        - FEATURE_NAME
+      place_type:
+        - feature_class
+        - FEATURE_CLASS
+      latitude:
+        - prim_lat_dec
+        - PRIM_LAT_DEC
+      longitude:
+        - prim_long_dec
+        - PRIM_LONG_DEC
+      state_code:
+        - state_alpha
+        - STATE_ALPHA
+      state_name:
+        - state_name
+        - STATE_NAME
+      aliases:
+        - variant_name
+        - VARIANT_NAME
+      metadata_fields:
+        county_name:
+          - county_name
+          - COUNTY_NAME
+        map_name:
+          - map_name
+          - MAP_NAME
+        state_name:
+          - state_name
+          - STATE_NAME
+        source_feature_class:
+          - feature_class
+          - FEATURE_CLASS
+      search_rank: 30
+      search_rank_map:
+        Basin: 48
+        Beach: 48
+        Falls: 52
+        Island: 44
+        Lake: 56
+        Locale: 46
+        Park: 46
+        Reservoir: 52
+        Stream: 42
+        Summit: 50
+        Trail: 58
+      place_type_map:
+        Arch: landmark
+        Area: destination
+        Basin: destination
+        Bay: water
+        Beach: beach
+        Falls: waterfall
+        Forest: forest
+        Island: island
+        Lake: lake
+        Locale: destination
+        Park: destination
+        Reserve: wilderness
+        Reservoir: lake
+        Ridge: ridge
+        Stream: river
+        Summit: peak
+        Trail: trail
+        Valley: destination
+      confidence: 0.82
+  - slug: usgs-trails
+    name: USGS Digital Trails
+    source_url: https://www.usgs.gov/national-digital-trails/how-access-or-view-usgs-trails-dataset
+    license_name: Public Domain
+    license_url: https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits
+    attribution_text: Trail data from the U.S. Geological Survey National Digital Trails dataset.
+    enabled: false
+    format: geojson
+    mapping:
+      external_id: permanentidentifier
+      name: trailname
+      default_place_type: trail
+      search_rank: 45
+      confidence: 0.78
+  - slug: usfs-recreation-sites
+    name: USFS Recreation Sites
+    source_url: https://catalog.data.gov/dataset/recreation-sites-feature-layer
+    license_name: CC-BY 4.0
+    license_url: https://creativecommons.org/licenses/by/4.0/
+    attribution_text: Recreation site data from USDA Forest Service Enterprise Data Warehouse.
+    enabled: false
+    format: geojson
+    mapping:
+      external_id: RECAREAID
+      name: RECAREANAME
+      place_type: RECAREATYPE
+      source_url: URL
+      search_rank: 60
+      confidence: 0.82
+  - slug: ridb
+    name: Recreation Information Database
+    source_url: https://www.recreation.gov/use-our-data
+    license_name: Federal recreation data; verify current RIDB terms before enabling
+    attribution_text: Recreation data from Recreation.gov / RIDB.
+    enabled: false
+    format: csv
+    mapping:
+      external_id: FacilityID
+      name: FacilityName
+      default_place_type: recreation_site
+      latitude: FacilityLatitude
+      longitude: FacilityLongitude
+      source_url: FacilityURL
+      search_rank: 55
+      confidence: 0.76

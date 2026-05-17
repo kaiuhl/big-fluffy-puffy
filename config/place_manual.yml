@@ -1,0 +1,682 @@
+dataset:
+  name: BFP curated launch destinations
+  license_name: BFP curated
+  attribution_text: Curated by Big Fluffy Puffy from official source research.
+places:
+  - slug: burnt-lake
+    name: Burnt Lake
+    place_type: lake
+    latitude: 45.3509
+    longitude: -121.8024
+    state_code: or
+    aliases:
+      - Burnt Lake Trail
+      - Burnt Lake Mount Hood
+    search_rank: 100
+    confidence: 0.92
+  - slug: wahtum-lake
+    name: Wahtum Lake
+    place_type: lake
+    latitude: 45.5825
+    longitude: -121.7956
+    state_code: or
+    aliases:
+      - Wahtum Lake Camp
+      - Wahtum Lake Mark O Hatfield
+    search_rank: 100
+    confidence: 0.92
+  - slug: ramona-falls
+    name: Ramona Falls
+    place_type: waterfall
+    latitude: 45.3798
+    longitude: -121.7726
+    state_code: or
+    aliases:
+      - Ramona Falls Trail
+      - Ramona Falls Mount Hood
+    search_rank: 95
+    confidence: 0.9
+  - slug: paradise-park
+    name: Paradise Park
+    place_type: destination
+    latitude: 45.338
+    longitude: -121.725
+    state_code: or
+    aliases:
+      - Paradise Park Timberline Trail
+      - Mount Hood Paradise Park
+    search_rank: 94
+    confidence: 0.86
+  - slug: jefferson-park
+    name: Jefferson Park
+    place_type: destination
+    latitude: 44.707
+    longitude: -121.8
+    state_code: or
+    aliases:
+      - Jefferson Park Mount Jefferson
+      - Jefferson Park Wilderness
+    search_rank: 96
+    confidence: 0.86
+  - slug: eagle-creek-trail
+    name: Eagle Creek Trail
+    place_type: trail
+    latitude: 45.6386
+    longitude: -121.9186
+    state_code: or
+    aliases:
+      - Eagle Creek
+      - Eagle Creek Trailhead
+    search_rank: 92
+    confidence: 0.84
+  - slug: timberline-trail
+    name: Timberline Trail
+    place_type: trail
+    latitude: 45.3311
+    longitude: -121.7113
+    state_code: or
+    aliases:
+      - Timberline Trail Mount Hood
+      - Mount Hood Timberline Trail
+    search_rank: 94
+    confidence: 0.82
+  - slug: mcneil-point
+    name: McNeil Point
+    place_type: destination
+    latitude: 45.3954
+    longitude: -121.779
+    state_code: or
+    aliases:
+      - McNeil Point Shelter
+      - McNeil Point Trail
+    search_rank: 92
+    confidence: 0.86
+  - slug: elk-cove
+    name: Elk Cove
+    place_type: destination
+    latitude: 45.397
+    longitude: -121.698
+    state_code: or
+    aliases:
+      - Elk Cove Mount Hood
+      - Elk Cove Timberline Trail
+    search_rank: 90
+    confidence: 0.8
+  - slug: elk-meadows
+    name: Elk Meadows
+    place_type: destination
+    latitude: 45.3206
+    longitude: -121.6047
+    state_code: or
+    aliases:
+      - Elk Meadows Mount Hood
+      - Elk Meadows Trail
+    search_rank: 90
+    confidence: 0.8
+  - slug: lost-lake-campground
+    name: Lost Lake Campground
+    place_type: campground
+    latitude: 45.4897
+    longitude: -121.8152
+    state_code: or
+    aliases:
+      - Lost Lake
+      - Lost Lake Mount Hood
+    search_rank: 90
+    confidence: 0.84
+  - slug: trillium-lake-campground
+    name: Trillium Lake Campground
+    place_type: campground
+    latitude: 45.2708
+    longitude: -121.7397
+    state_code: or
+    aliases:
+      - Trillium Lake
+      - Trillium Lake Mount Hood
+    search_rank: 88
+    confidence: 0.84
+  - slug: mirror-lake-trail
+    name: Mirror Lake Trail
+    place_type: trail
+    latitude: 45.3056
+    longitude: -121.7917
+    state_code: or
+    aliases:
+      - Mirror Lake
+      - Tom Dick and Harry Mountain
+    search_rank: 88
+    confidence: 0.82
+  - slug: tilly-jane-trailhead
+    name: Tilly Jane Trailhead
+    place_type: trailhead
+    latitude: 45.386
+    longitude: -121.566
+    state_code: or
+    aliases:
+      - Tilly Jane Trail
+      - Cooper Spur Tilly Jane
+    search_rank: 86
+    confidence: 0.78
+  - slug: frog-lake-campground
+    name: Frog Lake Campground
+    place_type: campground
+    latitude: 45.2286
+    longitude: -121.693
+    state_code: or
+    aliases:
+      - Frog Lake
+      - Frog Lake Sno Park
+    search_rank: 86
+    confidence: 0.82
+  - slug: tamolitch-blue-pool
+    name: Tamolitch Blue Pool
+    place_type: destination
+    latitude: 44.2909
+    longitude: -122.0368
+    state_code: or
+    aliases:
+      - Blue Pool
+      - Tamolitch Falls
+      - McKenzie River Blue Pool
+    search_rank: 90
+    confidence: 0.84
+  - slug: opal-creek
+    name: Opal Creek
+    place_type: destination
+    latitude: 44.855
+    longitude: -122.259
+    state_code: or
+    aliases:
+      - Opal Creek Wilderness
+      - Jawbone Flats
+    search_rank: 88
+    confidence: 0.76
+  - slug: marion-lake
+    name: Marion Lake
+    place_type: lake
+    latitude: 44.594
+    longitude: -121.895
+    state_code: or
+    aliases:
+      - Marion Lake Trail
+      - Mount Jefferson Marion Lake
+    search_rank: 92
+    confidence: 0.84
+  - slug: pamelia-lake
+    name: Pamelia Lake
+    place_type: lake
+    latitude: 44.665
+    longitude: -121.793
+    state_code: or
+    aliases:
+      - Pamelia Lake Trail
+      - Mount Jefferson Pamelia Lake
+    search_rank: 90
+    confidence: 0.84
+  - slug: waldo-lake
+    name: Waldo Lake
+    place_type: lake
+    latitude: 43.749
+    longitude: -122.032
+    state_code: or
+    aliases:
+      - Waldo Lake Islands
+      - Waldo Lake Campground
+    search_rank: 92
+    confidence: 0.86
+  - slug: green-lakes-trail
+    name: Green Lakes Trail
+    place_type: trail
+    latitude: 44.0428
+    longitude: -121.7692
+    state_code: or
+    aliases:
+      - Green Lakes
+      - Green Lakes Trailhead
+      - Three Sisters Green Lakes
+    search_rank: 92
+    confidence: 0.84
+  - slug: devils-lake-campground
+    name: Devils Lake Campground
+    place_type: campground
+    latitude: 43.978
+    longitude: -121.809
+    state_code: or
+    aliases:
+      - Devils Lake
+      - Devils Lake South Sister
+    search_rank: 88
+    confidence: 0.82
+  - slug: sparks-lake
+    name: Sparks Lake
+    place_type: lake
+    latitude: 44.033
+    longitude: -121.742
+    state_code: or
+    aliases:
+      - Sparks Lake Camp
+      - Cascade Lakes Sparks Lake
+    search_rank: 88
+    confidence: 0.82
+  - slug: todd-lake
+    name: Todd Lake
+    place_type: lake
+    latitude: 44.025
+    longitude: -121.688
+    state_code: or
+    aliases:
+      - Todd Lake Trail
+      - Todd Lake Broken Top
+    search_rank: 86
+    confidence: 0.82
+  - slug: moraine-lake
+    name: Moraine Lake
+    place_type: lake
+    latitude: 44.076
+    longitude: -121.786
+    state_code: or
+    aliases:
+      - Moraine Lake South Sister
+      - South Sister Moraine Lake
+    search_rank: 86
+    confidence: 0.78
+  - slug: south-sister
+    name: South Sister
+    place_type: peak
+    latitude: 44.1035
+    longitude: -121.768
+    state_code: or
+    aliases:
+      - South Sister Climber Trail
+      - South Sister Trailhead
+    search_rank: 88
+    confidence: 0.84
+  - slug: broken-top
+    name: Broken Top
+    place_type: peak
+    latitude: 44.082
+    longitude: -121.7
+    state_code: or
+    aliases:
+      - Broken Top Trail
+      - Broken Top No Name Lake
+    search_rank: 86
+    confidence: 0.82
+  - slug: metolius-river
+    name: Metolius River
+    place_type: river
+    latitude: 44.476
+    longitude: -121.633
+    state_code: or
+    aliases:
+      - Camp Sherman Metolius
+      - Metolius River Trail
+    search_rank: 86
+    confidence: 0.82
+  - slug: camp-sherman
+    name: Camp Sherman
+    place_type: destination
+    latitude: 44.4607
+    longitude: -121.641
+    state_code: or
+    aliases:
+      - Camp Sherman Oregon
+      - Metolius Camp Sherman
+    search_rank: 84
+    confidence: 0.82
+  - slug: scott-lake-campground
+    name: Scott Lake Campground
+    place_type: campground
+    latitude: 44.211
+    longitude: -121.96
+    state_code: or
+    aliases:
+      - Scott Lake
+      - Scott Lake Three Sisters
+    search_rank: 86
+    confidence: 0.8
+  - slug: three-sisters-wilderness
+    name: Three Sisters Wilderness
+    place_type: wilderness
+    latitude: 44.089
+    longitude: -121.805
+    state_code: or
+    aliases:
+      - Three Sisters
+      - Central Cascades Wilderness
+    search_rank: 90
+    confidence: 0.78
+  - slug: colchuck-lake
+    name: Colchuck Lake
+    place_type: lake
+    latitude: 47.498
+    longitude: -120.817
+    state_code: wa
+    aliases:
+      - Colchuck Lake Trail
+      - Enchantments Colchuck
+    search_rank: 94
+    confidence: 0.86
+  - slug: the-enchantments
+    name: The Enchantments
+    place_type: destination
+    latitude: 47.484
+    longitude: -120.805
+    state_code: wa
+    aliases:
+      - Enchantments
+      - Enchantment Lakes
+      - Core Enchantments
+    search_rank: 96
+    confidence: 0.84
+  - slug: snow-lakes-trail
+    name: Snow Lakes Trail
+    place_type: trail
+    latitude: 47.544
+    longitude: -120.708
+    state_code: wa
+    aliases:
+      - Snow Lakes
+      - Snow Lake Enchantments
+    search_rank: 88
+    confidence: 0.82
+  - slug: eightmile-lake
+    name: Eightmile Lake
+    place_type: lake
+    latitude: 47.518
+    longitude: -120.895
+    state_code: wa
+    aliases:
+      - Eightmile Lake Trail
+      - Eightmile Campground
+    search_rank: 86
+    confidence: 0.82
+  - slug: stuart-lake-trailhead
+    name: Stuart Lake Trailhead
+    place_type: trailhead
+    latitude: 47.527
+    longitude: -120.82
+    state_code: wa
+    aliases:
+      - Stuart Lake
+      - Colchuck Lake Trailhead
+    search_rank: 88
+    confidence: 0.82
+  - slug: alpine-lakes-wilderness
+    name: Alpine Lakes Wilderness
+    place_type: wilderness
+    latitude: 47.55
+    longitude: -121.13
+    state_code: wa
+    aliases:
+      - Alpine Lakes
+      - Alpine Lakes Wilderness Area
+    search_rank: 90
+    confidence: 0.78
+  - slug: goat-rocks-wilderness
+    name: Goat Rocks Wilderness
+    place_type: wilderness
+    latitude: 46.5
+    longitude: -121.45
+    state_code: wa
+    aliases:
+      - Goat Rocks
+      - Goat Rocks Crest
+    search_rank: 92
+    confidence: 0.8
+  - slug: snowgrass-flat
+    name: Snowgrass Flat
+    place_type: destination
+    latitude: 46.474
+    longitude: -121.48
+    state_code: wa
+    aliases:
+      - Snowgrass Trail
+      - Snowgrass Flat Goat Rocks
+    search_rank: 88
+    confidence: 0.78
+  - slug: goat-lake-goat-rocks
+    name: Goat Lake
+    place_type: lake
+    latitude: 46.486
+    longitude: -121.52
+    state_code: wa
+    aliases:
+      - Goat Lake Goat Rocks
+      - Goat Lake Snowgrass
+    search_rank: 88
+    confidence: 0.78
+  - slug: packwood-lake
+    name: Packwood Lake
+    place_type: lake
+    latitude: 46.602
+    longitude: -121.584
+    state_code: wa
+    aliases:
+      - Packwood Lake Trail
+      - Packwood Lake Camp
+    search_rank: 86
+    confidence: 0.82
+  - slug: mount-adams
+    name: Mount Adams
+    place_type: peak
+    latitude: 46.2024
+    longitude: -121.49
+    state_code: wa
+    aliases:
+      - Mt Adams
+      - Mount Adams Wilderness
+      - Mount Adams High Country
+    search_rank: 92
+    confidence: 0.84
+  - slug: chain-lakes-trail
+    name: Chain Lakes Trail
+    place_type: trail
+    latitude: 48.846
+    longitude: -121.692
+    state_code: wa
+    aliases:
+      - Chain Lakes Loop
+      - Mount Baker Chain Lakes
+    search_rank: 88
+    confidence: 0.82
+  - slug: artist-point
+    name: Artist Point
+    place_type: destination
+    latitude: 48.8467
+    longitude: -121.692
+    state_code: wa
+    aliases:
+      - Artist Point Mount Baker
+      - Heather Meadows Artist Point
+    search_rank: 88
+    confidence: 0.84
+  - slug: heather-meadows
+    name: Heather Meadows
+    place_type: destination
+    latitude: 48.86
+    longitude: -121.67
+    state_code: wa
+    aliases:
+      - Heather Meadows Mount Baker
+      - Heather Meadows Visitor Center
+    search_rank: 86
+    confidence: 0.82
+  - slug: maple-pass-loop
+    name: Maple Pass Loop
+    place_type: trail
+    latitude: 48.518
+    longitude: -120.735
+    state_code: wa
+    aliases:
+      - Maple Pass
+      - Heather Maple Pass Loop
+      - Rainy Pass Maple Pass
+    search_rank: 90
+    confidence: 0.84
+  - slug: blue-lake-north-cascades
+    name: Blue Lake
+    place_type: lake
+    latitude: 48.516
+    longitude: -120.68
+    state_code: wa
+    aliases:
+      - Blue Lake North Cascades
+      - Blue Lake Trail
+    search_rank: 86
+    confidence: 0.82
+  - slug: cascade-pass
+    name: Cascade Pass
+    place_type: trail
+    latitude: 48.475
+    longitude: -121.075
+    state_code: wa
+    aliases:
+      - Cascade Pass Trail
+      - Sahale Arm
+    search_rank: 88
+    confidence: 0.82
+  - slug: hoh-river-trail
+    name: Hoh River Trail
+    place_type: trail
+    latitude: 47.86
+    longitude: -123.934
+    state_code: wa
+    aliases:
+      - Hoh Rain Forest
+      - Hoh River
+    search_rank: 88
+    confidence: 0.84
+  - slug: enchanted-valley
+    name: Enchanted Valley
+    place_type: destination
+    latitude: 47.67
+    longitude: -123.37
+    state_code: wa
+    aliases:
+      - Enchanted Valley Chalet
+      - East Fork Quinault
+    search_rank: 86
+    confidence: 0.78
+  - slug: sol-duc-falls
+    name: Sol Duc Falls
+    place_type: waterfall
+    latitude: 47.951
+    longitude: -123.819
+    state_code: wa
+    aliases:
+      - Sol Duc Falls Trail
+      - Sol Duc
+    search_rank: 84
+    confidence: 0.84
+  - slug: lake-ozette
+    name: Lake Ozette
+    place_type: lake
+    latitude: 48.095
+    longitude: -124.618
+    state_code: wa
+    aliases:
+      - Ozette
+      - Ozette Triangle
+      - Cape Alava
+    search_rank: 86
+    confidence: 0.84
+  - slug: shi-shi-beach
+    name: Shi Shi Beach
+    place_type: beach
+    latitude: 48.267
+    longitude: -124.666
+    state_code: wa
+    aliases:
+      - Shi Shi
+      - Point of Arches
+    search_rank: 86
+    confidence: 0.8
+  - slug: trinity-alps-wilderness
+    name: Trinity Alps Wilderness
+    place_type: wilderness
+    latitude: 40.92
+    longitude: -123.14
+    state_code: ca
+    aliases:
+      - Trinity Alps
+      - Trinity Alps Wilderness Area
+    search_rank: 90
+    confidence: 0.8
+  - slug: canyon-creek-lakes
+    name: Canyon Creek Lakes
+    place_type: lake
+    latitude: 40.91
+    longitude: -123.02
+    state_code: ca
+    aliases:
+      - Canyon Creek Trail
+      - Canyon Creek Lakes Trinity Alps
+    search_rank: 88
+    confidence: 0.8
+  - slug: caribou-lakes
+    name: Caribou Lakes
+    place_type: lake
+    latitude: 40.97
+    longitude: -122.98
+    state_code: ca
+    aliases:
+      - Caribou Lakes Trail
+      - Caribou Basin
+    search_rank: 86
+    confidence: 0.78
+  - slug: devils-punchbowl
+    name: Devils Punchbowl
+    place_type: lake
+    latitude: 41.016
+    longitude: -123.006
+    state_code: ca
+    aliases:
+      - Devil's Punchbowl
+      - Devils Punchbowl Trinity Alps
+    search_rank: 88
+    confidence: 0.8
+  - slug: castle-lake
+    name: Castle Lake
+    place_type: lake
+    latitude: 41.226
+    longitude: -122.382
+    state_code: ca
+    aliases:
+      - Castle Lake Mount Shasta
+      - Castle Lake Trail
+    search_rank: 86
+    confidence: 0.84
+  - slug: mount-shasta-wilderness
+    name: Mount Shasta Wilderness
+    place_type: wilderness
+    latitude: 41.409
+    longitude: -122.194
+    state_code: ca
+    aliases:
+      - Mt Shasta Wilderness
+      - Mount Shasta
+    search_rank: 88
+    confidence: 0.82
+  - slug: heart-lake-mount-shasta
+    name: Heart Lake
+    place_type: lake
+    latitude: 41.224
+    longitude: -122.37
+    state_code: ca
+    aliases:
+      - Heart Lake Mount Shasta
+      - Heart Lake Castle Lake
+    search_rank: 84
+    confidence: 0.78
+  - slug: russian-wilderness
+    name: Russian Wilderness
+    place_type: wilderness
+    latitude: 41.25
+    longitude: -122.95
+    state_code: ca
+    aliases:
+      - Russian Wilderness Area
+      - Russian Lake
+    search_rank: 82
+    confidence: 0.76
