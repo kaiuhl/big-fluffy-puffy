@@ -30,7 +30,9 @@ GNIS point-buffer pattern for explicit 500-foot named-feature buffers.
 combines those explicit buffers with broader affected-area envelopes for Elk
 Cove, Elk Meadows, and Paradise Park. The Elk Cove and Elk Meadows polygons are
 not tree-island boundaries; they are named-place envelopes whose rule details
-carry the narrower legal restriction.
+carry the narrower legal restriction. Its generated `map_subfeatures` metadata
+lets the public map show part-specific popup text while preserving one logical
+localized restriction.
 
 `gifford-pinchot-mt-adams-high-country-campfire-prohibition-area.geojson` uses
 official USFS trail centerlines and the Gifford Pinchot/Yakama forest boundary,

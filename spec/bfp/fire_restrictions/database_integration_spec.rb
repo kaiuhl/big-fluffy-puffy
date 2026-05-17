@@ -154,6 +154,20 @@ RSpec.describe "fire restriction database integration", :db do
     expect(mt_hood_named.dig(:geometry_provenance, "affected_area_envelopes")).to include("Elk Cove", "Elk Meadows", "Paradise Park")
     expect(mt_hood_named.dig(:geometry_provenance, "geometry_coverage")).to eq("affected_area_envelope")
 
+    mt_hood_map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "mt-hood").geojson
+    mt_hood_named_features = mt_hood_map.fetch(:features).select do |feature|
+      feature.dig(:properties, :rule_slug) == "mt-hood-mount-hood-wilderness-named-area-campfire-prohibitions"
+    end
+    expect(mt_hood_named_features.map { |feature| feature.dig(:properties, :part_name) }).to contain_exactly(
+      "Ramona Falls",
+      "McNeil Point",
+      "Elk Cove",
+      "Elk Meadows",
+      "Paradise Park"
+    )
+    expect(mt_hood_named_features.find { |feature| feature.dig(:properties, :part_name) == "Elk Meadows" }.dig(:properties, :restriction_detail)).to include("tree-covered island in Elk Meadows")
+    expect(mt_hood_named_features.find { |feature| feature.dig(:properties, :part_name) == "Elk Meadows" }.dig(:properties, :geometry_basis)).to include("#645A")
+
     gifford_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("gifford-pinchot")
     mt_adams = gifford_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "gifford-pinchot-mt-adams-high-country-campfire-prohibition" }
     expect(mt_adams).to include(

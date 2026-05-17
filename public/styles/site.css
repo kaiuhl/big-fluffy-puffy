@@ -508,6 +508,14 @@ h1 {
   line-height: 1.15;
 }
 
+.map-popup-rule {
+  margin: -4px 0 10px;
+  color: var(--mid-gray);
+  font-size: 0.76rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
 .map-popup dl {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

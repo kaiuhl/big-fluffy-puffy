@@ -51,6 +51,43 @@ RUN_DB_SPECS=true mise exec -- bundle exec rspec spec/bfp/fire_restrictions/data
 
 Normal specs intentionally skip those DB integration examples unless `RUN_DB_SPECS=true`.
 
+## Browser/UI Verification
+
+For frontend or map-popup changes, verify in a real browser whenever practical,
+not just with Rack specs.
+
+Recommended local flow:
+
+```sh
+mise exec -- bundle exec rake fire:localized:seed
+mise exec -- bundle exec puma -C config/puma.rb -p 4567
+```
+
+Then open the relevant page, usually:
+
+```text
+http://127.0.0.1:4567/fire-restrictions
+http://127.0.0.1:4567/fire-restrictions/mt-hood
+```
+
+Prefer the Codex Browser plugin when it is available. If only Node tooling is
+available, call `load_workspace_dependencies`, add the bundled
+`node_modules` path to `node_repl`, and use Playwright from there. If Playwright
+is installed but its browser binary is missing, install Chromium through the
+bundled Playwright CLI, for example:
+
+```sh
+/Users/kaiuhl/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node \
+  /Users/kaiuhl/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/cli.js install chromium
+```
+
+For localized fire map work, inspect both the page and the GeoJSON endpoint.
+Click at least one rendered restriction shape and confirm the popup text,
+boundary note, source link, and map status count. For multi-part restrictions,
+confirm the endpoint preserves one logical restriction count while exposing
+part-specific popup fields such as `part_name`, `restriction_detail`, and
+`geometry_basis`.
+
 ## Console And Shell Helpers
 
 Local app console:

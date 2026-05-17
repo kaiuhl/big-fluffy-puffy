@@ -536,8 +536,39 @@ localized_rules:
           - Elk Meadows
           - Paradise Park
         selected_trails:
-          - Elk Meadows Perimeter Trail #645A
-          - Paradise Park Loop Trail #757
+          - "Elk Meadows Perimeter Trail #645A"
+          - "Paradise Park Loop Trail #757"
+        map_subfeatures:
+          - part_name: Ramona Falls
+            source_kind: explicit_buffer
+            restriction_detail: Campfires are prohibited within 500 feet of Ramona Falls.
+            geometry_basis: 500-foot buffer around the USGS GNIS named-feature point for Ramona Falls (Falls)
+            geometry_part_indexes:
+              - 0
+          - part_name: McNeil Point
+            source_kind: explicit_buffer
+            restriction_detail: Campfires are prohibited within 500 feet of McNeil Point.
+            geometry_basis: 500-foot buffer around the USGS GNIS named-feature point for McNeil Point (Ridge)
+            geometry_part_indexes:
+              - 1
+          - part_name: Elk Cove
+            source_kind: affected_area_envelope
+            restriction_detail: Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Cove.
+            geometry_basis: 2640-foot envelope around the USGS GNIS named-feature point for Elk Cove (Basin)
+            geometry_part_indexes:
+              - 2
+          - part_name: Elk Meadows
+            source_kind: affected_area_envelope
+            restriction_detail: Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Meadows.
+            geometry_basis: "1056-foot envelope around USFS Elk Meadows Perimeter Trail #645A"
+            geometry_part_indexes:
+              - 3
+          - part_name: Paradise Park
+            source_kind: affected_area_envelope
+            restriction_detail: Campfires are prohibited within Paradise Park.
+            geometry_basis: "1584-foot envelope around USFS Paradise Park Loop Trail #757"
+            geometry_part_indexes:
+              - 4
         geometry_coverage: affected_area_envelope
         review_note: This geometry maps the named places users need to recognize, not surveyed legal boundaries. Ramona Falls and McNeil Point are explicit 500-foot buffers; Elk Cove and Elk Meadows are broader envelopes where the actual campfire prohibition is limited to tree-covered islands; Paradise Park is mapped from its named loop trail envelope.
     metadata_json:

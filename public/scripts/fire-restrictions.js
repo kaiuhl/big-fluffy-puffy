@@ -166,8 +166,20 @@
     });
   }
 
+  function uniqueLocalizedRestrictionCount(features) {
+    return Object.keys(visibleMapFeatures(features).reduce(function (seen, feature) {
+      var properties = feature.properties || {};
+      var key = properties.rule_slug || properties.slug;
+
+      if (key) seen[key] = true;
+      return seen;
+    }, {})).length;
+  }
+
   function mapStatusMessage(container, features) {
-    var visibleCount = visibleMapFeatures(features).length;
+    var visibleCount = container.dataset.mapStatusMode === "localized-restrictions"
+      ? uniqueLocalizedRestrictionCount(features)
+      : visibleMapFeatures(features).length;
     var totalRestrictions = parseInt(container.dataset.mapTotalRestrictions || "", 10);
 
     if (container.dataset.mapStatusMode === "localized-restrictions") {
@@ -438,8 +450,19 @@
     var sourceUrl = safeHttpUrl(properties.source_url);
     var forestUrl = (properties.forest_url || "").toString();
     var sourceTitle = properties.source_title || "Source";
+    var partName = properties.part_name || "";
+    var title = partName || properties.name;
+    var ruleContext = partName && properties.name
+      ? '<p class="map-popup-rule">' + escapeHtml(properties.name) + "</p>"
+      : "";
     var boundaryNote = properties.geometry_is_approximate
       ? "Approximation shown on map. Read official sources and signs for exact boundaries."
+      : "";
+    var restrictionDetail = properties.restriction_detail
+      ? "<dt>Detail</dt><dd>" + escapeHtml(properties.restriction_detail) + "</dd>"
+      : "";
+    var geometryBasis = properties.geometry_basis
+      ? "<dt>Mapped as</dt><dd>" + escapeHtml(properties.geometry_basis) + "</dd>"
       : "";
     var sourceLink = sourceUrl
       ? '<p class="map-popup-source"><a href="' + escapeHtml(sourceUrl) + '" rel="noreferrer">View ' + escapeHtml(sourceTitle) + "</a></p>"
@@ -450,10 +473,13 @@
 
     return [
       '<div class="map-popup">',
-      "<strong>" + escapeHtml(properties.name) + "</strong>",
+      "<strong>" + escapeHtml(title) + "</strong>",
+      ruleContext,
       "<dl>",
       "<dt>Status</dt><dd>" + escapeHtml(labelize(properties.map_status)) + "</dd>",
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
+      restrictionDetail,
+      geometryBasis,
       boundaryNote ? "<dt>Boundary</dt><dd>" + escapeHtml(boundaryNote) + "</dd>" : "",
       "<dt>Checked</dt><dd>" + escapeHtml(properties.last_checked_label || formattedDate(properties.last_checked_at)) + "</dd>",
       "</dl>",

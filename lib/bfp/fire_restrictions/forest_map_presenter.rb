@@ -63,42 +63,102 @@ module BFP
       end
 
       def localized_features(rules)
-        rules.filter_map do |rule|
+        rules.flat_map do |rule|
           geometry = rule[:geometry_json]
-          next unless geojson_geometry?(geometry)
+          next [] unless geojson_geometry?(geometry)
 
-          {
-            type: "Feature",
-            geometry: geometry,
-            properties: {
-              kind: "localized_restriction",
-              id: rule[:id],
-              slug: rule[:slug],
-              name: rule[:title],
-              status: rule[:status],
-              duration_type: rule[:duration_type],
-              campfire_policy: rule[:campfire_policy],
-              gas_stove_policy: rule[:gas_stove_policy],
-              alcohol_stove_policy: rule[:alcohol_stove_policy],
-              solid_fuel_stove_policy: rule[:solid_fuel_stove_policy],
-              wood_stove_policy: rule[:wood_stove_policy],
-              map_status: "active",
-              affected_area: rule[:affected_area],
-              geometry_source_type: rule[:geometry_source_type],
-              geometry_accuracy: rule.dig(:geometry_provenance, "geometry_accuracy") || rule.dig(:geometry_provenance, :geometry_accuracy),
-              geometry_is_approximate: approximate_geometry?(rule),
-              source_url: rule[:source_url],
-              source_title: rule[:source_title]
-            }
-          }
+          subfeatures = localized_subfeatures(rule, geometry)
+          next subfeatures if subfeatures.any?
+
+          [localized_feature(geometry, localized_properties(rule))]
         end
+      end
+
+      def localized_subfeatures(rule, geometry)
+        coordinates = geometry_coordinates(geometry)
+        return [] unless geometry_type(geometry) == "MultiPolygon" && coordinates.is_a?(Array)
+
+        map_subfeatures(rule).filter_map do |subfeature|
+          indexes = Array(hash_fetch(subfeature, "geometry_part_indexes")).filter_map do |index|
+            Integer(index)
+          rescue ArgumentError, TypeError
+            nil
+          end
+          parts = indexes.filter_map { |index| coordinates[index] }
+          next if parts.empty?
+
+          properties = localized_properties(rule).merge(
+            map_feature_role: "restriction_part",
+            part_name: hash_fetch(subfeature, "part_name"),
+            restriction_detail: hash_fetch(subfeature, "restriction_detail"),
+            geometry_basis: hash_fetch(subfeature, "geometry_basis"),
+            source_kind: hash_fetch(subfeature, "source_kind")
+          ).compact
+
+          localized_feature(
+            {
+              "type" => "MultiPolygon",
+              "coordinates" => parts
+            },
+            properties
+          )
+        end
+      end
+
+      def localized_feature(geometry, properties)
+        {
+          type: "Feature",
+          geometry: geometry,
+          properties: properties
+        }
+      end
+
+      def localized_properties(rule)
+        {
+          kind: "localized_restriction",
+          id: rule[:id],
+          slug: rule[:slug],
+          rule_slug: rule[:slug],
+          name: rule[:title],
+          status: rule[:status],
+          duration_type: rule[:duration_type],
+          campfire_policy: rule[:campfire_policy],
+          gas_stove_policy: rule[:gas_stove_policy],
+          alcohol_stove_policy: rule[:alcohol_stove_policy],
+          solid_fuel_stove_policy: rule[:solid_fuel_stove_policy],
+          wood_stove_policy: rule[:wood_stove_policy],
+          map_status: "active",
+          affected_area: rule[:affected_area],
+          geometry_source_type: rule[:geometry_source_type],
+          geometry_accuracy: rule.dig(:geometry_provenance, "geometry_accuracy") || rule.dig(:geometry_provenance, :geometry_accuracy),
+          geometry_is_approximate: approximate_geometry?(rule),
+          source_url: rule[:source_url],
+          source_title: rule[:source_title]
+        }
       end
 
       def geojson_geometry?(geometry)
         geometry = geometry.to_hash if geometry.respond_to?(:to_hash)
-        !!(geometry.is_a?(Hash) &&
-          (geometry["type"] || geometry[:type]).to_s != "" &&
-          (geometry["coordinates"] || geometry[:coordinates]))
+        !!(geometry.is_a?(Hash) && geometry_type(geometry).to_s != "" && geometry_coordinates(geometry))
+      end
+
+      def geometry_type(geometry)
+        hash_fetch(geometry, "type")
+      end
+
+      def geometry_coordinates(geometry)
+        hash_fetch(geometry, "coordinates")
+      end
+
+      def map_subfeatures(rule)
+        Array(rule.dig(:geometry_provenance, "map_subfeatures") || rule.dig(:geometry_provenance, :map_subfeatures)).select { |item| item.is_a?(Hash) }
+      end
+
+      def hash_fetch(hash, key)
+        return unless hash.is_a?(Hash)
+        return hash[key] if hash.key?(key)
+
+        hash[key.to_sym]
       end
 
       def approximate_geometry?(rule)

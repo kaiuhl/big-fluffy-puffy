@@ -35,14 +35,16 @@ TARGETS = [
         layer_id: 4,
         feature_class: "Falls",
         state_alpha: "OR",
-        radius_miles: 500.0 / 5280.0
+        radius_miles: 500.0 / 5280.0,
+        restriction_detail: "Campfires are prohibited within 500 feet of Ramona Falls."
       },
       {
         name: "McNeil Point",
         layer_id: 2,
         feature_class: "Ridge",
         state_alpha: "OR",
-        radius_miles: 500.0 / 5280.0
+        radius_miles: 500.0 / 5280.0,
+        restriction_detail: "Campfires are prohibited within 500 feet of McNeil Point."
       }
     ],
     named_place_envelopes: [
@@ -341,12 +343,55 @@ def selected_trail_metadata(config, trail_features)
   }
 end
 
+def gnis_map_subfeature(config, metadata, source_kind:)
+  radius_feet = (config.fetch(:radius_miles) * 5280).round
+  shape_label = (source_kind == "explicit_buffer") ? "buffer" : "envelope"
+  detail = config.fetch(:restriction_detail)
+  detail = "Affected-area envelope. #{detail}" if source_kind == "affected_area_envelope" && !detail.start_with?("Affected-area envelope.")
+
+  {
+    "part_name" => config.fetch(:name),
+    "source_kind" => source_kind,
+    "restriction_detail" => detail,
+    "geometry_basis" => "#{radius_feet}-foot #{shape_label} around the USGS GNIS named-feature point for #{metadata.fetch("selected_name")} (#{metadata.fetch("feature_class")})",
+    "source_coordinate" => metadata.fetch("source_coordinate"),
+    "buffer_radius_miles" => config.fetch(:radius_miles)
+  }
+end
+
+def trail_map_subfeature(config)
+  radius_feet = (config.fetch(:radius_miles) * 5280).round
+  detail = config.fetch(:restriction_detail)
+  detail = "Affected-area envelope. #{detail}" if !detail.start_with?("Affected-area envelope.") && config.fetch(:name) != "Paradise Park"
+
+  {
+    "part_name" => config.fetch(:name),
+    "source_kind" => "affected_area_envelope",
+    "restriction_detail" => detail,
+    "geometry_basis" => "#{radius_feet}-foot envelope around USFS #{config.fetch(:trail_name).split.map(&:capitalize).join(" ")} Trail ##{config.fetch(:trail_no)}",
+    "trail_name" => config.fetch(:trail_name),
+    "trail_no" => config.fetch(:trail_no),
+    "buffer_radius_miles" => config.fetch(:radius_miles)
+  }
+end
+
+def append_map_subfeature!(factory, wilderness_geometry, geometry, metadata, polygon_parts, map_subfeatures, origin)
+  clipped = clean_geometry(clean_geometry(geometry).intersection(wilderness_geometry))
+  coordinates = multipolygon_coordinates(clipped, origin)
+  return if coordinates.empty?
+
+  first_index = polygon_parts.length
+  polygon_parts.concat(coordinates)
+  map_subfeatures << metadata.merge("geometry_part_indexes" => (first_index...(first_index + coordinates.length)).to_a)
+end
+
 def generated_feature(target)
   factory = geos_factory
   wilderness_feature = query_wilderness(target)
   origin = bounds_center(bounds_for_features([wilderness_feature]))
   wilderness_geometry = clean_geometry(geometry_from_geojson(factory, wilderness_feature.fetch("geometry"), origin))
-  geometries = []
+  polygon_parts = []
+  map_subfeatures = []
   selected_explicit_buffers = []
   selected_named_place_envelopes = []
   selected_trail_envelopes = []
@@ -358,8 +403,17 @@ def generated_feature(target)
     selected_feature, coordinate = best_feature(matches, target.fetch(:center))
 
     if selected_feature && coordinate
-      selected_explicit_buffers << selected_gnis_metadata(config, selected_feature, coordinate, matches.length)
-      geometries << point_buffer_geometry(factory, coordinate, config.fetch(:radius_miles), origin)
+      metadata = selected_gnis_metadata(config, selected_feature, coordinate, matches.length)
+      selected_explicit_buffers << metadata
+      append_map_subfeature!(
+        factory,
+        wilderness_geometry,
+        point_buffer_geometry(factory, coordinate, config.fetch(:radius_miles), origin),
+        gnis_map_subfeature(config, metadata, source_kind: "explicit_buffer"),
+        polygon_parts,
+        map_subfeatures,
+        origin
+      )
     else
       missing_features << config.fetch(:name)
     end
@@ -370,8 +424,17 @@ def generated_feature(target)
     selected_feature, coordinate = best_feature(matches, target.fetch(:center))
 
     if selected_feature && coordinate
-      selected_named_place_envelopes << selected_gnis_metadata(config, selected_feature, coordinate, matches.length)
-      geometries << point_buffer_geometry(factory, coordinate, config.fetch(:radius_miles), origin)
+      metadata = selected_gnis_metadata(config, selected_feature, coordinate, matches.length)
+      selected_named_place_envelopes << metadata
+      append_map_subfeature!(
+        factory,
+        wilderness_geometry,
+        point_buffer_geometry(factory, coordinate, config.fetch(:radius_miles), origin),
+        gnis_map_subfeature(config, metadata, source_kind: "affected_area_envelope"),
+        polygon_parts,
+        map_subfeatures,
+        origin
+      )
     else
       missing_features << config.fetch(:name)
     end
@@ -382,19 +445,21 @@ def generated_feature(target)
 
     if trail_features.any?
       selected_trail_envelopes << selected_trail_metadata(config, trail_features)
-      geometries << trail_buffer_geometry(factory, trail_features, config.fetch(:radius_miles), origin)
+      append_map_subfeature!(
+        factory,
+        wilderness_geometry,
+        trail_buffer_geometry(factory, trail_features, config.fetch(:radius_miles), origin),
+        trail_map_subfeature(config),
+        polygon_parts,
+        map_subfeatures,
+        origin
+      )
     else
       missing_trails << "#{config.fetch(:trail_name)} ##{config.fetch(:trail_no)}"
     end
   end
 
-  raise "No geometries generated for #{target.fetch(:slug)}" if geometries.empty?
-
-  combined = clean_geometry(factory.collection(geometries).buffer(0))
-  clipped = clean_geometry(combined.intersection(wilderness_geometry))
-  coordinates = multipolygon_coordinates(clipped, origin)
-
-  raise "Generated geometry is empty for #{target.fetch(:slug)}" if coordinates.empty?
+  raise "Generated geometry is empty for #{target.fetch(:slug)}" if polygon_parts.empty?
 
   {
     "type" => "Feature",
@@ -415,6 +480,7 @@ def generated_feature(target)
       "selected_explicit_buffers" => selected_explicit_buffers,
       "selected_named_place_envelopes" => selected_named_place_envelopes,
       "selected_trail_envelopes" => selected_trail_envelopes,
+      "map_subfeatures" => map_subfeatures,
       "affected_area_envelopes" => ["Elk Cove", "Elk Meadows", "Paradise Park"],
       "missing_features" => missing_features,
       "missing_trails" => missing_trails,
@@ -422,7 +488,7 @@ def generated_feature(target)
     },
     "geometry" => {
       "type" => "MultiPolygon",
-      "coordinates" => coordinates
+      "coordinates" => polygon_parts
     }
   }
 end
