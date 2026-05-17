@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-baker-snoqualmie-glacier-peak-quarter-mile-image-byrne-lakes",
     "title": "Glacier Peak Image Lake and Lake Byrne 1/4-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:00Z",
+    "generated_at": "2026-05-17T04:04:16Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -27,6 +27,32 @@
         "area_sq_km": 0.197,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Image Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Image Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Image Lake",
+        "selected_name": "Image Lake",
+        "permanent_identifier": "129308604",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Lake Byrne",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Lake Byrne.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Lake Byrne",
+        "selected_name": "Lake Byrne",
+        "permanent_identifier": "129308639",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          1
+        ]
       }
     ],
     "missing_lakes": [],

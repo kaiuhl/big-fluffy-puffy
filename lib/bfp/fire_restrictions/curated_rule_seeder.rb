@@ -80,6 +80,7 @@ module BFP
         return unless config
 
         now = @now
+        geometry_payload = geometry_payload_for(config)
         area = RestrictionArea.first(land_unit_id: land_unit.id, slug: config.fetch("slug")) ||
           RestrictionArea.new(land_unit_id: land_unit.id, slug: config.fetch("slug"), created_at: now)
 
@@ -87,12 +88,12 @@ module BFP
           name: config.fetch("name"),
           area_type: config.fetch("area_type"),
           area_description: config["area_description"],
-          geometry_json: Jsonb.wrap(geometry_json_for(config)),
+          geometry_json: Jsonb.wrap(geometry_json_for(config, geometry_payload: geometry_payload)),
           geometry_source_type: config["geometry_source_type"],
           geometry_source_url: config["geometry_source_url"],
           geometry_external_id: config["geometry_external_id"],
           geometry_acquired_at: parse_time(config["geometry_acquired_at"]),
-          geometry_provenance_json: Jsonb.wrap(config["geometry_provenance_json"] || config["geometry_provenance"] || {}),
+          geometry_provenance_json: Jsonb.wrap(geometry_provenance_json_for(config, geometry_payload: geometry_payload)),
           active: config.fetch("active", true),
           updated_at: now
         )
@@ -238,13 +239,12 @@ module BFP
           config["seed_review_override"].to_s != ""
       end
 
-      def geometry_json_for(config)
+      def geometry_json_for(config, geometry_payload: nil)
         return config["geometry_json"] if config.key?("geometry_json")
 
-        geometry_path = config["geometry_path"].to_s
-        return if geometry_path.empty?
+        payload = geometry_payload || geometry_payload_for(config)
+        return unless payload
 
-        payload = JSON.parse(File.read(File.join(BFP.root, geometry_path)))
         if payload["type"] == "FeatureCollection"
           feature = payload.fetch("features").first
           feature&.fetch("geometry")
@@ -253,6 +253,35 @@ module BFP
         else
           payload
         end
+      end
+
+      def geometry_provenance_json_for(config, geometry_payload: nil)
+        configured = config["geometry_provenance_json"] || config["geometry_provenance"] || {}
+        configured.merge(generated_geometry_provenance(geometry_payload || geometry_payload_for(config)))
+      end
+
+      def generated_geometry_provenance(payload)
+        properties = geojson_properties(payload)
+        return {} unless properties
+
+        properties.slice("map_subfeatures")
+      end
+
+      def geojson_properties(payload)
+        return unless payload.is_a?(Hash)
+
+        if payload["type"] == "FeatureCollection"
+          payload.fetch("features", []).first&.fetch("properties", nil)
+        elsif payload["type"] == "Feature"
+          payload["properties"]
+        end
+      end
+
+      def geometry_payload_for(config)
+        geometry_path = config["geometry_path"].to_s
+        return if geometry_path.empty?
+
+        JSON.parse(File.read(File.join(BFP.root, geometry_path)))
       end
 
       def canonical_json(value)

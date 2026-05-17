@@ -211,10 +211,16 @@ RSpec.describe "fire restriction database integration", :db do
     )
 
     map = BFP::FireRestrictions::ForestMapPresenter.new(slug: "wallowa-whitman").geojson
-    localized_feature = map.fetch(:features).find { |feature| feature.dig(:properties, :kind) == "localized_restriction" }
+    eagle_cap_features = map.fetch(:features).select do |feature|
+      feature.dig(:properties, :rule_slug) == "wallowa-whitman-eagle-cap-named-lakes-campfire-prohibition"
+    end
+    localized_feature = eagle_cap_features.first
 
     expect(localized_feature.dig(:geometry, "type")).to eq("MultiPolygon")
     expect(localized_feature.dig(:properties, :geometry_is_approximate)).to be(true)
+    expect(eagle_cap_features.length).to eq(22)
+    expect(eagle_cap_features.map { |feature| feature.dig(:properties, :part_name) }).to include("Bear Lake", "Eagle Lake", "Ice Lake")
+    expect(eagle_cap_features.find { |feature| feature.dig(:properties, :part_name) == "Bear Lake" }.dig(:properties, :restriction_detail)).to eq("Campfires are prohibited within 1/4 mile of Bear Lake.")
 
     klamath_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("klamath")
     expect(klamath_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("klamath-devils-punchbowl-wood-fire-prohibition")

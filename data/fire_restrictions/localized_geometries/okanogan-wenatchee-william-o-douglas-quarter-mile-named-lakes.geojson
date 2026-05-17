@@ -3,7 +3,7 @@
   "properties": {
     "slug": "okanogan-wenatchee-william-o-douglas-quarter-mile-named-lakes",
     "title": "William O. Douglas named lake 1/4-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:15Z",
+    "generated_at": "2026-05-17T04:04:45Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -27,6 +27,32 @@
         "area_sq_km": 0.079,
         "candidate_count": 2,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Dewey Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Dewey Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Dewey Lake",
+        "selected_name": "Dewey Lake",
+        "permanent_identifier": "145381474",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Goat Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Goat Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Goat Lake",
+        "selected_name": "Goat Lake",
+        "permanent_identifier": "129429494",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          1
+        ]
       }
     ],
     "missing_lakes": [],

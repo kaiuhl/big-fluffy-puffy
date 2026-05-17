@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-baker-snoqualmie-boulder-river-200-foot-bandana-saddle-lakes",
     "title": "Boulder River Bandana and Saddle Lakes 200-foot campfire buffers",
-    "generated_at": "2026-05-16T21:34:00Z",
+    "generated_at": "2026-05-17T04:04:18Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.0378788,
@@ -27,6 +27,32 @@
         "area_sq_km": 0.014,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Bandana Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 200 feet of Bandana Lake.",
+        "geometry_basis": "200 feet buffer around the NHD waterbody polygon for Bandana Lake",
+        "selected_name": "Bandana Lake",
+        "permanent_identifier": "129074135",
+        "buffer_radius_miles": 0.0378788,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Saddle Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 200 feet of Saddle Lake.",
+        "geometry_basis": "200 feet buffer around the NHD waterbody polygon for Saddle Lake",
+        "selected_name": "Saddle Lake",
+        "permanent_identifier": "129074204",
+        "buffer_radius_miles": 0.0378788,
+        "geometry_part_indexes": [
+          1
+        ]
       }
     ],
     "missing_lakes": [],

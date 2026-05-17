@@ -3,7 +3,7 @@
   "properties": {
     "slug": "gifford-pinchot-william-o-douglas-quarter-mile-dewey-lakes",
     "title": "William O. Douglas Dewey Lakes 1/4-mile campfire buffer",
-    "generated_at": "2026-05-16T21:34:18Z",
+    "generated_at": "2026-05-17T04:04:48Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -18,6 +18,20 @@
         "area_sq_km": 0.20700000000000002,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Dewey Lakes",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Dewey Lakes.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Dewey Lake",
+        "selected_name": "Dewey Lake",
+        "permanent_identifier": "145381474",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
       }
     ],
     "missing_lakes": [],

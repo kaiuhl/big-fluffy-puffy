@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-hood-wilderness-named-area-campfire-affected-area-envelopes",
     "title": "Mount Hood Wilderness named-area campfire affected-area envelopes",
-    "generated_at": "2026-05-17T03:51:53Z",
+    "generated_at": "2026-05-17T04:01:25Z",
     "geometry_source_type": "affected_area_envelope",
     "geometry_accuracy": "approximate",
     "geometry_coverage": "affected_area_envelope",
@@ -143,7 +143,7 @@
       {
         "part_name": "Elk Cove",
         "source_kind": "affected_area_envelope",
-        "restriction_detail": "Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Cove.",
+        "restriction_detail": "Campfires are prohibited within the tree-covered island in Elk Cove.",
         "geometry_basis": "2640-foot envelope around the USGS GNIS named-feature point for Elk Cove (Basin)",
         "source_coordinate": [
           -121.697868,
@@ -157,7 +157,7 @@
       {
         "part_name": "Elk Meadows",
         "source_kind": "affected_area_envelope",
-        "restriction_detail": "Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Meadows.",
+        "restriction_detail": "Campfires are prohibited within the tree-covered island in Elk Meadows.",
         "geometry_basis": "1056-foot envelope around USFS Elk Meadows Perimeter Trail #645A",
         "trail_name": "ELK MEADOWS PERIMETER",
         "trail_no": "645A",

@@ -3,7 +3,7 @@
   "properties": {
     "slug": "willamette-mt-jefferson-washington-quarter-mile-lake-basin-buffers",
     "title": "Willamette Mt. Jefferson and Mt. Washington named lake basin 1/4-mile campfire buffers",
-    "generated_at": "2026-05-16T23:13:03Z",
+    "generated_at": "2026-05-17T04:04:51Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -81,6 +81,104 @@
         "area_sq_km": 0.002,
         "candidate_count": 4,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Marion Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Marion Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Marion Lake",
+        "selected_name": "Marion Lake",
+        "permanent_identifier": "123427345",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Lake Ann",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Lake Ann.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Lake Ann",
+        "selected_name": "Lake Ann",
+        "permanent_identifier": "123427341",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          1
+        ]
+      },
+      {
+        "part_name": "Table Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Table Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Table Lake",
+        "selected_name": "Table Lake",
+        "permanent_identifier": "149196679",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          2
+        ]
+      },
+      {
+        "part_name": "Benson Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Benson Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Benson Lake",
+        "selected_name": "Benson Lake",
+        "permanent_identifier": "108054169",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          3
+        ]
+      },
+      {
+        "part_name": "Tenas Lakes",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Tenas Lakes.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Tenas Lakes",
+        "selected_name": "Tenas Lakes",
+        "permanent_identifier": "108054113",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          4
+        ]
+      },
+      {
+        "part_name": "Tenas Lakes",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Tenas Lakes.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Tenas Lakes",
+        "selected_name": "Tenas Lakes",
+        "permanent_identifier": "108054109",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          5
+        ]
+      },
+      {
+        "part_name": "Tenas Lakes",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Tenas Lakes.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Tenas Lakes",
+        "selected_name": "Tenas Lakes",
+        "permanent_identifier": "108054119",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          6
+        ]
+      },
+      {
+        "part_name": "Tenas Lakes",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Tenas Lakes.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Tenas Lakes",
+        "selected_name": "Tenas Lakes",
+        "permanent_identifier": "108054135",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          7
+        ]
       }
     ],
     "missing_lakes": [],

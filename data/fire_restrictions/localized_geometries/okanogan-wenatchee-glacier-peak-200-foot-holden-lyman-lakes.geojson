@@ -3,7 +3,7 @@
   "properties": {
     "slug": "okanogan-wenatchee-glacier-peak-200-foot-holden-lyman-lakes",
     "title": "Glacier Peak Holden and Lyman Lakes 200-foot campfire buffers",
-    "generated_at": "2026-05-16T21:34:00Z",
+    "generated_at": "2026-05-17T04:04:16Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.0378788,
@@ -27,6 +27,32 @@
         "area_sq_km": 0.305,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Holden Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 200 feet of Holden Lake.",
+        "geometry_basis": "200 feet buffer around the NHD waterbody polygon for Holden Lake",
+        "selected_name": "Holden Lake",
+        "permanent_identifier": "145096966",
+        "buffer_radius_miles": 0.0378788,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Lyman Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 200 feet of Lyman Lake.",
+        "geometry_basis": "200 feet buffer around the NHD waterbody polygon for Lyman Lake",
+        "selected_name": "Lyman Lake",
+        "permanent_identifier": "145096974",
+        "buffer_radius_miles": 0.0378788,
+        "geometry_part_indexes": [
+          1
+        ]
       }
     ],
     "missing_lakes": [],

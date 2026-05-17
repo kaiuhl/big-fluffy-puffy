@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-hood-wahtum-lake-200-foot-campfire-buffer",
     "title": "Wahtum Lake 200-foot campfire buffer",
-    "generated_at": "2026-05-16T21:34:18Z",
+    "generated_at": "2026-05-17T04:04:47Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.0378788,
@@ -18,6 +18,20 @@
         "area_sq_km": 0.264,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Wahtum Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 200 feet of Wahtum Lake.",
+        "geometry_basis": "200 feet buffer around the NHD waterbody polygon for Wahtum Lake",
+        "selected_name": "Wahtum Lake",
+        "permanent_identifier": "150815949",
+        "buffer_radius_miles": 0.0378788,
+        "geometry_part_indexes": [
+          0
+        ]
       }
     ],
     "missing_lakes": [],

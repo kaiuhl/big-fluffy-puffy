@@ -3,7 +3,7 @@
   "properties": {
     "slug": "okanogan-wenatchee-alpine-lakes-half-mile-named-lakes",
     "title": "Alpine Lakes named lake 1/2-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:11Z",
+    "generated_at": "2026-05-17T04:04:35Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.5,
@@ -234,6 +234,308 @@
         "area_sq_km": 0.18393287,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Hope Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Hope Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Hope Lake",
+        "selected_name": "Hope Lake",
+        "permanent_identifier": "150857882",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Josephine Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Josephine Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Josephine Lake",
+        "selected_name": "Josephine Lake",
+        "permanent_identifier": "150857867",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          1
+        ]
+      },
+      {
+        "part_name": "Leland Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Leland Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Leland",
+        "selected_name": "Lake Leland",
+        "permanent_identifier": "150857995",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          2
+        ]
+      },
+      {
+        "part_name": "Little Eightmile Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Little Eightmile Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Little Eightmile Lake",
+        "selected_name": "Little Eightmile Lake",
+        "permanent_identifier": "150858119",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          3
+        ]
+      },
+      {
+        "part_name": "Mig Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Mig Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Mig Lake",
+        "selected_name": "Mig Lake",
+        "permanent_identifier": "129380754",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          4
+        ]
+      },
+      {
+        "part_name": "Nada Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Nada Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Nada Lake",
+        "selected_name": "Nada Lake",
+        "permanent_identifier": "150858165",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          5
+        ]
+      },
+      {
+        "part_name": "Swimming Deer Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Swimming Deer Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Swimming Deer Lake",
+        "selected_name": "Swimming Deer Lake",
+        "permanent_identifier": "150857876",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          6
+        ]
+      },
+      {
+        "part_name": "Square Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Square Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Square Lake",
+        "selected_name": "Square Lake",
+        "permanent_identifier": "150857952",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          7
+        ]
+      },
+      {
+        "part_name": "Trout Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Trout Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Trout Lake",
+        "selected_name": "Trout Lake",
+        "permanent_identifier": "150858071",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          8
+        ]
+      },
+      {
+        "part_name": "Wolverine Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Wolverine Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Wolverine",
+        "selected_name": "Lake Wolverine",
+        "permanent_identifier": "150857950",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          9
+        ]
+      },
+      {
+        "part_name": "Upper Grace Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Upper Grace Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Upper Grace Lake",
+        "selected_name": "Upper Grace Lake",
+        "permanent_identifier": "150857942",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          10
+        ]
+      },
+      {
+        "part_name": "Lower Grace Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Lower Grace Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Grace Lakes",
+        "selected_name": "Grace Lakes",
+        "permanent_identifier": "129380726",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          11
+        ]
+      },
+      {
+        "part_name": "Donald Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Donald Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Donald",
+        "selected_name": "Lake Donald",
+        "permanent_identifier": "150857886",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          12
+        ]
+      },
+      {
+        "part_name": "Loch Eileen",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Loch Eileen.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Loch Eileen",
+        "selected_name": "Loch Eileen",
+        "permanent_identifier": "150857874",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          13
+        ]
+      },
+      {
+        "part_name": "Ethel Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Ethel Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Ethel",
+        "selected_name": "Lake Ethel",
+        "permanent_identifier": "150857870",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          14
+        ]
+      },
+      {
+        "part_name": "Julius Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Julius Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Julius",
+        "selected_name": "Lake Julius",
+        "permanent_identifier": "150857888",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          15
+        ]
+      },
+      {
+        "part_name": "Susan Jane Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Susan Jane Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Susan Jane",
+        "selected_name": "Lake Susan Jane",
+        "permanent_identifier": "150857864",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          16
+        ]
+      },
+      {
+        "part_name": "Rachel Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Rachel Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Rachel Lake",
+        "selected_name": "Rachel Lake",
+        "permanent_identifier": "149338010",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          17
+        ]
+      },
+      {
+        "part_name": "Glacier Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Glacier Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Glacier Lake",
+        "selected_name": "Glacier Lake",
+        "permanent_identifier": "129380824",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          18
+        ]
+      },
+      {
+        "part_name": "Spectacle Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Spectacle Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Spectacle Lake",
+        "selected_name": "Spectacle Lake",
+        "permanent_identifier": "149337973",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          19
+        ]
+      },
+      {
+        "part_name": "Ivanhoe Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Ivanhoe Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Ivanhoe",
+        "selected_name": "Lake Ivanhoe",
+        "permanent_identifier": "149337913",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          20
+        ]
+      },
+      {
+        "part_name": "Shovel Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Shovel Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Shovel Lake",
+        "selected_name": "Shovel Lake",
+        "permanent_identifier": "149337914",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          21
+        ]
+      },
+      {
+        "part_name": "Rebecca Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Rebecca Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Rebecca",
+        "selected_name": "Lake Rebecca",
+        "permanent_identifier": "149337904",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          22
+        ]
+      },
+      {
+        "part_name": "Rowena Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Rowena Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Lake Rowena",
+        "selected_name": "Lake Rowena",
+        "permanent_identifier": "149337899",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          23
+        ]
+      },
+      {
+        "part_name": "Deep Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Deep Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Deep Lake",
+        "selected_name": "Deep Lake",
+        "permanent_identifier": "149337916",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          24
+        ]
       }
     ],
     "missing_lakes": [

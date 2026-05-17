@@ -38,6 +38,7 @@ The generators use RGeo/GEOS and require the GEOS system library. Docker install
 
 Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`, with `geometry_accuracy: approximate`.
 They are good enough to show "roughly where this named restriction is" and not good enough to treat as official legal boundaries.
+NHD lake-buffer geometries include `map_subfeatures` metadata so grouped lake rules can show lake-specific map popup details while preserving a single logical localized restriction.
 The Jefferson Park and Waldo Lake island GeoJSON files in the same directory are exceptions: they are hand-digitized `source_pdf_map` polygons from official PDF map exhibits or USGS GeoPDF quadrangles.
 
 Generated coverage:

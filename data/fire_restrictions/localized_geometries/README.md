@@ -22,7 +22,10 @@ labels them as approximate and links back to the official rule source.
 
 The Willamette Mt. Jefferson/Mt. Washington named-lake file uses that same NHD
 waterbody-buffer pattern, with `select_all_features` for Tenas Lakes so every
-matching NHD polygon in the lake cluster is buffered.
+matching NHD polygon in the lake cluster is buffered. NHD lake-buffer files also
+include generated `map_subfeatures` metadata for each selected waterbody buffer
+so the public map can show lake-specific popup details without turning one
+legal rule into several rules.
 
 `mt-hood-ramona-falls-mcneil-point-500-foot-campfire-buffer.geojson` uses the
 GNIS point-buffer pattern for explicit 500-foot named-feature buffers.

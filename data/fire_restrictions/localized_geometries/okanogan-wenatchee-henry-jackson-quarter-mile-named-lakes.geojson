@@ -3,7 +3,7 @@
   "properties": {
     "slug": "okanogan-wenatchee-henry-jackson-quarter-mile-named-lakes",
     "title": "Henry M. Jackson named lake 1/4-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:12Z",
+    "generated_at": "2026-05-17T04:04:37Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -63,6 +63,80 @@
         "area_sq_km": 0.097,
         "candidate_count": 1,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Sally Ann Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Sally Ann Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Lake Sally Ann",
+        "selected_name": "Lake Sally Ann",
+        "permanent_identifier": "{D017610E-48BA-4F79-81B9-FC22C72CE593}",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Minotaur Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Minotaur Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Minotaur Lake",
+        "selected_name": "Minotaur Lake",
+        "permanent_identifier": "150857813",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          1
+        ]
+      },
+      {
+        "part_name": "Theseus Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Theseus Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Theseus Lake",
+        "selected_name": "Theseus Lake",
+        "permanent_identifier": "150857812",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          2
+        ]
+      },
+      {
+        "part_name": "Heather Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Heather Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Heather Lake",
+        "selected_name": "Heather Lake",
+        "permanent_identifier": "150857802",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          3
+        ]
+      },
+      {
+        "part_name": "Glasses Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Glasses Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Glasses Lake",
+        "selected_name": "Glasses Lake",
+        "permanent_identifier": "150857805",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          4
+        ]
+      },
+      {
+        "part_name": "Valhalla Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Valhalla Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Lake Valhalla",
+        "selected_name": "Lake Valhalla",
+        "permanent_identifier": "150857823",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          5
+        ]
       }
     ],
     "missing_lakes": [],

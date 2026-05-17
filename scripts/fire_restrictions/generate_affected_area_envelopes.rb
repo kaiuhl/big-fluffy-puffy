@@ -347,7 +347,6 @@ def gnis_map_subfeature(config, metadata, source_kind:)
   radius_feet = (config.fetch(:radius_miles) * 5280).round
   shape_label = (source_kind == "explicit_buffer") ? "buffer" : "envelope"
   detail = config.fetch(:restriction_detail)
-  detail = "Affected-area envelope. #{detail}" if source_kind == "affected_area_envelope" && !detail.start_with?("Affected-area envelope.")
 
   {
     "part_name" => config.fetch(:name),
@@ -362,7 +361,6 @@ end
 def trail_map_subfeature(config)
   radius_feet = (config.fetch(:radius_miles) * 5280).round
   detail = config.fetch(:restriction_detail)
-  detail = "Affected-area envelope. #{detail}" if !detail.start_with?("Affected-area envelope.") && config.fetch(:name) != "Paradise Park"
 
   {
     "part_name" => config.fetch(:name),

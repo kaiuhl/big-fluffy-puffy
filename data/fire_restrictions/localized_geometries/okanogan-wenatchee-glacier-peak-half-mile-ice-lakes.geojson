@@ -3,7 +3,7 @@
   "properties": {
     "slug": "okanogan-wenatchee-glacier-peak-half-mile-ice-lakes",
     "title": "Glacier Peak Ice Lakes 1/2-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:14Z",
+    "generated_at": "2026-05-17T04:04:41Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.5,
@@ -27,6 +27,32 @@
         "area_sq_km": 0.08700000000000001,
         "candidate_count": 2,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Upper Ice Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Upper Ice Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Ice Lakes",
+        "selected_name": "Ice Lakes",
+        "permanent_identifier": "150467870",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Lower Ice Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/2 mile of Lower Ice Lake.",
+        "geometry_basis": "1/2 mile buffer around the NHD waterbody polygon for Ice Lakes",
+        "selected_name": "Ice Lakes",
+        "permanent_identifier": "150467871",
+        "buffer_radius_miles": 0.5,
+        "geometry_part_indexes": [
+          1
+        ]
       }
     ],
     "missing_lakes": [],

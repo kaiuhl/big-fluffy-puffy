@@ -553,13 +553,13 @@ localized_rules:
               - 1
           - part_name: Elk Cove
             source_kind: affected_area_envelope
-            restriction_detail: Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Cove.
+            restriction_detail: Campfires are prohibited within the tree-covered island in Elk Cove.
             geometry_basis: 2640-foot envelope around the USGS GNIS named-feature point for Elk Cove (Basin)
             geometry_part_indexes:
               - 2
           - part_name: Elk Meadows
             source_kind: affected_area_envelope
-            restriction_detail: Affected-area envelope. Campfires are prohibited within the tree-covered island in Elk Meadows.
+            restriction_detail: Campfires are prohibited within the tree-covered island in Elk Meadows.
             geometry_basis: "1056-foot envelope around USFS Elk Meadows Perimeter Trail #645A"
             geometry_part_indexes:
               - 3

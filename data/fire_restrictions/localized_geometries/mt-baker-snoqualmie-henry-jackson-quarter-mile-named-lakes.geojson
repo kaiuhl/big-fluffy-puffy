@@ -3,7 +3,7 @@
   "properties": {
     "slug": "mt-baker-snoqualmie-henry-jackson-quarter-mile-named-lakes",
     "title": "Henry M. Jackson west-side named lake 1/4-mile campfire buffers",
-    "generated_at": "2026-05-16T21:34:00Z",
+    "generated_at": "2026-05-17T04:04:17Z",
     "geometry_source_type": "derived_nhd_waterbody_buffer",
     "geometry_accuracy": "approximate",
     "buffer_radius_miles": 0.25,
@@ -45,6 +45,56 @@
         "area_sq_km": 0.094,
         "candidate_count": 2,
         "source_geometry_type": "Polygon"
+      }
+    ],
+    "map_subfeatures": [
+      {
+        "part_name": "Goat Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Goat Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Goat Lake",
+        "selected_name": "Goat Lake",
+        "permanent_identifier": "129308682",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          0
+        ]
+      },
+      {
+        "part_name": "Silver Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Silver Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Silver Lake",
+        "selected_name": "Silver Lake",
+        "permanent_identifier": "129380385",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          1
+        ]
+      },
+      {
+        "part_name": "Upper Twin Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Upper Twin Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Twin Lakes",
+        "selected_name": "Twin Lakes",
+        "permanent_identifier": "129380465",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          2
+        ]
+      },
+      {
+        "part_name": "Lower Twin Lake",
+        "source_kind": "derived_nhd_waterbody_buffer",
+        "restriction_detail": "Campfires are prohibited within 1/4 mile of Lower Twin Lake.",
+        "geometry_basis": "1/4 mile buffer around the NHD waterbody polygon for Twin Lakes",
+        "selected_name": "Twin Lakes",
+        "permanent_identifier": "129380483",
+        "buffer_radius_miles": 0.25,
+        "geometry_part_indexes": [
+          3
+        ]
       }
     ],
     "missing_lakes": [],

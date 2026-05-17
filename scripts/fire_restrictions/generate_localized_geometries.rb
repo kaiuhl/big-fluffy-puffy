@@ -429,6 +429,39 @@ def buffered_coordinates(factory, feature, radius_meters, origin)
   multipolygon_coordinates(geometry.buffer(radius_meters), origin)
 end
 
+def radius_label(radius_miles)
+  feet = radius_miles * 5280
+
+  if (feet - feet.round).abs < 0.1 && feet < 1000
+    "#{feet.round} feet"
+  elsif (radius_miles - 0.25).abs < 0.001
+    "1/4 mile"
+  elsif (radius_miles - 0.5).abs < 0.001
+    "1/2 mile"
+  else
+    "#{radius_miles.round(2)} miles"
+  end
+end
+
+def map_subfeature_for(lake, selected_lake, first_index, part_count, group)
+  lake_label = lake_name(lake)
+  selected_name = selected_lake[:selected_name].to_s
+  display_name = lake_label.to_s.empty? ? selected_name : lake_label
+  radius = radius_label(group.fetch(:radius_miles))
+  source_name = selected_name.empty? ? display_name : selected_name
+
+  {
+    "part_name" => display_name,
+    "source_kind" => "derived_nhd_waterbody_buffer",
+    "restriction_detail" => "Campfires are prohibited within #{radius} of #{display_name}.",
+    "geometry_basis" => "#{radius} buffer around the NHD waterbody polygon for #{source_name}",
+    "selected_name" => selected_name,
+    "permanent_identifier" => selected_lake[:permanent_identifier],
+    "buffer_radius_miles" => group.fetch(:radius_miles),
+    "geometry_part_indexes" => (first_index...(first_index + part_count)).to_a
+  }.compact
+end
+
 def generated_feature(group)
   factory = geos_factory
   radius_meters = group.fetch(:radius_miles) * METERS_PER_MILE
@@ -457,6 +490,15 @@ def generated_feature(group)
     end
   end
 
+  coordinates = []
+  map_subfeatures = []
+  selected.each do |lake|
+    first_index = coordinates.length
+    buffered = lake.fetch(:buffered_coordinates)
+    coordinates.concat(buffered)
+    map_subfeatures << map_subfeature_for(lake[:lake_name], lake, first_index, buffered.length, group)
+  end
+
   {
     "type" => "Feature",
     "properties" => {
@@ -469,12 +511,13 @@ def generated_feature(group)
       "source_url" => group.fetch(:source_url),
       "nhd_layer_url" => "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12",
       "selected_lakes" => selected.map { |lake| lake.except(:buffered_coordinates) },
+      "map_subfeatures" => map_subfeatures,
       "missing_lakes" => missing,
       "notes" => "Derived from official NHD waterbody polygons; buffers are approximate and require reviewer spot checks before relying on exact boundaries."
     },
     "geometry" => {
       "type" => "MultiPolygon",
-      "coordinates" => selected.flat_map { |lake| lake.fetch(:buffered_coordinates) }
+      "coordinates" => coordinates
     }
   }
 end
