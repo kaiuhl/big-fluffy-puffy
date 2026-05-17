@@ -96,9 +96,10 @@ bundle exec rake fire:status:list
 ```
 
 `places:refresh` imports public-domain GNIS Oregon, Washington, and California
-Domestic Names ZIPs into `tmp/place_imports`, seeds a small BFP-curated catalog
-for product-priority destinations, then resolves active places against monitored
-forest and localized fire-use geometry.
+Domestic Names ZIPs plus USFS campground recreation opportunities into
+`tmp/place_imports`, seeds a small BFP-curated catalog for product-priority
+destinations, then resolves active places against monitored forest and localized
+fire-use geometry.
 
 Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
 

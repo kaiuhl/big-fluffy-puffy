@@ -9,10 +9,17 @@ module BFP
         "nf" => "national forest",
         "natl" => "national",
         "cg" => "campground",
+        "campgrounds" => "campground",
         "th" => "trailhead",
+        "trailheads" => "trailhead",
         "trl" => "trail",
+        "trails" => "trail",
         "lk" => "lake",
-        "rvr" => "river"
+        "lakes" => "lake",
+        "rvr" => "river",
+        "rivers" => "river",
+        "waterfalls" => "waterfall",
+        "wildernesses" => "wilderness"
       }.freeze
 
       def normalize(value)

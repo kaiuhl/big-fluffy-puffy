@@ -15,6 +15,24 @@ module BFP
         "destination" => 48
       }.freeze
 
+      CATEGORY_TYPE_ALIASES = {
+        "campground" => %w[campground],
+        "camping" => %w[campground],
+        "campsite" => %w[campground],
+        "campsites" => %w[campground],
+        "developed campground" => %w[campground],
+        "developed camping" => %w[campground],
+        "destination" => %w[destination],
+        "forest" => %w[forest],
+        "lake" => %w[lake],
+        "recreation site" => %w[recreation_site],
+        "river" => %w[river],
+        "trail" => %w[trail],
+        "trailhead" => %w[trailhead],
+        "waterfall" => %w[waterfall],
+        "wilderness" => %w[wilderness]
+      }.freeze
+
       STATE_NAMES = {
         "or" => "Oregon",
         "wa" => "Washington",
@@ -25,7 +43,8 @@ module BFP
         normalized_query = Normalizer.normalize(query)
         return [] if normalized_query.empty?
 
-        name_rows = matching_name_rows(normalized_query)
+        category_types = category_place_types(normalized_query)
+        name_rows = matching_name_rows(normalized_query, category_types)
         grouped = name_rows.group_by(&:place_id)
         places_by_id = Place.where(id: grouped.keys).all.to_h { |place| [place.id, place] }
 
@@ -34,7 +53,7 @@ module BFP
           next unless place&.active
 
           best_name = rows.max_by { |row| score_name(row, place, normalized_query) }
-          suggestion_for(place, best_name, score_name(best_name, place, normalized_query), normalized_query)
+          suggestion_for(place, best_name, score_name(best_name, place, normalized_query), normalized_query, category_types)
         end.sort_by { |suggestion| [-suggestion[:score], suggestion[:name]] }.first(limit)
       rescue Sequel::DatabaseError
         []
@@ -42,7 +61,7 @@ module BFP
 
       private
 
-      def matching_name_rows(normalized_query)
+      def matching_name_rows(normalized_query, category_types)
         tokens = normalized_query.split
         dataset = PlaceName
           .join(:places, id: :place_id)
@@ -53,8 +72,21 @@ module BFP
           filter ? (filter | expression) : expression
         end
 
-        dataset = dataset.where(token_filter) if token_filter
-        dataset.select_all(:place_names).limit(240).all
+        category_filter = category_types.any? ? Sequel.expr(Sequel[:places][:place_type] => category_types) : nil
+        filter = [token_filter, category_filter].compact.reduce { |left, right| left | right }
+
+        return [] unless filter
+
+        dataset
+          .where(filter)
+          .select_all(:place_names)
+          .order(
+            Sequel.desc(Sequel[:places][:search_rank]),
+            Sequel.desc(Sequel[:place_names][:weight]),
+            Sequel[:place_names][:name]
+          )
+          .limit(360)
+          .all
       end
 
       def candidate_name_phrases(tokens, normalized_query)
@@ -68,7 +100,7 @@ module BFP
         phrases.uniq
       end
 
-      def suggestion_for(place, name_row, score, normalized_query)
+      def suggestion_for(place, name_row, score, normalized_query, category_types)
         land_units = matched_land_units_for(place)
         matched_rule_count = place.place_localized_rule_matches_dataset.count
         {
@@ -82,8 +114,9 @@ module BFP
           matched_rule_count: matched_rule_count,
           url: "/trip-check/#{place.slug}",
           match_name: name_row.name,
-          match_type: match_type(name_row.normalized_name, normalized_query),
+          match_type: match_type_for(place, name_row.normalized_name, normalized_query, category_types),
           score: score +
+            type_query_score(place, category_types) +
             context_score(land_units, matched_rule_count) +
             context_query_score(normalized_query, name_row.normalized_name, place, land_units)
         }
@@ -111,6 +144,21 @@ module BFP
         score
       end
 
+      def type_query_score(place, category_types)
+        category_types.include?(place.place_type.to_s) ? 760 : 0
+      end
+
+      def category_place_types(normalized_query)
+        CATEGORY_TYPE_ALIASES.fetch(normalized_query, [])
+      end
+
+      def match_type_for(place, normalized_name, normalized_query, category_types)
+        return match_type(normalized_name, normalized_query) if name_matches_query?(normalized_name, normalized_query)
+        return "place_type" if category_types.include?(place.place_type.to_s)
+
+        match_type(normalized_name, normalized_query)
+      end
+
       def match_type(normalized_name, normalized_query)
         return "exact" if normalized_name == normalized_query
         return "prefix" if normalized_name.start_with?(normalized_query)
@@ -120,12 +168,22 @@ module BFP
         "token"
       end
 
+      def name_matches_query?(normalized_name, normalized_query)
+        normalized_name == normalized_query ||
+          normalized_name.start_with?(normalized_query) ||
+          normalized_name.include?(normalized_query) ||
+          normalized_query.include?(normalized_name) ||
+          normalized_query.split.all? { |token| normalized_name.include?(token) }
+      end
+
       def subtitle_for(place, land_units)
+        metadata = place_metadata(place)
         parts = [labelize(place.place_type)]
         parts << land_units.first.name if land_units.first
+        parts << metadata["forest_name"] if land_units.empty?
         parts << STATE_NAMES.fetch(place.state_code.to_s, nil)
-        parts << county_label(place_metadata(place)["county_name"])
-        parts << quad_label(place_metadata(place)["map_name"])
+        parts << county_label(metadata["county_name"])
+        parts << quad_label(metadata["map_name"])
         parts.compact.join(" / ")
       end
 
@@ -157,6 +215,9 @@ module BFP
           metadata["map_name"],
           metadata["state_name"],
           metadata["source_feature_class"],
+          metadata["forest_name"],
+          metadata["source_activity"],
+          metadata["activity_group"],
           *land_units.flat_map { |unit| [unit.slug, unit.name] }
         ].compact
       end

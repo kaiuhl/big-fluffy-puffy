@@ -24,6 +24,14 @@ module BFP
         "oregon" => "or",
         "washington" => "wa"
       }.freeze
+      CACHE_EXTENSIONS = {
+        "csv" => ".csv",
+        "geojson" => ".geojson",
+        "json" => ".json",
+        "tsv" => ".tsv",
+        "txt" => ".txt",
+        "zip" => ".zip"
+      }.freeze
 
       def initialize(path: CONFIG_PATH, cache_dir: CACHE_DIR)
         @path = path
@@ -105,9 +113,10 @@ module BFP
 
       def download_source(config, data_url)
         FileUtils.mkdir_p(@cache_dir)
-        url_path = URI.parse(data_url).path
+        uri = URI.parse(data_url)
+        url_path = uri.path
         basename = File.basename(url_path)
-        basename = "#{config.fetch("slug")}#{File.extname(url_path)}" if basename.empty?
+        basename = cache_basename(config, data_url, basename) if basename.empty? || uri.query.to_s != "" || File.extname(basename).empty?
         target = File.join(@cache_dir, basename)
         return target if File.file?(target)
 
@@ -116,6 +125,16 @@ module BFP
 
         File.binwrite(target, response.body)
         target
+      end
+
+      def cache_basename(config, data_url, basename)
+        extension = CACHE_EXTENSIONS[config["format"].to_s] || File.extname(URI.parse(data_url).path)
+        extension = ".dat" if extension.to_s.empty?
+        slug = config.fetch("slug")
+        digest = Digest::SHA1.hexdigest(data_url)[0, 12]
+        stem = File.extname(basename).empty? ? slug : File.basename(basename, File.extname(basename))
+
+        "#{stem}-#{digest}#{extension}"
       end
 
       def zip_records(path, config)
@@ -144,6 +163,8 @@ module BFP
 
       def geojson_records_from_string(content, config)
         payload = JSON.parse(content)
+        raise "Place import failed for #{config.fetch("slug")}: GeoJSON source exceeded transfer limit." if geojson_exceeded_transfer_limit?(payload)
+
         features = payload.fetch("features", [])
         mapping = config.fetch("mapping", {})
         features.filter_map do |feature|
@@ -154,6 +175,10 @@ module BFP
             "longitude" => point_longitude(feature["geometry"], properties, mapping)
           )
         end
+      end
+
+      def geojson_exceeded_transfer_limit?(payload)
+        payload["exceededTransferLimit"] || payload.dig("properties", "exceededTransferLimit")
       end
 
       def delimited_records(path, config, col_sep:)

@@ -44,4 +44,26 @@ RSpec.describe BFP::Places::Searcher do
 
     expect(searcher.send(:context_query_score, "bear lake gifford", "bear lake", place, gifford)).to be > searcher.send(:context_query_score, "bear lake gifford", "bear lake", place, willamette)
   end
+
+  it "recognizes campground category queries" do
+    searcher = described_class.new
+    campground = Struct.new(:place_type).new("campground")
+    lake = Struct.new(:place_type).new("lake")
+    category_types = searcher.send(:category_place_types, "campground")
+
+    expect(category_types).to eq(["campground"])
+    expect(searcher.send(:category_place_types, "camping")).to eq(["campground"])
+    expect(searcher.send(:type_query_score, campground, category_types)).to be > searcher.send(:type_query_score, lake, category_types)
+  end
+
+  it "uses source forest metadata in subtitles before spatial resolution runs" do
+    searcher = described_class.new
+    place = Struct.new(:place_type, :state_code, :metadata).new(
+      "campground",
+      nil,
+      {"forest_name" => "Willamette National Forest"}
+    )
+
+    expect(searcher.send(:subtitle_for, place, [])).to eq("Campground / Willamette National Forest")
+  end
 end
