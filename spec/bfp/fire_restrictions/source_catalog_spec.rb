@@ -125,9 +125,14 @@ RSpec.describe "fire restriction source catalog" do
   end
 
   it "tracks official NPS fire-use regulation pages for parks with durable backcountry rules" do
-    expect(generated_sources(unit("north-cascades")).map { |source| source.fetch("slug") }).to include("north-cascades-wilderness-trip-planner")
-    expect(generated_sources(unit("olympic-national-park")).map { |source| source.fetch("slug") }).to include("olympic-national-park-wilderness-regulations")
-    expect(generated_sources(unit("lassen-volcanic")).map { |source| source.fetch("slug") }).to include("lassen-volcanic-fire-regulations")
+    sources = [
+      generated_sources(unit("north-cascades")).find { |source| source.fetch("slug") == "north-cascades-wilderness-trip-planner" },
+      generated_sources(unit("olympic-national-park")).find { |source| source.fetch("slug") == "olympic-national-park-wilderness-regulations" },
+      generated_sources(unit("lassen-volcanic")).find { |source| source.fetch("slug") == "lassen-volcanic-fire-regulations" }
+    ]
+
+    expect(sources).to all(include("authority" => "official_nps", "source_type" => "nps_fire_page"))
+    expect(sources).to all(satisfy { |source| source.dig("metadata_json", "auto_publish") == true })
   end
 
   it "tracks Colville's maintained current fire restrictions page" do
