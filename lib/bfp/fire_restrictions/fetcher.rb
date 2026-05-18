@@ -6,6 +6,7 @@ module BFP
   module FireRestrictions
     class Fetcher
       USER_AGENT = "BigFluffyPuffy Fire Restriction Monitor/1.0 (https://bigfluffypuffy.org)"
+      NPS_API_HOST = "developer.nps.gov"
       DEFAULT_TIMEOUT_SECONDS = 15
       DEFAULT_MAX_BODY_BYTES = 8 * 1024 * 1024
 
@@ -44,7 +45,7 @@ module BFP
         http.read_timeout = @timeout_seconds
 
         request = Net::HTTP::Get.new(uri)
-        apply_request_headers(request, source)
+        apply_request_headers(request, source, uri)
 
         response = http.request(request)
         case response
@@ -74,20 +75,25 @@ module BFP
         request["If-Modified-Since"] = latest.last_modified if latest.last_modified
       end
 
-      def apply_request_headers(request, source)
+      def apply_request_headers(request, source, uri)
         request["User-Agent"] = USER_AGENT
         request["Accept"] = "text/html,application/pdf,application/json;q=0.9,*/*;q=0.5"
-        apply_nps_api_key(request, source)
+        apply_nps_api_key(request, source, uri)
         apply_conditional_headers(request, source)
       end
 
-      def apply_nps_api_key(request, source)
+      def apply_nps_api_key(request, source, uri)
         return unless source.source_type == "nps_alerts_api"
+        return unless nps_api_request?(uri)
 
         api_key = ENV["NPS_API_KEY"].to_s.strip
         raise "NPS_API_KEY is required to fetch NPS alerts API sources." if api_key.empty?
 
         request["X-Api-Key"] = api_key
+      end
+
+      def nps_api_request?(uri)
+        uri.scheme == "https" && uri.host.to_s.casecmp?(NPS_API_HOST)
       end
 
       def save_success(source, response, fetched_at, duration_ms)

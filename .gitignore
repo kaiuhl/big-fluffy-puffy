@@ -16,6 +16,14 @@
 *.pyc
 __pycache__/
 .DS_Store
+*.swp
+*.swo
+
+# Local private keys and credential archives.
+*.pem
+*.key
+*.p12
+*.pfx
 
 /vendor/bundle/
 

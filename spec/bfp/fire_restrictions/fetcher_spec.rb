@@ -18,7 +18,7 @@ RSpec.describe BFP::FireRestrictions::Fetcher do
     ENV["NPS_API_KEY"] = "test-nps-key"
     request = Net::HTTP::Get.new(URI("https://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
 
-    described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"))
+    described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"), URI("https://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
 
     expect(request["X-Api-Key"]).to eq("test-nps-key")
   end
@@ -28,15 +28,33 @@ RSpec.describe BFP::FireRestrictions::Fetcher do
     request = Net::HTTP::Get.new(URI("https://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
 
     expect do
-      described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"))
+      described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"), URI("https://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
     end.to raise_error(RuntimeError, /NPS_API_KEY/)
+  end
+
+  it "does not add the NPS API key header to redirected non-NPS hosts" do
+    ENV["NPS_API_KEY"] = "test-nps-key"
+    request = Net::HTTP::Get.new(URI("https://example.test/redirected"))
+
+    described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"), URI("https://example.test/redirected"))
+
+    expect(request["X-Api-Key"]).to be_nil
+  end
+
+  it "does not add the NPS API key header to non-HTTPS NPS API URLs" do
+    ENV["NPS_API_KEY"] = "test-nps-key"
+    request = Net::HTTP::Get.new(URI("http://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
+
+    described_class.new.send(:apply_nps_api_key, request, source("nps_alerts_api"), URI("http://developer.nps.gov/api/v1/alerts?parkCode=MORA"))
+
+    expect(request["X-Api-Key"]).to be_nil
   end
 
   it "does not add an NPS API key header for non-NPS sources" do
     ENV["NPS_API_KEY"] = "test-nps-key"
     request = Net::HTTP::Get.new(URI("https://www.fs.usda.gov/r06/willamette/fire"))
 
-    described_class.new.send(:apply_nps_api_key, request, source("fs_fire_page"))
+    described_class.new.send(:apply_nps_api_key, request, source("fs_fire_page"), URI("https://www.fs.usda.gov/r06/willamette/fire"))
 
     expect(request["X-Api-Key"]).to be_nil
   end
