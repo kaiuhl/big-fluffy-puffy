@@ -10,6 +10,13 @@ module BFP
     class SourceParser
       PRIMARY_MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
       ESCALATION_MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+      PARTIAL_NPS_FIRE_RULE_SOURCES = %w[
+        north-cascades-wilderness-trip-planner
+        olympic-national-park-wilderness-regulations
+      ].freeze
+      DEVELOPED_SITE_ONLY_NPS_FIRE_RULE_SOURCES = %w[
+        lassen-volcanic-fire-regulations
+      ].freeze
       NPS_BACKCOUNTRY_FIRE_RESTRICTIONS = {
         "mount-rainier-wilderness-regulations" => {
           pattern: /following items or activities are prohibited on the trails and in the backcountry of Mount Rainier National Park:\s*Fire \(white gas, iso-butane cartridge, alcohol stoves are okay\. No bio-fuel stoves; i\.e\., those that burn twigs, sticks, cones, etc\.\)/i,
@@ -22,6 +29,24 @@ module BFP
           evidence_quote: "Campfires are prohibited in the park's backcountry.",
           affected_area: "park backcountry",
           summary: "Campfires are prohibited in Crater Lake's backcountry; fuel-canister and liquid-fuel camp stoves are permitted."
+        },
+        "north-cascades-wilderness-trip-planner" => {
+          pattern: /See the table below for information on group size limitation for each backcountry camp, food storage requirements, and campfire rules.*No Campfires/im,
+          evidence_quote: "See the table below for information on group size limitation for each backcountry camp, food storage requirements, and campfire rules.",
+          affected_area: "listed backcountry camps and cross-country zones",
+          summary: "Some North Cascades backcountry camps and cross-country zones prohibit campfires; the wilderness trip planner lists campfire rules by camp."
+        },
+        "olympic-national-park-wilderness-regulations" => {
+          pattern: /Campfires and wood-burning camp stoves are allowed below 3,500 feet only.*Campfires and wood-burning camp stoves are not allowed on the coast between the headland at Wedding Rocks and the headland north of Yellow Banks/im,
+          evidence_quote: "Campfires and wood-burning camp stoves are allowed below 3,500 feet only.",
+          affected_area: "wilderness above 3,500 feet and the coast between Wedding Rocks and Yellow Banks",
+          summary: "Olympic allows campfires and wood-burning camp stoves below 3,500 feet only, with an additional coastal prohibition between Wedding Rocks and Yellow Banks."
+        },
+        "lassen-volcanic-fire-regulations" => {
+          pattern: /Fires are only allowed in park-provided grills or fire rings in established frontcountry campgrounds and day use areas.*Fires are not permitted in any other area of the park, including backcountry and wilderness areas/im,
+          evidence_quote: "Fires are only allowed in park-provided grills or fire rings in established frontcountry campgrounds and day use areas.",
+          affected_area: "outside established frontcountry campgrounds and day-use areas",
+          summary: "Fires are allowed only in park-provided grills or fire rings in established frontcountry campgrounds and day-use areas; liquid or gas fuel stoves are permitted in the backcountry."
         }
       }.freeze
 
@@ -482,8 +507,8 @@ module BFP
         return result unless text.match?(restriction.fetch(:pattern))
 
         result.merge(
-          "status" => "year_round",
-          "campfire_policy" => "prohibited",
+          "status" => nps_backcountry_status_for(source),
+          "campfire_policy" => nps_backcountry_campfire_policy_for(source),
           "fire_danger_rating" => nil,
           "ifpl_level" => nil,
           "effective_start" => nil,
@@ -499,6 +524,14 @@ module BFP
 
       def ignorable_nps_backcountry_reason?(reason)
         reason.to_s.match?(/LLM parsing is disabled or unavailable|campfire policy|effective dates|permanent|backcountry/i)
+      end
+
+      def nps_backcountry_status_for(source)
+        PARTIAL_NPS_FIRE_RULE_SOURCES.include?(source.slug.to_s) ? "partial" : "year_round"
+      end
+
+      def nps_backcountry_campfire_policy_for(source)
+        DEVELOPED_SITE_ONLY_NPS_FIRE_RULE_SOURCES.include?(source.slug.to_s) ? "developed_sites_only" : "prohibited"
       end
 
       def parse_error_result(error, model_id)

@@ -129,6 +129,60 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(normalized["needs_review_reasons"]).to be_empty
   end
 
+  it "normalizes North Cascades camp-specific wilderness fire rules without LLM parsing" do
+    result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
+    source = nps_source("north-cascades-wilderness-trip-planner")
+    text = <<~TEXT
+      See the table below for information on group size limitation for each backcountry camp, food storage requirements, and campfire rules.
+      Fisher Pit Canister 4,4,4 4 No Campfires, Bear Canister Required
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "partial",
+      "campfire_policy" => "prohibited",
+      "affected_area" => "listed backcountry camps and cross-country zones"
+    )
+    expect(normalized["needs_review_reasons"]).to be_empty
+  end
+
+  it "normalizes Olympic elevation and coast fire rules without LLM parsing" do
+    result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
+    source = nps_source("olympic-national-park-wilderness-regulations")
+    text = <<~TEXT
+      Campfires and wood-burning camp stoves are allowed below 3,500 feet only. This helps protect subalpine forests and soils.
+      Campfires and wood-burning camp stoves are not allowed on the coast between the headland at Wedding Rocks and the headland north of Yellow Banks.
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "partial",
+      "campfire_policy" => "prohibited",
+      "affected_area" => "wilderness above 3,500 feet and the coast between Wedding Rocks and Yellow Banks"
+    )
+    expect(normalized["evidence_quotes"]).to eq(["Campfires and wood-burning camp stoves are allowed below 3,500 feet only."])
+  end
+
+  it "normalizes Lassen frontcountry-only fire rules without LLM parsing" do
+    result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
+    source = nps_source("lassen-volcanic-fire-regulations")
+    text = <<~TEXT
+      Fires are only allowed in park-provided grills or fire rings in established frontcountry campgrounds and day use areas.
+      Fires are not permitted in any other area of the park, including backcountry and wilderness areas.
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "year_round",
+      "campfire_policy" => "developed_sites_only",
+      "affected_area" => "outside established frontcountry campgrounds and day-use areas"
+    )
+    expect(normalized["needs_review_reasons"]).to be_empty
+  end
+
   it "marks parser results with only localized rules as localized observations" do
     result = parser_result("partial", confidence: 0.8).merge(
       "campfire_policy" => "unknown",

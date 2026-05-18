@@ -329,6 +329,12 @@ land_units:
         authority: official_nps
         url: https://www.nps.gov/noca/planyourvisit/fire-closures.htm
         parser_key: nps_html
+      - slug: north-cascades-wilderness-trip-planner
+        name: Wilderness Trip Planner
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/noca/planyourvisit/wilderness-trip-planner.htm
+        parser_key: nps_html
       - slug: north-cascades-current-conditions
         name: Current Conditions
         source_type: nps_conditions_page
@@ -397,6 +403,12 @@ land_units:
         authority: official_nps
         url: https://www.nps.gov/olym/planyourvisit/conditions.htm
         parser_key: nps_html
+      - slug: olympic-national-park-wilderness-regulations
+        name: Wilderness Regulations
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/olym/planyourvisit/wilderness-regulations.htm
+        parser_key: nps_html
       - slug: olympic-national-park-wilderness-trip-planner
         name: Wilderness Trip Planner
         source_type: nps_fire_page
@@ -464,6 +476,12 @@ land_units:
         source_type: nps_conditions_page
         authority: official_nps
         url: https://www.nps.gov/lavo/planyourvisit/conditions.htm
+        parser_key: nps_html
+      - slug: lassen-volcanic-fire-regulations
+        name: Camp/Cooking Fire Regulations and Restrictions
+        source_type: nps_fire_page
+        authority: official_nps
+        url: https://www.nps.gov/lavo/learn/management/fire-regulations-and-restrictions.htm
         parser_key: nps_html
       - slug: lassen-volcanic-current-fire-activity
         name: Current Wildfire Activity
