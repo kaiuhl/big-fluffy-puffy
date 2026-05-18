@@ -4,7 +4,7 @@ module BFP
   module FireRestrictions
     class ObservationValidator
       RESTRICTIVE_STATUSES = %w[advisory partial stage_1 stage_2 full closure year_round].freeze
-      RESTRICTIVE_EVIDENCE = /prohibit|restriction|ban|not allowed|closed|closure|stage\s*(1|2|i|ii)|forest order|public[- ]use/i
+      RESTRICTIVE_EVIDENCE = /prohibit|restriction|ban|not allowed|not permitted|no campfires?|closed|closure|stage\s*(1|2|i|ii)|forest order|public[- ]use/i
       NONE_EVIDENCE = /no (?:current |active )?(?:public[- ]use |fire public use |fire |campfire )?restrictions(?: \(?PURS\)?)?(?: are)?(?: currently)?(?: in effect| in place)?|(?:fire ban|fire restrictions?) (?:is|are) not in effect|no active forest fire restriction alerts were listed|restrictions?.{0,80}(lifted|rescinded|ended)|lifted.{0,80}restrictions?|rescinded|campfires? are allowed/i
       INCIDENT_CONTEXT_TYPES = %w[inciweb_feed nifc_feature_layer].freeze
 

@@ -42,6 +42,16 @@ RSpec.describe BFP::FireRestrictions::ObservationValidator do
     expect(result).to be_valid
   end
 
+  it "accepts NPS no-campfires and not-permitted restriction evidence" do
+    text = "Fisher Pit Canister 4,4,4 4 No Campfires, Bear Canister Required. Fires are not permitted in backcountry areas."
+    result = validate(
+      {"status" => "partial", "campfire_policy" => "prohibited", "evidence_quotes" => ["Fisher Pit Canister 4,4,4 4 No Campfires, Bear Canister Required"]},
+      text
+    )
+
+    expect(result).to be_valid
+  end
+
   it "rejects expired restrictive observations" do
     text = "Stage 2 public use restrictions are in effect. Campfires are prohibited."
     result = described_class.new(today: Date.new(2026, 5, 3)).validate(

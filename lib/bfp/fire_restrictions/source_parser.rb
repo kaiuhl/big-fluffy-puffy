@@ -32,19 +32,19 @@ module BFP
         },
         "north-cascades-wilderness-trip-planner" => {
           pattern: /See the table below for information on group size limitation for each backcountry camp, food storage requirements, and campfire rules.*No Campfires/im,
-          evidence_quote: "See the table below for information on group size limitation for each backcountry camp, food storage requirements, and campfire rules.",
+          evidence_quote: "Fisher Pit Canister 4,4,4 4 No Campfires, Bear Canister Required",
           affected_area: "listed backcountry camps and cross-country zones",
           summary: "Some North Cascades backcountry camps and cross-country zones prohibit campfires; the wilderness trip planner lists campfire rules by camp."
         },
         "olympic-national-park-wilderness-regulations" => {
           pattern: /Campfires and wood-burning camp stoves are allowed below 3,500 feet only.*Campfires and wood-burning camp stoves are not allowed on the coast between the headland at Wedding Rocks and the headland north of Yellow Banks/im,
-          evidence_quote: "Campfires and wood-burning camp stoves are allowed below 3,500 feet only.",
+          evidence_quote: "Campfires and wood-burning camp stoves are not allowed on the coast between the headland at Wedding Rocks and the headland north of Yellow Banks.",
           affected_area: "wilderness above 3,500 feet and the coast between Wedding Rocks and Yellow Banks",
           summary: "Olympic allows campfires and wood-burning camp stoves below 3,500 feet only, with an additional coastal prohibition between Wedding Rocks and Yellow Banks."
         },
         "lassen-volcanic-fire-regulations" => {
           pattern: /Fires are only allowed in park-provided grills or fire rings in established frontcountry campgrounds and day use areas.*Fires are not permitted in any other area of the park, including backcountry and wilderness areas/im,
-          evidence_quote: "Fires are only allowed in park-provided grills or fire rings in established frontcountry campgrounds and day use areas.",
+          evidence_quote: "Fires are not permitted in any other area of the park, including backcountry and wilderness areas.",
           affected_area: "outside established frontcountry campgrounds and day-use areas",
           summary: "Fires are allowed only in park-provided grills or fire rings in established frontcountry campgrounds and day-use areas; liquid or gas fuel stoves are permitted in the backcountry."
         }

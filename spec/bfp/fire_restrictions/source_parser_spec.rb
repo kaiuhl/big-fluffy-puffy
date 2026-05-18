@@ -162,7 +162,7 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
       "campfire_policy" => "prohibited",
       "affected_area" => "wilderness above 3,500 feet and the coast between Wedding Rocks and Yellow Banks"
     )
-    expect(normalized["evidence_quotes"]).to eq(["Campfires and wood-burning camp stoves are allowed below 3,500 feet only."])
+    expect(normalized["evidence_quotes"]).to eq(["Campfires and wood-burning camp stoves are not allowed on the coast between the headland at Wedding Rocks and the headland north of Yellow Banks."])
   end
 
   it "normalizes Lassen frontcountry-only fire rules without LLM parsing" do
@@ -180,6 +180,7 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
       "campfire_policy" => "developed_sites_only",
       "affected_area" => "outside established frontcountry campgrounds and day-use areas"
     )
+    expect(normalized["evidence_quotes"]).to eq(["Fires are not permitted in any other area of the park, including backcountry and wilderness areas."])
     expect(normalized["needs_review_reasons"]).to be_empty
   end
 
