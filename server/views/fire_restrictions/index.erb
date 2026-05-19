@@ -123,7 +123,6 @@
                           <th scope="col">Campfires</th>
                           <th scope="col"><%= h(climate_label) %></th>
                           <th scope="col">Source</th>
-                          <th scope="col">Checked</th>
                           <th scope="col">Note</th>
                         </tr>
                       </thead>
@@ -147,15 +146,19 @@
                             <td data-label="Source">
                               <% if source && source[:url] %>
                                 <a href="<%= h(source[:url]) %>" rel="noreferrer"><%= h(source[:name]) %></a>
+                              <% elsif checked_at %>
+                                Current evidence
                               <% else %>
                                 Not checked yet
                               <% end %>
-                            </td>
-                            <td data-label="Checked">
-                              <% if checked_at %>
-                                <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
-                              <% else %>
-                                not checked
+                              <% if (source && source[:url]) || checked_at %>
+                                <small class="restrictions-source-checked">
+                                  <% if checked_at %>
+                                    Checked <time datetime="<%= h(checked_at) %>"><%= h(date_label(checked_at)) %></time>
+                                  <% else %>
+                                    not checked
+                                  <% end %>
+                                </small>
                               <% end %>
                             </td>
                             <td data-label="Note"><%= h(restriction_note(forest)) %></td>

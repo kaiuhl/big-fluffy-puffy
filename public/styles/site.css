@@ -1172,23 +1172,32 @@ h1 {
 }
 
 .restrictions-table td:nth-child(4) {
-  min-width: 180px;
+  min-width: 220px;
 }
 
 .restrictions-table td:nth-child(4) a {
   display: inline-block;
-  margin: 0 8px 6px 0;
+  margin: 0;
   color: var(--signal);
   font-weight: 650;
 }
 
-.restrictions-table td:nth-child(5) {
+.restrictions-source-checked {
+  display: block;
+  margin-top: 7px;
+  color: var(--mid-gray);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.restrictions-source-checked time {
   color: var(--charcoal);
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.restrictions-table td:nth-child(6) {
+.restrictions-table td:nth-child(5) {
   max-width: 420px;
   color: var(--charcoal);
 }
@@ -1504,8 +1513,7 @@ h1 {
 
   .restrictions-table td:nth-child(3),
   .restrictions-table td:nth-child(4),
-  .restrictions-table td:nth-child(5),
-  .restrictions-table td:nth-child(6) {
+  .restrictions-table td:nth-child(5) {
     min-width: 0;
     max-width: none;
   }

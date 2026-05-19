@@ -1,13 +1,13 @@
 {
   "build": {
     "boundary_path": "data/fire_restriction_boundaries.geojson",
-    "boundary_sha256": "3a320a85fb732e87b12f934609fc7aa6383c29931451e57d2c5ca9fd96c0ab31",
-    "forest_count": 23,
-    "generated_at": "2026-05-03T17:02:15.346733+00:00",
-    "numpy": "2.1.3",
-    "python": "3.12.3",
+    "boundary_sha256": "ab2a9dff78ad0e3ce101db48ad38cb5b569cd7e7f775dc21cf10e3f834d3a00c",
+    "forest_count": 28,
+    "generated_at": "2026-05-19T17:14:58.881235+00:00",
+    "numpy": "2.0.2",
+    "python": "3.9.6",
     "rasterio": "1.4.3",
-    "row_count": 1272,
+    "row_count": 1536,
     "script": "scripts/climate/build_normals.py"
   },
   "dataset": {

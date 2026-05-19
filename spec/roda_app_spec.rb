@@ -238,7 +238,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-label="Campfires"')
     expect(last_response.body).to include('data-label="Typical May lows"')
     expect(last_response.body).to include('data-label="Source"')
-    expect(last_response.body).to include('data-label="Checked"')
+    expect(last_response.body).to include('class="restrictions-source-checked"')
+    expect(last_response.body).not_to include('data-label="Checked"')
     expect(last_response.body).to include('data-label="Note"')
     expect(last_response.body).to include("restrictions-filter-empty")
   end
