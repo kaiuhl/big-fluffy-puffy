@@ -20,7 +20,7 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
-  SITE_CSS_PATH = "/styles/site.css?v=20260517-trip-check-page-9".freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260519-fire-table-1".freeze
   FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260517-trip-check-page-3".freeze
   PLACE_SEARCH_JS_PATH = "/scripts/place-search.js?v=20260517-trip-check".freeze
 
