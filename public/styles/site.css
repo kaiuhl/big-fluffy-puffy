@@ -895,11 +895,12 @@ h1 {
 
 .restrictions-table {
   width: 100%;
-  min-width: 920px;
+  min-width: 0;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.78rem;
   line-height: 1.38;
+  table-layout: fixed;
 }
 
 .restrictions-table th,
@@ -922,17 +923,39 @@ h1 {
   text-transform: uppercase;
 }
 
+.restrictions-table thead th:nth-child(1) {
+  width: 26%;
+}
+
+.restrictions-table thead th:nth-child(2) {
+  width: 10%;
+}
+
+.restrictions-table thead th:nth-child(3) {
+  width: 17%;
+}
+
+.restrictions-table thead th:nth-child(4) {
+  width: 29%;
+}
+
+.restrictions-table thead th:nth-child(5) {
+  width: 18%;
+}
+
 .restrictions-section-none .restrictions-table thead th,
 .restrictions-section-unknown .restrictions-table thead th {
   background: #f1f0ec;
 }
 
 .restrictions-table tbody th {
-  min-width: 260px;
+  width: 26%;
+  min-width: 0;
   color: var(--near-black);
   font-size: 0.86rem;
   font-weight: 650;
   line-height: 1.32;
+  overflow-wrap: anywhere;
 }
 
 .restrictions-table tbody th span,
@@ -1112,7 +1135,8 @@ h1 {
 }
 
 .restrictions-table td:nth-child(3) {
-  min-width: 190px;
+  width: 17%;
+  min-width: 0;
 }
 
 .climate-low-context {
@@ -1172,14 +1196,16 @@ h1 {
 }
 
 .restrictions-table td:nth-child(4) {
-  min-width: 220px;
+  width: 29%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .restrictions-table td:nth-child(4) a {
-  display: inline-block;
   margin: 0;
   color: var(--signal);
   font-weight: 650;
+  overflow-wrap: anywhere;
 }
 
 .restrictions-source-checked {
@@ -1198,8 +1224,10 @@ h1 {
 }
 
 .restrictions-table td:nth-child(5) {
+  width: 18%;
   max-width: 420px;
   color: var(--charcoal);
+  overflow-wrap: anywhere;
 }
 
 .empty-state {
