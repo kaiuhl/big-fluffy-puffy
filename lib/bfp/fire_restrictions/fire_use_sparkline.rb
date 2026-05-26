@@ -3,27 +3,27 @@ require "rack/utils"
 module BFP
   module FireRestrictions
     class FireUseSparkline
-      POINT_WIDTH = 46
-      POINT_GAP = 7
+      POINT_WIDTH = 42
+      POINT_GAP = 5
 
       ITEMS = [
         {
           key: :campfire_policy,
-          chart_label: "Campfires",
+          chart_label: "Campfire",
           aria_label: "campfires",
           summary_label: "campfires",
           kind: :campfire
         },
         {
           key: :gas_stove_policy,
-          chart_label: "Gas stoves",
+          chart_label: "Gas",
           aria_label: "gas stoves",
           summary_label: "gas stoves",
           kind: :stove
         },
         {
           key: :alcohol_stove_policy,
-          chart_label: "Alcohol stoves",
+          chart_label: "Alcohol",
           aria_label: "alcohol stoves",
           summary_label: "alcohol stoves",
           kind: :stove
@@ -37,14 +37,14 @@ module BFP
         },
         {
           key: :solid_fuel_stove_policy,
-          chart_label: "Solid fuel stoves",
+          chart_label: "Solid fuel",
           aria_label: "solid fuel stoves",
           summary_label: "solid fuel stoves",
           kind: :stove
         },
         {
           key: :wood_stove_policy,
-          chart_label: "Wood stoves",
+          chart_label: "Wood",
           aria_label: "wood stoves",
           summary_label: "wood stoves",
           kind: :stove

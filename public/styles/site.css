@@ -1042,11 +1042,28 @@ h1 {
 }
 
 .localized-restrictions-table {
-  min-width: 760px;
+  min-width: 920px;
 }
 
-.localized-restrictions-table td:nth-child(2) {
-  min-width: 310px;
+.restrictions-table.localized-restrictions-table thead th:nth-child(1),
+.restrictions-table.localized-restrictions-table tbody th {
+  width: 29%;
+}
+
+.restrictions-table.localized-restrictions-table thead th:nth-child(2),
+.restrictions-table.localized-restrictions-table td:nth-child(2) {
+  width: 33%;
+  min-width: 0;
+}
+
+.restrictions-table.localized-restrictions-table thead th:nth-child(3),
+.restrictions-table.localized-restrictions-table td:nth-child(3) {
+  width: 17%;
+}
+
+.restrictions-table.localized-restrictions-table thead th:nth-child(4),
+.restrictions-table.localized-restrictions-table td:nth-child(4) {
+  width: 21%;
 }
 
 .fire-use-profile {
@@ -1054,7 +1071,7 @@ h1 {
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
   min-width: 0;
-  max-width: 330px;
+  max-width: none;
 }
 
 .fire-use-chart {
@@ -1066,10 +1083,10 @@ h1 {
 
 .fire-use-sparkline {
   display: grid;
-  grid-template-columns: repeat(var(--fire-use-count), minmax(0, 1fr));
-  gap: 7px;
-  width: min(100%, var(--fire-use-width));
-  max-width: 100%;
+  grid-template-columns: repeat(var(--fire-use-count), 42px);
+  gap: 5px;
+  width: var(--fire-use-width);
+  max-width: none;
   cursor: help;
 }
 
@@ -1087,6 +1104,7 @@ h1 {
 
 .fire-use-point {
   display: grid;
+  width: 42px;
   min-width: 0;
   align-content: start;
   justify-items: center;
@@ -1127,7 +1145,8 @@ h1 {
 
 .fire-use-label {
   color: var(--mid-gray);
-  font-size: 0.5rem;
+  max-width: 42px;
+  font-size: 0.48rem;
   font-weight: 900;
   line-height: 1.05;
   overflow-wrap: normal;
@@ -1341,6 +1360,87 @@ h1 {
 @media (max-width: 980px) {
   .forest-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .localized-restrictions-table {
+    display: block;
+    min-width: 0;
+    font-size: 0.78rem;
+  }
+
+  .localized-restrictions-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .localized-restrictions-table tbody,
+  .localized-restrictions-table tr,
+  .localized-restrictions-table th,
+  .localized-restrictions-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .localized-restrictions-table tr {
+    border-bottom: 1px solid var(--rule-gray);
+    padding: 18px;
+  }
+
+  .restrictions-table.localized-restrictions-table th,
+  .restrictions-table.localized-restrictions-table td {
+    border-bottom: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .localized-restrictions-table tbody th {
+    min-width: 0;
+    margin-bottom: 12px;
+  }
+
+  .localized-restrictions-table tbody th span {
+    font-size: 0.95rem;
+    line-height: 1.22;
+  }
+
+  .localized-restrictions-table td {
+    display: grid;
+    grid-template-columns: minmax(86px, 0.34fr) minmax(0, 1fr);
+    gap: 12px;
+    padding: 7px 0;
+  }
+
+  .localized-restrictions-table td::before {
+    content: attr(data-label);
+    color: var(--mid-gray);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .restrictions-table.localized-restrictions-table td:nth-child(2),
+  .restrictions-table.localized-restrictions-table td:nth-child(3),
+  .restrictions-table.localized-restrictions-table td:nth-child(4) {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .localized-restrictions-table .fire-use-sparkline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .localized-restrictions-table .fire-use-point {
+    flex: 0 0 42px;
   }
 }
 
