@@ -98,7 +98,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, `auto_accept_observations`, and `llm_costs`.
+The console preloads `config/boot` and `bfp/fire_restrictions` when the database is available. It adds helpers: `app_env`, `database_url`, `fire_counts`, `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_summary`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, `auto_accept_observations`, and `llm_costs`.
 
 Production console and shell:
 

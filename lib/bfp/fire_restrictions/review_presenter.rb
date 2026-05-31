@@ -1,6 +1,30 @@
+require_relative "observation_freshness"
+require_relative "status_display"
+
 module BFP
   module FireRestrictions
     class ReviewPresenter
+      def initialize(observation_freshness: ObservationFreshness.new)
+        @observation_freshness = observation_freshness
+      end
+
+      def summary(limit: nil, status: nil, land_unit: nil, include_published: false)
+        rows = review_land_units(land_unit: land_unit, include_published: include_published).map do |unit|
+          observations = candidate_observations(unit, status: status)
+          current_observations = observations.select { |observation| @observation_freshness.current?(observation) }
+          best = best_candidate(current_observations.empty? ? observations : current_observations)
+
+          summary_row(
+            unit,
+            observations: observations,
+            current_observations: current_observations,
+            best: best
+          )
+        end
+
+        limit ? rows.first(limit.to_i) : rows
+      end
+
       def queue(limit: 20, status: nil, land_unit: nil)
         dataset = RestrictionObservation.where(review_status: "needs_review")
         dataset = dataset.where(status: status.to_s) if present?(status)
@@ -14,16 +38,13 @@ module BFP
       end
 
       def candidates(limit: nil, status: nil, land_unit: nil, include_published: false)
-        units = LandUnit.where(active: true).order(:market_bucket, :name).all
-        units = units.select { |unit| unit.slug == land_unit.to_s } if present?(land_unit)
-
-        rows = units.filter_map do |unit|
-          next if !include_published && published_status?(unit)
-
+        rows = review_land_units(land_unit: land_unit, include_published: include_published).filter_map do |unit|
           observations = candidate_observations(unit, status: status)
+          current_observations = observations.select { |observation| @observation_freshness.current?(observation) }
+          observations = current_observations unless current_observations.empty?
           next if observations.empty?
 
-          row(observations.max_by { |observation| candidate_score(observation) }).merge(
+          row(best_candidate(observations)).merge(
             reviewed_observations: observations.length,
             best_candidate: true
           )
@@ -71,6 +92,24 @@ module BFP
           document: document_details(document),
           commands: review_commands(observation)
         )
+      end
+
+      def format_summary(limit: nil, status: nil, land_unit: nil, include_published: false)
+        rows = summary(
+          limit: limit,
+          status: status,
+          land_unit: land_unit,
+          include_published: include_published
+        )
+        return "No land units need review." if rows.empty?
+
+        total_observations = rows.sum { |row| row[:review_observations] }
+        total_current = rows.sum { |row| row[:current_review_observations] }
+        lines = [
+          "#{rows.length} land units need review (#{total_observations} review observations, #{total_current} current)."
+        ]
+        lines.concat(rows.map { |row| format_summary_row(row) })
+        lines.join("\n")
       end
 
       def format_queue(limit: 20, status: nil, land_unit: nil)
@@ -164,6 +203,64 @@ module BFP
 
       private
 
+      def review_land_units(land_unit:, include_published:)
+        units = LandUnit.where(active: true).order(:market_bucket, :name).all
+        units = units.select { |unit| unit.slug == land_unit.to_s } if present?(land_unit)
+        units = units.reject { |unit| published_status?(unit) } unless include_published
+        units
+      end
+
+      def summary_row(land_unit, observations:, current_observations:, best:)
+        status = land_unit.restriction_status
+        best_row = best && row(best)
+
+        {
+          forest: land_unit.name,
+          forest_slug: land_unit.slug,
+          public_status: status&.status || "unknown",
+          public_campfire_policy: StatusDisplay.campfire_policy(
+            status: status&.status,
+            campfire_policy: status&.campfire_policy
+          ),
+          public_review_status: status&.review_status || "needs_review",
+          public_summary: status&.summary,
+          last_checked_at: status&.last_checked_at&.iso8601,
+          review_observations: observations.length,
+          current_review_observations: current_observations.length,
+          stale_review_observations: observations.length - current_observations.length,
+          best_observation: best_row,
+          command: "bin/prod-console -e 'review_forest(\"#{land_unit.slug}\")'"
+        }
+      end
+
+      def format_summary_row(row)
+        best = row[:best_observation]
+        best_summary = if best
+          reasons = best[:needs_review_reasons].first(2).join("; ")
+          [
+            "best=#{best[:id]}",
+            best[:source],
+            best[:status],
+            best[:campfire_policy],
+            "confidence=#{best[:confidence]}",
+            reasons
+          ].compact.join(" | ")
+        else
+          "best=(none)"
+        end
+
+        [
+          row[:forest],
+          row[:public_status],
+          row[:public_campfire_policy],
+          "observations=#{row[:review_observations]}",
+          "current=#{row[:current_review_observations]}",
+          "checked=#{row[:last_checked_at] || "unknown"}",
+          best_summary,
+          row[:command]
+        ].join(" | ")
+      end
+
       def row(observation)
         {
           id: observation.id,
@@ -187,6 +284,10 @@ module BFP
           .where(land_unit_id: land_unit.id, review_status: "needs_review")
         dataset = dataset.where(status: status.to_s) if present?(status)
         dataset.all
+      end
+
+      def best_candidate(observations)
+        observations.max_by { |observation| candidate_score(observation) }
       end
 
       def published_status?(land_unit)

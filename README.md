@@ -39,7 +39,7 @@ bin/console -e 'fire_counts'
 bin/console -e 'latest_fetches'
 ```
 
-Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `auto_accept_observations`. The `forests`/`forest` helper names are legacy aliases for monitored land units.
+Inside the console, handy helpers include `forests`, `forest("deschutes")`, `source("willamette-fire-info")`, `status("deschutes")`, `latest_fetches`, `latest_observations`, `review_summary`, `review_candidates`, `review_forest("willamette")`, `review_queue`, `review_observation(123)`, `accept_observation(123)`, `reject_observation(123, "reason")`, and `auto_accept_observations`. The `forests`/`forest` helper names are legacy aliases for monitored land units.
 
 After a Bedrock-backed parse run, use `llm_costs` to see captured token usage and an estimated per-run cost:
 

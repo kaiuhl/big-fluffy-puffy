@@ -28,7 +28,7 @@ one-off human judgment, and make any manual acceptance explicit.
 
    ```sh
    bin/prod-console -e 'fire_counts'
-   bin/prod-console -e 'review_candidates'
+   bin/prod-console -e 'review_summary'
    bin/prod-console -e 'llm_costs'
    ```
 

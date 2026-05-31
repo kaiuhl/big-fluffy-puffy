@@ -113,8 +113,16 @@ namespace :fire do
       puts BFP::FireRestrictions::ReviewPresenter.new.format_candidates(limit: limit)
     end
 
-    desc "List fire restriction observations awaiting review"
+    desc "List land units whose public fire restriction status needs review"
     task :list, [:limit] do |_task, args|
+      load_fire_restrictions
+
+      limit = args[:limit] ? Integer(args[:limit]) : nil
+      puts BFP::FireRestrictions::ReviewPresenter.new.format_summary(limit: limit)
+    end
+
+    desc "List raw fire restriction observations awaiting review"
+    task :observations, [:limit] do |_task, args|
       load_fire_restrictions
 
       puts BFP::FireRestrictions::ReviewPresenter.new.format_queue(limit: args[:limit] || 50)

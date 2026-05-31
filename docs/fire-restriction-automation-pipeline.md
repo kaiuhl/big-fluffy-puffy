@@ -499,8 +499,8 @@ Useful production checks:
 ```sh
 bin/prod-console -e 'latest_fetches(20)'
 bin/prod-console -e 'latest_observations(20)'
+bin/prod-console -e 'review_summary'
 bin/prod-console -e 'review_candidates'
-bin/prod-console -e 'review_queue'
 bin/prod-console -e 'llm_costs'
 bin/prod-console -e 'fire_counts'
 bin/prod-console -e 'status("deschutes")'
@@ -550,7 +550,7 @@ inspect recent observations for common triggers:
 
 ```sh
 bin/prod-console -e 'latest_observations(20)'
-bin/prod-console -e 'review_candidates'
+bin/prod-console -e 'review_summary'
 ```
 
 Common causes are weak extraction, multiple overlapping orders, broad alert

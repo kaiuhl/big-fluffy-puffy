@@ -102,6 +102,17 @@ module BFPConsoleHelpers
     BFP::FireRestrictions::ReviewPresenter.new.queue(limit: limit, status: status, land_unit: land_unit)
   end
 
+  def review_summary(limit = nil, status: nil, land_unit: nil, include_published: false)
+    ensure_fire_loaded!
+
+    BFP::FireRestrictions::ReviewPresenter.new.summary(
+      limit: limit,
+      status: status,
+      land_unit: land_unit,
+      include_published: include_published
+    )
+  end
+
   def review_candidates(limit = nil, status: nil, land_unit: nil, include_published: false)
     ensure_fire_loaded!
 
@@ -234,6 +245,8 @@ module BFPConsoleHelpers
         status("deschutes")
         latest_fetches
         latest_observations
+        review_summary
+        review_summary(10)
         review_candidates
         review_candidates(10, status: "partial")
         review_forest("willamette")
