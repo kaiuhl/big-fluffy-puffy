@@ -94,7 +94,7 @@ Current secret flow:
 
 - Bedrock parser credentials are created by OpenTofu in `infra/opentofu`.
 - These credentials are created in the AWS account configured by `infra/opentofu/terraform.tfvars`, currently the account used by the local AWS CLI.
-- The IAM user is restricted to the configured Haiku primary model, can subscribe only to that Haiku Marketplace product when Bedrock performs first-use enablement, and is explicitly denied other Bedrock model invocations.
+- The IAM user is restricted to the configured primary Bedrock parser model and configured escalation model, can subscribe only to the Haiku Marketplace product when Bedrock performs first-use enablement, and is explicitly denied other Bedrock model invocations.
 - Ansible writes the generated key into `/srv/bfp/.env`.
 - OpenTofu state contains the generated secret access key, so keep state private and do not commit local state files.
 

@@ -34,12 +34,7 @@ module BFP
       end
 
       def self.parse_fetch?(fetch)
-        return false if fetch.error_class
-        return false unless fetch.source_document
-
-        fetch.content_changed ||
-          RestrictionObservation.where(source_fetch_id: fetch.id).empty? &&
-            RestrictionObservation.where(restriction_source_id: fetch.restriction_source_id).empty?
+        ParseDecision.parse_fetch?(fetch)
       end
 
       def run(source_slug)

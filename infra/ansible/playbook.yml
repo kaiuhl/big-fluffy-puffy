@@ -10,6 +10,8 @@
     bfp_llm_parse_enabled: "false"
     bfp_llm_escalation_enabled: "false"
     bfp_fire_auto_poll_enabled: "false"
+    bfp_clock_interval_seconds: "604800"
+    bfp_fire_poll_batch_size: "150"
     bfp_google_analytics_measurement_id: G-F2V4N8BKGS
     bfp_bedrock_primary_model_id: global.anthropic.claude-haiku-4-5-20251001-v1:0
     bfp_bedrock_escalation_model_id: global.anthropic.claude-sonnet-4-5-20250929-v1:0
@@ -44,6 +46,10 @@
           value: "{{ bfp_llm_escalation_enabled }}"
         - key: FIRE_AUTO_POLL_ENABLED
           value: "{{ bfp_fire_auto_poll_enabled }}"
+        - key: CLOCK_INTERVAL_SECONDS
+          value: "{{ bfp_clock_interval_seconds }}"
+        - key: FIRE_POLL_BATCH_SIZE
+          value: "{{ bfp_fire_poll_batch_size }}"
         - key: GOOGLE_ANALYTICS_MEASUREMENT_ID
           value: "{{ bfp_google_analytics_measurement_id }}"
         - key: BEDROCK_PRIMARY_MODEL_ID

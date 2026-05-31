@@ -1,3 +1,5 @@
+require_relative "observation_freshness"
+
 module BFP
   module FireRestrictions
     class Resolver
@@ -16,6 +18,10 @@ module BFP
         "inciweb_feed" => 10,
         "nifc_feature_layer" => 10
       }.freeze
+
+      def initialize(observation_freshness: ObservationFreshness.new)
+        @observation_freshness = observation_freshness
+      end
 
       def resolve(land_unit)
         land_unit = LandUnit[land_unit] unless land_unit.is_a?(LandUnit)
@@ -40,8 +46,8 @@ module BFP
         RestrictionObservation
           .where(land_unit_id: land_unit.id, review_status: %w[accepted auto_accepted])
           .where(Sequel.|({scope: nil}, {scope: "forestwide"}))
-          .where { created_at > Time.now - (30 * 24 * 60 * 60) }
           .all
+          .select { |candidate| @observation_freshness.current?(candidate) }
       end
 
       def conflicting?(candidates)

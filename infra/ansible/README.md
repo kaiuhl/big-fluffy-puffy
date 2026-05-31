@@ -7,7 +7,7 @@ Current responsibilities:
 - Manage the production `.env` fire parser settings.
 - Install least-privilege Bedrock parser access keys created by OpenTofu.
 - Install the optional NPS Data API key used by national park alert sources.
-- Keep paid parsing and Sonnet escalation disabled by default.
+- Keep paid parsing, automatic polling, and Sonnet escalation disabled by default.
 
 Planned responsibilities:
 
@@ -40,7 +40,7 @@ ansible-playbook \
   -e bfp_aws_secret_access_key="$(cd infra/opentofu && tofu output -raw bedrock_parser_secret_access_key)"
 ```
 
-The playbook writes these values into `/srv/bfp/.env` with mode `0600`. It leaves `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false` unless you intentionally override them.
+The playbook writes these values into `/srv/bfp/.env` with mode `0600`. It leaves `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false` unless you intentionally override them. It also writes the production clock cadence defaults `CLOCK_INTERVAL_SECONDS=604800` and `FIRE_POLL_BATCH_SIZE=150`.
 
 To configure National Park Service alert polling, pass the free NPS Data API key
 as `-e bfp_nps_api_key=...`. The playbook writes it as `NPS_API_KEY` and does

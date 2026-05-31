@@ -44,6 +44,6 @@ variable "bedrock_primary_marketplace_product_id" {
 
 variable "bedrock_escalation_model_id" {
   type        = string
-  description = "Escalation model ID that this IAM identity explicitly cannot invoke."
+  description = "Escalation Bedrock inference profile model ID allowed for difficult parser cases."
   default     = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 }

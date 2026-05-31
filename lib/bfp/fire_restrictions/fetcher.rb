@@ -97,10 +97,18 @@ module BFP
       end
 
       def save_success(source, response, fetched_at, duration_ms)
-        body = response.body.to_s
-        content_hash = body.empty? ? nil : Digest::SHA256.hexdigest(body)
-        document = document_for(response, content_hash, body)
-        content_changed = content_hash && content_hash != latest_content_hash(source)
+        latest_fetch = latest_document_fetch(source)
+        not_modified = response.is_a?(Net::HTTPNotModified)
+        body = not_modified ? "" : response.body.to_s
+        content_hash = if not_modified
+          latest_fetch&.content_hash
+        elsif body.empty?
+          nil
+        else
+          Digest::SHA256.hexdigest(body)
+        end
+        document = not_modified ? latest_fetch&.source_document : document_for(response, content_hash, body)
+        content_changed = !not_modified && content_hash && content_hash != latest_fetch&.content_hash
 
         fetch = SourceFetch.create(
           restriction_source_id: source.id,
@@ -108,9 +116,9 @@ module BFP
           fetched_at: fetched_at,
           http_status: response.code.to_i,
           final_url: response.instance_variable_get(:@bfp_final_url),
-          etag: response["etag"],
-          last_modified: response["last-modified"],
-          content_type: response["content-type"],
+          etag: response["etag"] || latest_fetch&.etag,
+          last_modified: response["last-modified"] || latest_fetch&.last_modified,
+          content_type: response["content-type"] || latest_fetch&.content_type,
           content_hash: content_hash,
           content_changed: !!content_changed,
           duration_ms: duration_ms,
@@ -148,8 +156,8 @@ module BFP
           )
       end
 
-      def latest_content_hash(source)
-        source.source_fetches_dataset.exclude(content_hash: nil).reverse(:fetched_at).first&.content_hash
+      def latest_document_fetch(source)
+        source.source_fetches_dataset.exclude(content_hash: nil).reverse(:fetched_at).first
       end
 
       def update_source_checked_at(source, checked_at, content_changed)

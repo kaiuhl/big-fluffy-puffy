@@ -5,9 +5,9 @@ This directory manages AWS resources that should be rebuildable from the repo.
 Current resources:
 
 - IAM user for the production app's Bedrock parser credentials.
-- Haiku-only `bedrock:InvokeModel` policy for the primary parser model.
+- Least-privilege `bedrock:InvokeModel` policy for the configured primary parser model and configured escalation parser model.
 - Scoped AWS Marketplace subscribe/view permissions for the Haiku 4.5 Bedrock product, only when called through Bedrock for first-use model enablement.
-- Explicit deny for every other Bedrock model invocation, including the configured Sonnet escalation model.
+- Explicit deny for every other Bedrock model invocation.
 
 Planned resources:
 
@@ -54,4 +54,4 @@ Important: `aws_iam_access_key.bedrock_parser.secret` is stored in OpenTofu stat
 
 IAM permissions are necessary but may not be sufficient on a fresh AWS account. Anthropic models require the first-time use case form, and third-party Bedrock models may create an AWS Marketplace subscription on first invocation.
 
-This configuration allows the production parser identity to subscribe only to the configured Haiku 4.5 product ID through Bedrock. It does not allow Sonnet invocation, and it does not grant broad Marketplace access.
+This configuration allows the production parser identity to subscribe only to the configured Haiku 4.5 product ID through Bedrock. It allows invocation of the configured primary and escalation inference profiles, and denies every other Bedrock model. It does not grant broad Marketplace access. If the escalation model requires separate account-level model access or subscription, grant that in Bedrock before enabling production escalation.

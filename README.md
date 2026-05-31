@@ -102,7 +102,7 @@ Domestic Names ZIPs plus USFS campground recreation opportunities into
 destinations, then resolves active places against monitored forest and localized
 fire-use geometry.
 
-Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` only when you want changed pages parsed by the LLM. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
+Automatic polling is off by default. During fire season, enable it explicitly with `FIRE_AUTO_POLL_ENABLED=true`; enable Bedrock parsing with `LLM_PARSE_ENABLED=true` when changed or first-seen pages should be parsed by the LLM. Unchanged source hashes are trusted as a fresh verification of the previous accepted parse. Sonnet escalation is separately off by default with `LLM_ESCALATION_ENABLED=false`; set it to `true` only for intentional escalation runs.
 
 National Park Service alert sources use the free NPS Data API. Set `NPS_API_KEY`
 in local and production environments before polling `nps_alerts_api` sources.
@@ -115,7 +115,7 @@ docker compose --profile jobs up worker clock
 
 Secrets belong in environment variables, GitHub Actions secrets, or AWS secret stores. Never commit them.
 
-Bedrock parser AWS credentials are managed in `infra/opentofu` as a least-privilege IAM user with Haiku-only invoke permissions. `infra/ansible` installs those credentials into the production `.env` on the Lightsail box.
+Bedrock parser AWS credentials are managed in `infra/opentofu` as a least-privilege IAM user with invoke permissions for only the configured primary and escalation parser models. `infra/ansible` installs those credentials into the production `.env` on the Lightsail box.
 
 ## Project Notes
 

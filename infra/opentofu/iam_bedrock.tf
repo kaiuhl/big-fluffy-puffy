@@ -117,6 +117,75 @@ data "aws_iam_policy_document" "bedrock_parser" {
   }
 
   statement {
+    sid    = "AllowEscalationInferenceProfile"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:InvokeModel"
+    ]
+
+    resources = [
+      local.bedrock_escalation_inference_profile_arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
+  }
+
+  statement {
+    sid    = "AllowEscalationRegionalFoundationModelViaProfile"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:InvokeModel"
+    ]
+
+    resources = [
+      local.bedrock_escalation_regional_model_arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [var.aws_region]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "bedrock:InferenceProfileArn"
+      values   = [local.bedrock_escalation_inference_profile_arn]
+    }
+  }
+
+  statement {
+    sid    = "AllowEscalationGlobalFoundationModelViaProfile"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:InvokeModel"
+    ]
+
+    resources = [
+      local.bedrock_escalation_global_model_arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = ["unspecified"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "bedrock:InferenceProfileArn"
+      values   = [local.bedrock_escalation_inference_profile_arn]
+    }
+  }
+
+  statement {
     sid    = "DenyAllOtherBedrockModelInvocations"
     effect = "Deny"
 
@@ -128,20 +197,7 @@ data "aws_iam_policy_document" "bedrock_parser" {
     not_resources = [
       local.bedrock_primary_inference_profile_arn,
       local.bedrock_primary_regional_model_arn,
-      local.bedrock_primary_global_model_arn
-    ]
-  }
-
-  statement {
-    sid    = "DenyEscalationModelInvocations"
-    effect = "Deny"
-
-    actions = [
-      "bedrock:InvokeModel",
-      "bedrock:InvokeModelWithResponseStream"
-    ]
-
-    resources = [
+      local.bedrock_primary_global_model_arn,
       local.bedrock_escalation_inference_profile_arn,
       local.bedrock_escalation_regional_model_arn,
       local.bedrock_escalation_global_model_arn
@@ -150,8 +206,8 @@ data "aws_iam_policy_document" "bedrock_parser" {
 }
 
 resource "aws_iam_policy" "bedrock_parser" {
-  name        = "bfp-${var.environment}-bedrock-parser-haiku-only"
-  description = "Least-privilege Haiku-only Bedrock parser permissions for BFP ${var.environment}."
+  name        = "bfp-${var.environment}-bedrock-parser-primary-escalation"
+  description = "Least-privilege Bedrock parser permissions for BFP ${var.environment} primary and escalation models."
   path        = "/bfp/"
   policy      = data.aws_iam_policy_document.bedrock_parser.json
 }
