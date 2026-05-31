@@ -13,7 +13,7 @@ RSpec.describe BFP::FireRestrictions::Resolver do
       expect(precedence.fetch("nps_fire_page")).to eq(precedence.fetch("fs_fire_page"))
     end
 
-    it "limits forestwide status candidates to forestwide or legacy null-scope observations" do
+    it "limits forestwide status candidates to forestwide, mixed, or legacy null-scope observations" do
       db = Sequel.mock(host: :postgres, fetch: [])
       land_unit = Struct.new(:id, keyword_init: true).new(id: 7)
 
@@ -22,7 +22,7 @@ RSpec.describe BFP::FireRestrictions::Resolver do
       described_class.new.send(:accepted_candidates, land_unit)
 
       sql = db.sqls.last
-      expect(sql).to include('("scope" IS NULL) OR ("scope" = \'forestwide\')')
+      expect(sql).to include('("scope" IS NULL) OR ("scope" IN (\'forestwide\', \'mixed\'))')
       expect(sql).to include('"review_status" IN (\'accepted\', \'auto_accepted\')')
     end
   end

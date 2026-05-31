@@ -90,6 +90,28 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(normalized["needs_review_reasons"]).to be_empty
   end
 
+  it "normalizes moderate Seasonal Restrictions/Phase A public-use rows to an advisory" do
+    result = parser_result("unknown", confidence: 0.3, reasons: ["Campfire policy cannot be determined"])
+    text = <<~TEXT
+      Industrial Fire Precaution Levels (IFPL) and current public use restrictions at Malheur National Forest.
+      Fire Danger: MODERATE
+      IFPL: I
+      PUR: Seasonal Restrictions
+      Phase A
+    TEXT
+
+    normalized = parser.send(:apply_structural_overrides, result, text, source)
+
+    expect(normalized).to include(
+      "status" => "advisory",
+      "campfire_policy" => "allowed",
+      "fire_danger_rating" => "MODERATE",
+      "ifpl_level" => "I"
+    )
+    expect(normalized["evidence_quotes"]).to eq(["Fire Danger: MODERATE", "IFPL: I", "PUR: Seasonal Restrictions"])
+    expect(normalized["needs_review_reasons"]).to be_empty
+  end
+
   it "normalizes Mount Rainier's official backcountry fire rule without LLM parsing" do
     result = parser_result("unknown", confidence: 0.0, reasons: ["LLM parsing is disabled or unavailable."])
     source = nps_source("mount-rainier-wilderness-regulations")

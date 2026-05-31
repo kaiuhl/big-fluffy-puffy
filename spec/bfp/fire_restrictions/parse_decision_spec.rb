@@ -64,4 +64,28 @@ RSpec.describe BFP::FireRestrictions::ParseDecision do
 
     expect(described_class.parse_fetch?(fetch, observation_model: observation_model)).to be(false)
   end
+
+  it "parses unchanged documents once parsing is enabled when the source only has disabled-parser placeholders" do
+    fetch = fetch_class.new(
+      id: 10,
+      restriction_source_id: 20,
+      error_class: nil,
+      source_document: Object.new,
+      content_changed: false
+    )
+    placeholder = Struct.new(:needs_review_reasons).new(["LLM parsing is disabled or unavailable."])
+    observation_model = Class.new do
+      define_singleton_method(:where) do |conditions|
+        (conditions == {source_fetch_id: 10}) ? [] : [placeholder]
+      end
+    end
+
+    previous = ENV["LLM_PARSE_ENABLED"]
+    ENV["LLM_PARSE_ENABLED"] = "true"
+    begin
+      expect(described_class.parse_fetch?(fetch, observation_model: observation_model)).to be(true)
+    ensure
+      ENV["LLM_PARSE_ENABLED"] = previous
+    end
+  end
 end

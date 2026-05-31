@@ -3,6 +3,7 @@ require_relative "observation_freshness"
 module BFP
   module FireRestrictions
     class Resolver
+      PUBLISHABLE_SCOPES = %w[forestwide mixed].freeze
       SOURCE_PRECEDENCE = {
         "arcgis_feature_layer" => 100,
         "fs_fire_info_page" => 90,
@@ -45,7 +46,7 @@ module BFP
       def accepted_candidates(land_unit)
         RestrictionObservation
           .where(land_unit_id: land_unit.id, review_status: %w[accepted auto_accepted])
-          .where(Sequel.|({scope: nil}, {scope: "forestwide"}))
+          .where(Sequel.|({scope: nil}, {scope: PUBLISHABLE_SCOPES}))
           .all
           .select { |candidate| @observation_freshness.current?(candidate) }
       end

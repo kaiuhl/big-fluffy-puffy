@@ -472,20 +472,21 @@ module BFP
         return result unless source.respond_to?(:authority)
         return result unless source.authority == "official_usfs"
         return result unless text.match?(/PUR:\s*Seasonal Restrictions/i)
-        return result unless text.match?(/Fire Danger:\s*LOW/i)
+        return result unless text.match?(/Fire Danger:\s*(?:LOW|MODERATE)/i)
         return result unless text.match?(/IFPL:\s*I/i)
+        fire_danger = text.match?(/Fire Danger:\s*MODERATE/i) ? "MODERATE" : "LOW"
 
         result.merge(
           "status" => "advisory",
           "campfire_policy" => "allowed",
-          "fire_danger_rating" => "LOW",
+          "fire_danger_rating" => fire_danger,
           "ifpl_level" => "I",
           "effective_start" => nil,
           "effective_end" => nil,
           "order_number" => nil,
           "affected_area" => nil,
-          "summary" => "Current public-use restrictions are in Seasonal Restrictions/Phase A with LOW fire danger and IFPL I.",
-          "evidence_quotes" => ["Fire Danger: LOW", "IFPL: I", "PUR: Seasonal Restrictions"],
+          "summary" => "Current public-use restrictions are in Seasonal Restrictions/Phase A with #{fire_danger} fire danger and IFPL I.",
+          "evidence_quotes" => ["Fire Danger: #{fire_danger}", "IFPL: I", "PUR: Seasonal Restrictions"],
           "confidence" => [result["confidence"].to_f, 0.9].max,
           "needs_review_reasons" => Array(result["needs_review_reasons"]).reject { |reason| ignorable_current_pur_reason?(reason) }
         )
