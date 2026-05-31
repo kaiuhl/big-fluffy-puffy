@@ -125,7 +125,7 @@ RSpec.describe BFP::LLM::BedrockParserClient do
     expect(rule_properties.fetch("alcohol_stove_policy").fetch("enum")).to include("prohibited")
     expect(rule_properties.fetch("duration_type").fetch("enum")).to eq(%w[unknown permanent seasonal temporary incident])
     expect(rule_properties.fetch("area_type").fetch("enum")).to include("wilderness", "corridor", "incident_area")
-    expect(rule_properties.fetch("geometry_source_type").fetch("enum")).to include("text_description", "source_map", "source_arcgis_feature", "affected_area_envelope", "derived_nhd_flowline_buffer")
+    expect(rule_properties.fetch("geometry_source_type").fetch("enum")).to include("text_description", "source_map", "source_arcgis_feature", "affected_area_envelope", "derived_nhd_flowline_buffer", "blm_plss_section")
   end
 
   it "scopes the system prompt to active camping and backpacking fire-use rules" do

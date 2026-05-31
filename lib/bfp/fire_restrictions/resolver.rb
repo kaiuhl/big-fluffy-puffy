@@ -1,9 +1,20 @@
 require_relative "observation_freshness"
+require_relative "localized_rule_resolver"
+require "date"
 
 module BFP
   module FireRestrictions
     class Resolver
       PUBLISHABLE_SCOPES = %w[forestwide mixed].freeze
+      LOCALIZED_POLICY_PRECEDENCE = %w[
+        prohibited
+        stoves_only
+        developed_sites_only
+        fire_pan_required
+        propane_allowed
+        allowed
+        unknown
+      ].freeze
       SOURCE_PRECEDENCE = {
         "arcgis_feature_layer" => 100,
         "fs_fire_info_page" => 90,
@@ -20,8 +31,10 @@ module BFP
         "nifc_feature_layer" => 10
       }.freeze
 
-      def initialize(observation_freshness: ObservationFreshness.new)
+      def initialize(observation_freshness: ObservationFreshness.new, localized_rule_resolver: LocalizedRuleResolver.new, today: Date.today)
         @observation_freshness = observation_freshness
+        @localized_rule_resolver = localized_rule_resolver
+        @today = today
       end
 
       def resolve(land_unit)
@@ -33,7 +46,12 @@ module BFP
         status = status_record(land_unit)
 
         if observation.nil?
-          publish_unknown(status, land_unit)
+          localized_rules = @localized_rule_resolver.active_rules_for(land_unit, on: @today)
+          if localized_rules.any?
+            publish_localized_status(status, land_unit, localized_rules)
+          else
+            publish_unknown(status, land_unit)
+          end
         elsif conflicting?(candidates)
           publish_conflict(status, land_unit, candidates)
         else
@@ -88,6 +106,32 @@ module BFP
         status.save
       end
 
+      def publish_localized_status(status, land_unit, rules)
+        status.set(
+          land_unit_id: land_unit.id,
+          restriction_observation_id: nil,
+          status: "partial",
+          campfire_policy: localized_campfire_policy(rules),
+          fire_danger_rating: nil,
+          ifpl_level: nil,
+          effective_start: nil,
+          effective_end: nil,
+          order_number: nil,
+          affected_area: localized_affected_area(rules),
+          geometry_json: Jsonb.wrap(nil),
+          summary: localized_summary(rules),
+          evidence_quotes: Jsonb.wrap(localized_evidence(rules)),
+          confidence: rules.map { |rule| rule.confidence.to_f }.max || 0.0,
+          review_status: "accepted",
+          source_url: rules.first&.source_url,
+          source_title: "Accepted localized fire-use rules",
+          last_checked_at: latest_checked_at(land_unit),
+          published_at: Time.now,
+          updated_at: Time.now
+        )
+        status.save
+      end
+
       def publish_observation(status, land_unit, observation)
         status.set(
           land_unit_id: land_unit.id,
@@ -124,6 +168,30 @@ module BFP
           .join(:restriction_sources, id: :restriction_source_id)
           .where(Sequel[:restriction_sources][:land_unit_id] => land_unit.id)
           .max(Sequel[:source_fetches][:fetched_at])
+      end
+
+      def localized_campfire_policy(rules)
+        policies = rules.map { |rule| rule.campfire_policy.to_s.empty? ? "unknown" : rule.campfire_policy.to_s }
+        LOCALIZED_POLICY_PRECEDENCE.find { |policy| policies.include?(policy) } || "unknown"
+      end
+
+      def localized_affected_area(rules)
+        titles = rules.first(3).map(&:title)
+        suffix = (rules.length > titles.length) ? " and #{rules.length - titles.length} more" : nil
+
+        (titles + [suffix]).compact.join(", ")
+      end
+
+      def localized_summary(rules)
+        if rules.length == 1
+          "Accepted localized fire-use restriction is active: #{rules.first.title}."
+        else
+          "Accepted localized fire-use restrictions are active, including #{localized_affected_area(rules)}."
+        end
+      end
+
+      def localized_evidence(rules)
+        rules.flat_map { |rule| Array(rule.evidence_quotes) }.compact.map(&:to_s).reject(&:empty?).uniq.first(4)
       end
 
       def candidate_sort_key(candidate)

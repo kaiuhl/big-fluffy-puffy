@@ -1,0 +1,105 @@
+{
+  "type": "Feature",
+  "properties": {
+    "slug": "klamath-devils-punchbowl-plss-section-6",
+    "title": "Devil's Punchbowl Campfire Prohibition Area",
+    "generated_at": "2026-05-31T05:54:35Z",
+    "geometry_source_type": "blm_plss_section",
+    "geometry_accuracy": "source",
+    "source_url": "https://www.fs.usda.gov/r05/klamath/alerts/wilderness-area-restrictions-siskiyou-marble-mountain-and-russian-wilderness",
+    "official_map_url": "https://www.fs.usda.gov/sites/nfs/files/r05/klamath/image/alerts/05-05-00-26-01%20-%20Wilderness%20Maps%20-%20Devils%20Punchbowl.jpg",
+    "blm_layer_url": "https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer/2",
+    "plssid": "CA150160N0050E0",
+    "frstdivid": "CA150160N0050E0SN060",
+    "section_number": "06",
+    "township_range_label": "T16N R5E HBM",
+    "meridian": "Humboldt Meridian",
+    "map_subfeatures": [
+      {
+        "part_name": "Devil's Punchbowl Campfire Prohibition Area",
+        "source_kind": "blm_plss_section",
+        "restriction_detail": "Wood fires are prohibited in the Devil's Punchbowl Campfire Prohibition Area.",
+        "geometry_basis": "BLM PLSS section polygon for Section 6, Township 16 North, Range 5 East, Humboldt Base and Meridian",
+        "geometry_part_indexes": [
+          0
+        ]
+      }
+    ],
+    "notes": "The Forest Service order defines the prohibition area as this PLSS section and shows the same section on Exhibit A. The Forest Service order remains the legal boundary."
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -123.664513,
+          41.802472
+        ],
+        [
+          -123.664523,
+          41.806138
+        ],
+        [
+          -123.664533,
+          41.809804
+        ],
+        [
+          -123.664534,
+          41.813448
+        ],
+        [
+          -123.664535,
+          41.81705
+        ],
+        [
+          -123.669375,
+          41.817064
+        ],
+        [
+          -123.674215,
+          41.817077
+        ],
+        [
+          -123.679056,
+          41.817085
+        ],
+        [
+          -123.683704,
+          41.817092
+        ],
+        [
+          -123.683698,
+          41.813422
+        ],
+        [
+          -123.683693,
+          41.809775
+        ],
+        [
+          -123.683682,
+          41.806102
+        ],
+        [
+          -123.683671,
+          41.80243
+        ],
+        [
+          -123.678995,
+          41.802441
+        ],
+        [
+          -123.674162,
+          41.802454
+        ],
+        [
+          -123.669338,
+          41.802463
+        ],
+        [
+          -123.664513,
+          41.802472
+        ]
+      ]
+    ]
+  }
+}

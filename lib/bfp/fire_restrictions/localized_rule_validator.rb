@@ -32,6 +32,7 @@ module BFP
         geojson
         linked_map
         usfs_edw_wilderness
+        blm_plss_section
         usgs_nhd_waterbody
         derived_nhd_centroid_buffer
         derived_nhd_waterbody_buffer

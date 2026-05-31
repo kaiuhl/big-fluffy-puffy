@@ -1720,14 +1720,30 @@ localized_rules:
     source_title: Klamath wilderness area restrictions
     confidence: 0.9
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_30
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2028-03-01"
+    area:
+      slug: klamath-devils-punchbowl-plss-section-6
+      name: Devil's Punchbowl Campfire Prohibition Area
+      area_type: named_area
+      area_description: Section 6, Township 16 North, Range 5 East, Humboldt Base and Meridian, shown as the Devil's Punchbowl Campfire Prohibition Area on Forest Order 05-05-00-26-01 Exhibit A.
+      geometry_path: data/fire_restrictions/localized_geometries/klamath-devils-punchbowl-plss-section-6.geojson
+      geometry_source_type: blm_plss_section
+      geometry_source_url: https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer/2
+      geometry_external_id: CA150160N0050E0SN060
+      geometry_acquired_at: "2026-05-31T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: source
+        generated_by: scripts/fire_restrictions/generate_plss_section_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r05/klamath/alerts/wilderness-area-restrictions-siskiyou-marble-mountain-and-russian-wilderness
+        official_map_url: https://www.fs.usda.gov/sites/nfs/files/r05/klamath/image/alerts/05-05-00-26-01%20-%20Wilderness%20Maps%20-%20Devils%20Punchbowl.jpg
     metadata_json:
-      checked_on: "2026-05-16"
-      geometry_strategy: official_order_map_pending
+      checked_on: "2026-05-30"
+      geometry_strategy: blm_plss_section
       order_number: 05-05-00-26-01
-      geometry_review_note: Needs PLSS Section 6 T16N R5E HBM geometry clipped to Klamath/Siskiyou Wilderness and QA against the official map.
+      geometry_review_note: Generated from the official BLM PLSS section polygon for the section named in the Forest Service order and shown on Exhibit A.
 
   - slug: shasta-trinity-mt-shasta-wilderness-campfire-prohibition
     land_unit_slug: shasta-trinity

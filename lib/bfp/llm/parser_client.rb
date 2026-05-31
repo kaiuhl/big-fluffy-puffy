@@ -30,6 +30,7 @@ module BFP
         source_arcgis_feature
         geojson
         linked_map
+        blm_plss_section
         derived_nhd_waterbody_buffer
         derived_nhd_flowline_buffer
         derived_gnis_feature_buffer

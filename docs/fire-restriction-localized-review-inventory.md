@@ -1,6 +1,6 @@
 # Fire Restriction Localized Review Inventory
 
-Checked date: 2026-05-16. Mt. Hood affected-area envelope update: 2026-05-17. Wallowa-Whitman Snake River corridor update: 2026-05-30.
+Checked date: 2026-05-16. Mt. Hood affected-area envelope update: 2026-05-17. Wallowa-Whitman Snake River corridor update: 2026-05-30. Klamath Devil's Punchbowl PLSS update: 2026-05-30.
 
 ## Scope
 
@@ -14,13 +14,14 @@ The seed uses static generated or digitized geometry where the rule shape can be
 - High-confidence accepted rules: 49
 - Needs-review rules: 4
 - Primary `source_url` values: 39
-- Generated localized GeoJSON files: 29
+- Generated localized GeoJSON files: 30
 - Approximate NHD waterbody-buffer polygons generated: 81
 - Approximate NHD flowline-buffer corridors generated: 1
+- BLM PLSS section polygons generated: 1
 - Approximate GNIS named-feature buffers generated: 2
 - Approximate USFS trail/boundary polygons generated: 1
 - Approximate affected-area envelopes generated: 3
-- Primary checked date embedded in metadata: 2026-05-16; Mt. Hood affected-area envelope update checked on 2026-05-17; Wallowa-Whitman Snake River corridor checked on 2026-05-30
+- Primary checked date embedded in metadata: 2026-05-16; Mt. Hood affected-area envelope update checked on 2026-05-17; Wallowa-Whitman Snake River corridor checked on 2026-05-30; Klamath Devil's Punchbowl PLSS section checked on 2026-05-30
 
 ## Generated Geometry
 
@@ -34,14 +35,16 @@ mise exec -- bundle exec ruby scripts/fire_restrictions/generate_trail_boundary_
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_elevation_band_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_wilderness_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_river_corridor_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_plss_section_geometries.rb
 ```
 
 The generators use RGeo/GEOS and require the GEOS system library. Docker installs `libgeos-dev` for parity with local generation.
 
-Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_nhd_flowline_buffer`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`, with `geometry_accuracy: approximate`.
+Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_nhd_flowline_buffer`, `blm_plss_section`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`.
 They are good enough to show "roughly where this named restriction is" and not good enough to treat as official legal boundaries.
 NHD lake-buffer geometries include `map_subfeatures` metadata so grouped lake rules can show lake-specific map popup details while preserving a single logical localized restriction.
 The Snake River corridor geometry is an approximate 1/4-mile buffer around official NHD flowline features for the order's Hells Canyon Dam to Oregon-Washington border segment.
+The Devil's Punchbowl geometry is a BLM PLSS Section 6 polygon because the Forest Service order defines the prohibition area by that section and shows it on Exhibit A.
 The Jefferson Park and Waldo Lake island GeoJSON files in the same directory are exceptions: they are hand-digitized `source_pdf_map` polygons from official PDF map exhibits or USGS GeoPDF quadrangles.
 
 Generated coverage:
@@ -50,6 +53,7 @@ Generated coverage:
 | --- | ---: | --- | --- |
 | Wallowa-Whitman Eagle Cap named lakes | 22 | none | 1/4-mile approximate buffers |
 | Wallowa-Whitman Hells Canyon Snake River | 1 corridor | none | 1/4-mile approximate NHD flowline buffer |
+| Klamath Devil's Punchbowl | 1 section | none | BLM PLSS Section 6, T16N R5E HBM |
 | Okanogan-Wenatchee Alpine Lakes named lakes | 25 | Upper Park Lake | 1/2-mile approximate buffers |
 | Okanogan-Wenatchee Henry M. Jackson named lakes | 6 | none | 1/4-mile approximate buffers |
 | Okanogan-Wenatchee Glacier Peak Ice Lakes | 1 | none | 1/2-mile approximate buffer |
@@ -208,6 +212,24 @@ Decision notes:
 - These are intentionally `needs_review` with `geometry_strategy: official_map_pending` until the exhibit geometry is digitized or otherwise represented.
 - Gas, jellied petroleum, and pressurized liquid-fuel stoves with shutoff valves are accepted as allowed. Alcohol, solid-fuel, and charcoal policies remain `unknown`.
 
+### P1 Klamath Devil's Punchbowl
+
+Seeded one accepted rule:
+
+- `klamath-devils-punchbowl-wood-fire-prohibition`
+
+Official sources:
+
+- https://www.fs.usda.gov/r05/klamath/alerts/wilderness-area-restrictions-siskiyou-marble-mountain-and-russian-wilderness
+- https://www.fs.usda.gov/sites/nfs/files/r05/klamath/image/alerts/05-05-00-26-01%20-%20Wilderness%20Maps%20-%20Devils%20Punchbowl.jpg
+
+Decision notes:
+
+- Forest Order 05-05-00-26-01 is active from 2026-04-07 through 2028-04-07.
+- The order defines the Devil's Punchbowl Campfire Prohibition Area as Section 6, Township 16 North, Range 5 East, Humboldt Base and Meridian, and Exhibit A shows the same section.
+- BFP maps the rule from the official BLM PLSS section polygon `CA150160N0050E0SN060`.
+- Pressurized liquid or gas devices with shutoff valves are accepted as allowed for persons with a valid California Campfire Permit. Wood fires are prohibited.
+
 ### P1 Olympic Elevation Rule
 
 Seeded one accepted rule:
@@ -261,6 +283,7 @@ Primary source URLs in the seed:
 - https://www.fs.usda.gov/media/144510
 - https://www.fs.usda.gov/media/151852
 - https://www.fs.usda.gov/media/234596
+- https://www.fs.usda.gov/r05/klamath/alerts/wilderness-area-restrictions-siskiyou-marble-mountain-and-russian-wilderness
 - https://www.fs.usda.gov/r05/klamath/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/shasta-trinity/alerts/trinity-alps-wilderness-area-restrictions
 - https://www.fs.usda.gov/r05/sixrivers/alerts/trinity-wilderness-area-restrictions
@@ -298,6 +321,7 @@ Related official URLs captured in metadata or review notes:
 - Okanogan-Wenatchee: Named lake buffers are generated as approximate NHD waterbody buffers. Upper Park Lake did not resolve cleanly in NHD and remains unmapped.
 - Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD waterbody buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
 - Wallowa-Whitman: The Hells Canyon Snake River corridor is generated as an approximate NHD flowline buffer for the official Hells Canyon Dam to Oregon-Washington border segment. It is suitable for map context, not legal boundary interpretation.
+- Klamath: The Devil's Punchbowl geometry follows the BLM PLSS section named by the official Forest Service order. The public map should still send users to the order and Exhibit A for legal interpretation.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
 - Mt. Hood: Wilderness Connect is used for Burnt Lake and Mark O. Hatfield rows because the official Mt. Hood fire page links it as a detail source for year-round wilderness fire rules. The Mount Hood Wilderness named-area row uses the current official Timberline Trail #600 guide for the Ramona Falls/McNeil Point buffer text, Elk Cove/Elk Meadows tree-covered-island text, and Paradise Park text; it retains Wilderness Connect as prior-source provenance.

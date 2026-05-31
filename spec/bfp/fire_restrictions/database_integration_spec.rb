@@ -234,7 +234,43 @@ RSpec.describe "fire restriction database integration", :db do
     expect(eagle_cap_features.find { |feature| feature.dig(:properties, :part_name) == "Bear Lake" }.dig(:properties, :restriction_detail)).to eq("Campfires are prohibited within 1/4 mile of Bear Lake.")
 
     klamath_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("klamath")
-    expect(klamath_detail.fetch(:localized_restrictions).map { |rule| rule[:slug] }).to include("klamath-devils-punchbowl-wood-fire-prohibition")
+    devils_punchbowl = klamath_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "klamath-devils-punchbowl-wood-fire-prohibition" }
+
+    expect(devils_punchbowl).to include(
+      mapped: true,
+      geometry_source_type: "blm_plss_section"
+    )
+    expect(devils_punchbowl.dig(:geometry_provenance, "geometry_accuracy")).to eq("source")
+  end
+
+  it "publishes a partial rollup when accepted localized restrictions are active without a forestwide observation" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+    BFP::FireRestrictions::CuratedRuleSeeder.new(now: Time.utc(2026, 5, 16)).seed
+
+    wallowa = BFP::FireRestrictions::LandUnit.first(slug: "wallowa-whitman")
+    klamath = BFP::FireRestrictions::LandUnit.first(slug: "klamath")
+    resolver = BFP::FireRestrictions::Resolver.new(today: Date.new(2026, 6, 15))
+
+    resolver.resolve(wallowa)
+    resolver.resolve(klamath)
+
+    wallowa_status = BFP::FireRestrictions::RestrictionStatus.first(land_unit_id: wallowa.id)
+    klamath_status = BFP::FireRestrictions::RestrictionStatus.first(land_unit_id: klamath.id)
+
+    expect(wallowa_status).to have_attributes(
+      status: "partial",
+      campfire_policy: "prohibited",
+      review_status: "accepted"
+    )
+    expect(wallowa_status.summary).to include("Hells Canyon Snake River")
+
+    expect(klamath_status).to have_attributes(
+      status: "partial",
+      campfire_policy: "prohibited",
+      review_status: "accepted"
+    )
+    expect(klamath_status.summary).to include("Devil's Punchbowl")
   end
 
   it "preserves accepted review state for seed-reviewed geometry-only upgrades" do
