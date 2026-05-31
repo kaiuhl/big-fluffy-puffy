@@ -228,6 +228,7 @@ module BFP
         Array(result["localized_rules"]).each do |rule|
           next unless rule.is_a?(Hash)
 
+          rule = normalize_localized_rule(rule)
           validation = @localized_rule_validator.validate(
             rule,
             source: source,
@@ -288,6 +289,16 @@ module BFP
         end
       end
 
+      def normalize_localized_rule(rule)
+        normalized = rule.dup
+        if recurring_seasonal_rule?(normalized)
+          normalized["effective_start"] = nil
+          normalized["effective_end"] = nil
+        end
+
+        normalized
+      end
+
       def persist_localized_fire_use_rule(attributes)
         existing = LocalizedFireUseRule.first(
           land_unit_id: attributes.fetch(:land_unit_id),
@@ -334,6 +345,20 @@ module BFP
         Integer(value)
       rescue ArgumentError, TypeError
         nil
+      end
+
+      def recurring_seasonal_rule?(rule)
+        return false unless rule["duration_type"].to_s == "seasonal"
+
+        {
+          "season_start_month" => 1..12,
+          "season_end_month" => 1..12,
+          "season_start_day" => 1..31,
+          "season_end_day" => 1..31
+        }.all? do |field, range|
+          value = integer_or_nil(rule[field])
+          value && range.cover?(value)
+        end
       end
 
       def presence(value)

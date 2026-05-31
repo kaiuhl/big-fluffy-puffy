@@ -31,6 +31,7 @@ module BFP
         geojson
         linked_map
         derived_nhd_waterbody_buffer
+        derived_nhd_flowline_buffer
         derived_gnis_feature_buffer
         affected_area_envelope
         derived_dem_elevation

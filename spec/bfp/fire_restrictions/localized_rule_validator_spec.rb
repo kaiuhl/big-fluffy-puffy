@@ -32,11 +32,37 @@ RSpec.describe BFP::FireRestrictions::LocalizedRuleValidator do
   end
 
   it "keeps expired restrictive localized rules out of strong validation" do
-    result = validator.validate(rule.merge("effective_end" => "2025-10-15"), source: source, extracted_text: text)
+    result = validator.validate(
+      rule.merge(
+        "duration_type" => "temporary",
+        "season_start_month" => nil,
+        "season_start_day" => nil,
+        "season_end_month" => nil,
+        "season_end_day" => nil,
+        "effective_end" => "2025-10-15"
+      ),
+      source: source,
+      extracted_text: text
+    )
 
     expect(result).not_to be_valid
     expect(result.errors).to include("Localized rule effective_end is in the past.")
     expect(validator.strong?(rule, result)).to be(false)
+  end
+
+  it "allows recurring seasonal localized rules to carry stale absolute dates" do
+    result = validator.validate(
+      rule.merge(
+        "effective_start" => "2025-06-01",
+        "effective_end" => "2025-10-15"
+      ),
+      source: source,
+      extracted_text: text
+    )
+
+    expect(result).to be_valid
+    expect(result.errors).to be_empty
+    expect(validator.strong?(rule, result)).to be(true)
   end
 
   def rule

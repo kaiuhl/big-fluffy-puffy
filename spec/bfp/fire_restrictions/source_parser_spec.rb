@@ -243,6 +243,26 @@ RSpec.describe BFP::FireRestrictions::SourceParser do
     expect(parser.send(:explicit_geojson, {"type" => "Polygon", "coordinates" => []})).to eq({"type" => "Polygon", "coordinates" => []})
   end
 
+  it "normalizes stale absolute dates off recurring seasonal localized rules" do
+    normalized = parser.send(
+      :normalize_localized_rule,
+      localized_rule.merge(
+        "effective_start" => "2025-06-01",
+        "effective_end" => "2025-10-15"
+      )
+    )
+
+    expect(normalized).to include(
+      "duration_type" => "seasonal",
+      "effective_start" => nil,
+      "effective_end" => nil,
+      "season_start_month" => 6,
+      "season_start_day" => 1,
+      "season_end_month" => 10,
+      "season_end_day" => 15
+    )
+  end
+
   it "persists localized rules with needs_review status and nil geometry unless parser supplied GeoJSON" do
     created_rules = []
     created_areas = []

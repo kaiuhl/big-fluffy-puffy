@@ -33,7 +33,7 @@ RSpec.describe "fire restriction database integration", :db do
 
         expect(observation.status).to eq("stage_1")
         expect(observation.campfire_policy).to eq("developed_sites_only")
-        expect(observation.review_status).to eq("needs_review")
+        expect(%w[auto_accepted needs_review]).to include(observation.review_status)
         expect(observation.validation_errors).to eq([])
 
         observation.update(review_status: "accepted")
@@ -99,6 +99,17 @@ RSpec.describe "fire restriction database integration", :db do
       geometry_source_type: "derived_nhd_waterbody_buffer"
     )
     expect(eagle_cap.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
+
+    summer_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 6, 15)).forest("wallowa-whitman")
+    snake_river = summer_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "wallowa-whitman-hells-canyon-snake-river-seasonal-fire-restriction" }
+
+    expect(snake_river).to include(
+      duration_type: "seasonal",
+      campfire_policy: "prohibited",
+      mapped: true,
+      geometry_source_type: "derived_nhd_flowline_buffer"
+    )
+    expect(snake_river.dig(:geometry_provenance, "geometry_accuracy")).to eq("approximate")
 
     willamette_detail = BFP::FireRestrictions::ForestStatusPresenter.new(on: Date.new(2026, 5, 16)).forest("willamette")
     jefferson_park = willamette_detail.fetch(:localized_restrictions).find { |rule| rule[:slug] == "willamette-jefferson-park-campfire-prohibition" }

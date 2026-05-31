@@ -35,6 +35,7 @@ module BFP
         usgs_nhd_waterbody
         derived_nhd_centroid_buffer
         derived_nhd_waterbody_buffer
+        derived_nhd_flowline_buffer
         derived_gnis_feature_buffer
         affected_area_envelope
         derived_dem_elevation
@@ -108,7 +109,7 @@ module BFP
 
         if rule["effective_end"] && !effective_end
           errors << "Localized rule effective_end is not a valid date."
-        elsif effective_end && effective_end < @today && RESTRICTIVE_STATUSES.include?(rule["status"].to_s)
+        elsif effective_end && effective_end < @today && RESTRICTIVE_STATUSES.include?(rule["status"].to_s) && !recurring_seasonal_rule?(rule)
           errors << "Localized rule effective_end is in the past."
         end
 
@@ -129,6 +130,20 @@ module BFP
           next if value.is_a?(Integer) && range.cover?(value)
 
           errors << "Localized rule #{field} is outside #{range.first}-#{range.last}."
+        end
+      end
+
+      def recurring_seasonal_rule?(rule)
+        return false unless rule["duration_type"].to_s == "seasonal"
+
+        {
+          "season_start_month" => 1..12,
+          "season_end_month" => 1..12,
+          "season_start_day" => 1..31,
+          "season_end_day" => 1..31
+        }.all? do |field, range|
+          value = integer_value(rule[field])
+          value && range.cover?(value)
         end
       end
 
@@ -170,6 +185,14 @@ module BFP
 
         Date.parse(value.to_s)
       rescue ArgumentError
+        nil
+      end
+
+      def integer_value(value)
+        return if value.nil? || value.to_s.strip.empty?
+
+        Integer(value)
+      rescue ArgumentError, TypeError
         nil
       end
 

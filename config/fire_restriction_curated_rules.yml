@@ -1873,11 +1873,26 @@ localized_rules:
     source_title: Hells Canyon National Recreation Area annual fire restrictions
     confidence: 0.88
     review_status: accepted
+    seed_review_override: geometry_source_upgrade_2026_05_30
     published_at: "2026-05-16T00:00:00Z"
     last_reviewed_at: "2026-05-16T00:00:00Z"
     next_review_due_on: "2027-05-16"
+    area:
+      slug: wallowa-whitman-hells-canyon-snake-river-quarter-mile-corridor
+      name: Hells Canyon Snake River 1/4-mile fire-restriction corridor
+      area_type: corridor
+      area_description: Approximate 1/4-mile buffer around the NHD Snake River flowline between Hells Canyon Dam and the Oregon-Washington border.
+      geometry_path: data/fire_restrictions/localized_geometries/wallowa-whitman-hells-canyon-snake-river-quarter-mile-corridor.geojson
+      geometry_source_type: derived_nhd_flowline_buffer
+      geometry_source_url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6
+      geometry_acquired_at: "2026-05-31T00:00:00Z"
+      geometry_provenance_json:
+        geometry_accuracy: approximate
+        generated_by: scripts/fire_restrictions/generate_river_corridor_geometries.rb
+        official_rule_source_url: https://www.fs.usda.gov/r06/wallowa-whitman/newsroom/releases/hells-canyon-national-recreation-area-annual-fire
+        official_order_url: https://www.fs.usda.gov/r06/wallowa-whitman/alerts/forest-order-hcnra-fire-closure-order
     metadata_json:
-      checked_on: "2026-05-16"
-      geometry_strategy: official_river_corridor_buffer_pending
-      geometry_review_note: Needs official Snake River corridor or repeatable river-mile segment geometry buffered 1/4 mile.
+      checked_on: "2026-05-30"
+      geometry_strategy: derived_nhd_flowline_buffer
+      geometry_review_note: Approximate 1/4-mile NHD flowline buffer; the Forest Service order remains the legal boundary.
       stove_review_note: Wood stove exemption requires a five-foot chimney and spark arresting screen; the current data model only records wood stoves as allowed.

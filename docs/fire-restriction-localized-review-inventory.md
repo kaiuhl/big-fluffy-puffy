@@ -1,6 +1,6 @@
 # Fire Restriction Localized Review Inventory
 
-Checked date: 2026-05-16. Mt. Hood affected-area envelope update: 2026-05-17.
+Checked date: 2026-05-16. Mt. Hood affected-area envelope update: 2026-05-17. Wallowa-Whitman Snake River corridor update: 2026-05-30.
 
 ## Scope
 
@@ -14,12 +14,13 @@ The seed uses static generated or digitized geometry where the rule shape can be
 - High-confidence accepted rules: 49
 - Needs-review rules: 4
 - Primary `source_url` values: 39
-- Generated localized GeoJSON files: 28
+- Generated localized GeoJSON files: 29
 - Approximate NHD waterbody-buffer polygons generated: 81
+- Approximate NHD flowline-buffer corridors generated: 1
 - Approximate GNIS named-feature buffers generated: 2
 - Approximate USFS trail/boundary polygons generated: 1
 - Approximate affected-area envelopes generated: 3
-- Primary checked date embedded in metadata: 2026-05-16; Mt. Hood affected-area envelope update checked on 2026-05-17
+- Primary checked date embedded in metadata: 2026-05-16; Mt. Hood affected-area envelope update checked on 2026-05-17; Wallowa-Whitman Snake River corridor checked on 2026-05-30
 
 ## Generated Geometry
 
@@ -32,13 +33,15 @@ mise exec -- bundle exec ruby scripts/fire_restrictions/generate_affected_area_e
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_trail_boundary_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_elevation_band_geometries.rb
 mise exec -- bundle exec ruby scripts/fire_restrictions/generate_wilderness_geometries.rb
+mise exec -- bundle exec ruby scripts/fire_restrictions/generate_river_corridor_geometries.rb
 ```
 
 The generators use RGeo/GEOS and require the GEOS system library. Docker installs `libgeos-dev` for parity with local generation.
 
-Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`, with `geometry_accuracy: approximate`.
+Generated geometries are intentionally labeled by source strategy, such as `derived_nhd_waterbody_buffer`, `derived_nhd_flowline_buffer`, `derived_gnis_feature_buffer`, `derived_usfs_trail_boundary_polygon`, or `affected_area_envelope`, with `geometry_accuracy: approximate`.
 They are good enough to show "roughly where this named restriction is" and not good enough to treat as official legal boundaries.
 NHD lake-buffer geometries include `map_subfeatures` metadata so grouped lake rules can show lake-specific map popup details while preserving a single logical localized restriction.
+The Snake River corridor geometry is an approximate 1/4-mile buffer around official NHD flowline features for the order's Hells Canyon Dam to Oregon-Washington border segment.
 The Jefferson Park and Waldo Lake island GeoJSON files in the same directory are exceptions: they are hand-digitized `source_pdf_map` polygons from official PDF map exhibits or USGS GeoPDF quadrangles.
 
 Generated coverage:
@@ -46,6 +49,7 @@ Generated coverage:
 | Rule group | Buffer count | Missing names | Notes |
 | --- | ---: | --- | --- |
 | Wallowa-Whitman Eagle Cap named lakes | 22 | none | 1/4-mile approximate buffers |
+| Wallowa-Whitman Hells Canyon Snake River | 1 corridor | none | 1/4-mile approximate NHD flowline buffer |
 | Okanogan-Wenatchee Alpine Lakes named lakes | 25 | Upper Park Lake | 1/2-mile approximate buffers |
 | Okanogan-Wenatchee Henry M. Jackson named lakes | 6 | none | 1/4-mile approximate buffers |
 | Okanogan-Wenatchee Glacier Peak Ice Lakes | 1 | none | 1/2-mile approximate buffer |
@@ -162,21 +166,26 @@ Decision notes:
 - Where official text says only "campfires," BFP stove and charcoal policy fields are left `unknown`.
 - Henry M. Jackson and Glacier Peak pages except self-contained carry-in stoves, but do not break out BFP stove fuel classes, so stove fuel fields remain `unknown`.
 
-### P1 Wallowa-Whitman Eagle Cap
+### P1 Wallowa-Whitman Eagle Cap And Hells Canyon
 
-Seeded one accepted rule:
+Seeded two accepted rules:
 
 - `wallowa-whitman-eagle-cap-named-lakes-campfire-prohibition`
+- `wallowa-whitman-hells-canyon-snake-river-seasonal-fire-restriction`
 
-Official source:
+Official sources:
 
 - https://www.fs.usda.gov/r06/wallowa-whitman/recreation/eagle-cap-wilderness
+- https://www.fs.usda.gov/r06/wallowa-whitman/newsroom/releases/hells-canyon-national-recreation-area-annual-fire
+- https://www.fs.usda.gov/r06/wallowa-whitman/alerts/forest-order-hcnra-fire-closure-order
 
 Decision notes:
 
 - The named lake 1/4-mile campfire prohibition is accepted.
 - The general 100-foot lake camping and campfire rule is recorded in metadata, but not separately seeded because the current geometry strategy list does not include a general waterbody buffer strategy.
 - Stove and charcoal policies are left `unknown` because the source does not resolve them.
+- The Hells Canyon Snake River seasonal restriction is accepted as a recurring June 1 through September 30 localized rule. The geometry is an approximate 1/4-mile buffer around official NHD large-scale Snake River flowlines selected for the order's river-mile 247.5 to 176.0 segment.
+- The Snake River order excepts charcoal fires in a fire pan, liquid petroleum/LPG appliances, and wood stoves that meet order requirements. BFP records those allowance classes, but the public source order remains the legal reference for the detailed wood-stove chimney and spark-arrester requirements.
 
 ### P1 Trinity Alps, Klamath/Shasta-Trinity/Six Rivers
 
@@ -288,6 +297,7 @@ Related official URLs captured in metadata or review notes:
 - Okanogan-Wenatchee: Several official pages state only campfire prohibitions. Stove and charcoal policy fields are therefore `unknown` unless the source explicitly provides an exception.
 - Okanogan-Wenatchee: Named lake buffers are generated as approximate NHD waterbody buffers. Upper Park Lake did not resolve cleanly in NHD and remains unmapped.
 - Wallowa-Whitman: The Eagle Cap named-lake 1/4-mile buffers are generated as approximate NHD waterbody buffers. The general 100-foot all-lake rule is not separately seeded because it would require a broader hydrography buffer workflow.
+- Wallowa-Whitman: The Hells Canyon Snake River corridor is generated as an approximate NHD flowline buffer for the official Hells Canyon Dam to Oregon-Washington border segment. It is suitable for map context, not legal boundary interpretation.
 - Trinity Alps: The restriction is real and active, but publication needs Exhibit B geometry and cross-forest handling. It stays `needs_review`.
 - Olympic: The 3,500-foot wilderness rule is direct, but the source does not map BFP stove fuel classes.
 - Mt. Hood: Wilderness Connect is used for Burnt Lake and Mark O. Hatfield rows because the official Mt. Hood fire page links it as a detail source for year-round wilderness fire rules. The Mount Hood Wilderness named-area row uses the current official Timberline Trail #600 guide for the Ramona Falls/McNeil Point buffer text, Elk Cove/Elk Meadows tree-covered-island text, and Paradise Park text; it retains Wilderness Connect as prior-source provenance.
