@@ -51,9 +51,13 @@ module ApiRoutes
         r.get "search" do
           limit = Integer(r.params.fetch("limit", 8))
           limit = limit.clamp(1, 20)
-          json_response({places: place_search_suggestions(r.params["q"].to_s, limit: limit)})
+          results = place_search_suggestions(r.params["q"].to_s, limit: limit)
+
+          json_response({places: results, results: results})
         rescue ArgumentError
-          json_response({places: place_search_suggestions(r.params["q"].to_s, limit: 8)})
+          results = place_search_suggestions(r.params["q"].to_s, limit: 8)
+
+          json_response({places: results, results: results})
         end
       end
 

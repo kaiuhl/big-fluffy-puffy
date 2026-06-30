@@ -27,6 +27,18 @@ module PlacesHelper
     place_search_suggestions(query, limit: limit)
   end
 
+  def search_result_type_label(result)
+    return "Fire restriction area" if result[:result_type].to_s == "land_unit"
+
+    result[:place_type].to_s.tr("_", " ").split.map(&:capitalize).join(" ")
+  end
+
+  def search_result_rule_label(result)
+    return "Area-wide page" if result[:result_type].to_s == "land_unit"
+
+    "#{result[:matched_rule_count].to_i} matched"
+  end
+
   def fire_use_rows(fire_use)
     [
       ["Campfires", fire_use[:campfire_policy]],

@@ -25,16 +25,16 @@
         return;
       }
 
-      results.innerHTML = matches.map(function (place) {
+      results.innerHTML = matches.map(function (result) {
         return [
           '<a class="place-search-result" href="',
-          escapeHtml(place.url),
+          escapeHtml(result.url),
           '">',
           "<strong>",
-          escapeHtml(place.name),
+          escapeHtml(result.name),
           "</strong>",
           "<span>",
-          escapeHtml(place.subtitle || place.place_type),
+          escapeHtml(result.subtitle || result.place_type),
           "</span>",
           "</a>"
         ].join("");
@@ -57,7 +57,9 @@
           return response.json();
         })
         .then(function (data) {
-          render(Array.isArray(data.places) ? data.places : []);
+          var matches = Array.isArray(data.results) ? data.results : data.places;
+
+          render(Array.isArray(matches) ? matches : []);
         })
         .catch(function () {
           render([]);

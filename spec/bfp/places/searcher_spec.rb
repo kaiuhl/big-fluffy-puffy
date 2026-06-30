@@ -5,6 +5,7 @@ RSpec.describe BFP::Places::Searcher do
   let(:name_row_class) { Struct.new(:normalized_name, :weight, :name) }
   let(:place_row_class) { Struct.new(:search_rank, :place_type) }
   let(:land_unit_class) { Struct.new(:slug, :name) }
+  let(:search_land_unit_class) { Struct.new(:slug, :name, :unit_type) }
 
   it "ranks exact destination matches above prefix and token matches" do
     searcher = described_class.new
@@ -54,6 +55,28 @@ RSpec.describe BFP::Places::Searcher do
     expect(category_types).to eq(["campground"])
     expect(searcher.send(:category_place_types, "camping")).to eq(["campground"])
     expect(searcher.send(:type_query_score, campground, category_types)).to be > searcher.send(:type_query_score, lake, category_types)
+  end
+
+  it "scores area-wide land units above same-name destination places" do
+    searcher = described_class.new
+    land_unit = search_land_unit_class.new("mt-hood", "Mt. Hood National Forest", "national_forest")
+    forest_result = searcher.send(:land_unit_suggestion_for, land_unit, "mount hood")
+    peak = place_row_class.new(100, "destination")
+    peak_name = name_row_class.new("mount hood", 100, "Mt. Hood")
+
+    expect(forest_result).to include(
+      result_type: "land_unit",
+      name: "Mt. Hood National Forest",
+      url: "/fire-restrictions/mt-hood"
+    )
+    expect(forest_result.fetch(:score)).to be > searcher.send(:score_name, peak_name, peak, "mount hood")
+  end
+
+  it "does not return a land unit for generic lake queries" do
+    searcher = described_class.new
+    land_unit = search_land_unit_class.new("lake-tahoe-basin", "Lake Tahoe Basin Management Unit", "management_unit")
+
+    expect(searcher.send(:land_unit_suggestion_for, land_unit, "lake")).to be_nil
   end
 
   it "uses source forest metadata in subtitles before spatial resolution runs" do

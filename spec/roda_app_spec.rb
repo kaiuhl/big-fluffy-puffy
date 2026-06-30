@@ -136,6 +136,7 @@ RSpec.describe RodaApp do
     allow_any_instance_of(described_class).to receive(:place_search_suggestions).with("Burnt", limit: 8).and_return(
       [
         {
+          result_type: "place",
           slug: "burnt-lake",
           name: "Burnt Lake",
           place_type: "lake",
@@ -155,6 +156,41 @@ RSpec.describe RodaApp do
     data = JSON.parse(last_response.body)
     expect(data.dig("places", 0, "name")).to eq("Burnt Lake")
     expect(data.dig("places", 0, "url")).to eq("/trip-check/burnt-lake")
+    expect(data.dig("results", 0, "url")).to eq("/trip-check/burnt-lake")
+  end
+
+  it "exposes area-wide search suggestions before destination suggestions" do
+    allow_any_instance_of(described_class).to receive(:place_search_suggestions).with("Mt Hood", limit: 8).and_return(
+      [
+        {
+          result_type: "land_unit",
+          slug: "mt-hood",
+          name: "Mt. Hood National Forest",
+          place_type: "national_forest",
+          subtitle: "National Forest / Area-wide fire restriction page",
+          matched_land_units: [{slug: "mt-hood", name: "Mt. Hood National Forest"}],
+          url: "/fire-restrictions/mt-hood"
+        },
+        {
+          result_type: "place",
+          slug: "mount-hood",
+          name: "Mt. Hood",
+          place_type: "destination",
+          subtitle: "Destination / Mt. Hood National Forest / Oregon",
+          matched_rule_count: 0,
+          url: "/trip-check/mount-hood"
+        }
+      ]
+    )
+
+    get "/api/places/search?q=Mt%20Hood"
+
+    expect(last_response).to be_ok
+    data = JSON.parse(last_response.body)
+    expect(data.fetch("places").map { |result| result.fetch("url") }).to eq(
+      ["/fire-restrictions/mt-hood", "/trip-check/mount-hood"]
+    )
+    expect(data.fetch("results").map { |result| result.fetch("result_type") }).to eq(["land_unit", "place"])
   end
 
   it "serves the fire restrictions page shell" do
@@ -165,8 +201,9 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260526-localized-table-1"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260630-unified-search-1"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
+    expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
@@ -234,6 +271,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Area Status Map")
     expect(last_response.body).not_to include("<th scope=\"col\">Status</th>")
     expect(last_response.body).to include('for="restrictions-search"')
+    expect(last_response.body).to include("data-place-search")
+    expect(last_response.body).to include("data-place-search-results")
     expect(last_response.body).to include('id="restrictions-filter-status"')
     expect(last_response.body).to include('data-label="Campfires"')
     expect(last_response.body).to include('data-label="Typical May lows"')
@@ -432,7 +471,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('class="site-brand site-brand-active" href="/" aria-current="page"')
     expect(last_response.body).to include('action="/trip-check"')
     expect(last_response.body).to include("Where are you going?")
-    expect(last_response.body).to include('src="/scripts/place-search.js?v=20260517-trip-check"')
+    expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
     expect(last_response.body).not_to include(">Home</a>")
   end
 
@@ -440,6 +479,7 @@ RSpec.describe RodaApp do
     allow_any_instance_of(described_class).to receive(:trip_check_search_results).with("lake", limit: 8).and_return(
       [
         {
+          result_type: "place",
           slug: "burnt-lake",
           name: "Burnt Lake",
           place_type: "lake",
@@ -448,6 +488,7 @@ RSpec.describe RodaApp do
           url: "/trip-check/burnt-lake"
         },
         {
+          result_type: "place",
           slug: "wahtum-lake",
           name: "Wahtum Lake",
           place_type: "lake",
@@ -467,6 +508,39 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("Burnt Lake")
     expect(last_response.body).to include("Wahtum Lake")
     expect(last_response.body).to include('href="/trip-check/burnt-lake"')
+  end
+
+  it "renders unified search disambiguation with area-wide results" do
+    allow_any_instance_of(described_class).to receive(:trip_check_search_results).with("mt hood", limit: 8).and_return(
+      [
+        {
+          result_type: "land_unit",
+          slug: "mt-hood",
+          name: "Mt. Hood National Forest",
+          place_type: "national_forest",
+          subtitle: "National Forest / Area-wide fire restriction page",
+          url: "/fire-restrictions/mt-hood"
+        },
+        {
+          result_type: "place",
+          slug: "mount-hood",
+          name: "Mt. Hood",
+          place_type: "destination",
+          subtitle: "Destination / Mt. Hood National Forest / Oregon",
+          matched_rule_count: 0,
+          url: "/trip-check/mount-hood"
+        }
+      ]
+    )
+
+    get "/trip-check?q=mt+hood"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("2 results")
+    expect(last_response.body).to include('href="/fire-restrictions/mt-hood"')
+    expect(last_response.body).to include("Fire restriction area")
+    expect(last_response.body).to include("Area-wide page")
+    expect(last_response.body).to include('href="/trip-check/mount-hood"')
   end
 
   it "renders a trip check page" do
@@ -660,6 +734,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("setupPlaceSearch")
     expect(last_response.body).to include("/api/places/search")
     expect(last_response.body).to include("data-place-search-results")
+    expect(last_response.body).to include("data.results")
   end
 
   def stub_fire_restriction_records(records)

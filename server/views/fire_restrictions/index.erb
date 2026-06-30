@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
     <script src="/vendor/leaflet/leaflet.js" defer></script>
+    <script src="<%= h(RodaApp::PLACE_SEARCH_JS_PATH) %>" defer></script>
     <script src="<%= h(RodaApp::FIRE_RESTRICTIONS_JS_PATH) %>" defer></script>
     <%= partial("shared/analytics") %>
   </head>
@@ -83,15 +84,22 @@
             ></div>
           </section>
 
-          <section class="restrictions-filter" aria-labelledby="restrictions-filter-label">
-            <label id="restrictions-filter-label" for="restrictions-search">Search Forests and Parks</label>
-            <input
-              id="restrictions-search"
-              name="q"
-              type="search"
-              autocomplete="off"
-              placeholder="Forest, park, state, source, policy"
-            >
+          <section class="restrictions-filter" aria-label="Search destinations and monitored areas">
+            <form class="place-search-form restrictions-search-form" action="/trip-check" method="get" data-place-search>
+              <label id="restrictions-filter-label" for="restrictions-search">Search Destinations and Areas</label>
+              <div class="place-search-control">
+                <input
+                  id="restrictions-search"
+                  name="q"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="Mt. Hood, Burnt Lake, state, source, policy"
+                  data-place-search-input
+                >
+                <button type="submit">Search</button>
+              </div>
+              <div class="place-search-results" data-place-search-results hidden></div>
+            </form>
             <p id="restrictions-filter-status" aria-live="polite">
               Showing <%= h(land_unit_count(records.length)) %>.
             </p>

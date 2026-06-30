@@ -787,7 +787,7 @@ h1 {
 
 .restrictions-filter {
   display: grid;
-  grid-template-columns: minmax(180px, 0.28fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px 18px;
   border-bottom: 1px solid var(--black);
@@ -821,6 +821,24 @@ h1 {
 .restrictions-filter input:focus-visible {
   outline: 3px solid var(--signal);
   outline-offset: 2px;
+}
+
+.restrictions-search-form {
+  width: 100%;
+  max-width: none;
+}
+
+.restrictions-filter .place-search-control {
+  width: 100%;
+}
+
+.restrictions-filter .place-search-control input {
+  border: 0;
+  padding: 11px 12px;
+}
+
+.restrictions-filter .place-search-control button {
+  padding: 0 16px;
 }
 
 .restrictions-filter p {
