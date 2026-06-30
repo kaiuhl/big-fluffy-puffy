@@ -1387,13 +1387,14 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .localized-restrictions-table {
+  .forest-restrictions-page .localized-restrictions-table {
     display: block;
     min-width: 0;
-    font-size: 0.78rem;
+    background: transparent;
+    font-size: 0.9rem;
   }
 
-  .localized-restrictions-table thead {
+  .forest-restrictions-page .localized-restrictions-table thead {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -1402,70 +1403,96 @@ h1 {
     white-space: nowrap;
   }
 
-  .localized-restrictions-table tbody,
-  .localized-restrictions-table tr,
-  .localized-restrictions-table th,
-  .localized-restrictions-table td {
-    display: block;
+  .forest-restrictions-page .localized-restrictions-table tbody {
+    display: grid;
+    gap: 14px;
+    padding: 0 var(--page-content-gutter) 24px;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table tr {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--black);
+    padding: 16px;
+    background: var(--white);
+  }
+
+  .forest-restrictions-page .restrictions-table.localized-restrictions-table th,
+  .forest-restrictions-page .restrictions-table.localized-restrictions-table td {
     width: 100%;
-  }
-
-  .localized-restrictions-table tr {
-    border-bottom: 1px solid var(--rule-gray);
-    padding: 18px;
-  }
-
-  .restrictions-table.localized-restrictions-table th,
-  .restrictions-table.localized-restrictions-table td {
+    max-width: none;
     border-bottom: 0;
     padding: 0;
-    width: 100%;
   }
 
-  .localized-restrictions-table tbody th {
-    min-width: 0;
-    margin-bottom: 12px;
+  .forest-restrictions-page .localized-restrictions-table tbody th {
+    margin: 0;
+    border-bottom: 1px solid var(--rule-gray);
+    padding-bottom: 14px;
   }
 
-  .localized-restrictions-table tbody th span {
-    font-size: 0.95rem;
-    line-height: 1.22;
+  .forest-restrictions-page .localized-restrictions-table tbody th span {
+    font-size: 1.08rem;
+    line-height: 1.18;
   }
 
-  .localized-restrictions-table td {
+  .forest-restrictions-page .localized-restrictions-table tbody th small {
+    max-width: 34rem;
+    font-size: 0.88rem;
+    line-height: 1.3;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table td {
     display: grid;
-    grid-template-columns: minmax(86px, 0.34fr) minmax(0, 1fr);
-    gap: 12px;
-    padding: 7px 0;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    border-top: 1px solid var(--rule-gray);
+    padding: 13px 0;
   }
 
-  .localized-restrictions-table td::before {
+  .forest-restrictions-page .localized-restrictions-table tbody th + td {
+    border-top: 0;
+    padding-top: 14px;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table td::before {
     content: attr(data-label);
+    display: block;
     color: var(--mid-gray);
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 900;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
+    line-height: 1;
     text-transform: uppercase;
   }
 
-  .restrictions-table.localized-restrictions-table td:nth-child(2),
-  .restrictions-table.localized-restrictions-table td:nth-child(3),
-  .restrictions-table.localized-restrictions-table td:nth-child(4) {
+  .forest-restrictions-page .localized-restrictions-table .fire-use-profile {
     width: 100%;
-    min-width: 0;
-    max-width: none;
   }
 
-  .localized-restrictions-table .fire-use-sparkline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 10px;
+  .forest-restrictions-page .localized-restrictions-table .fire-use-sparkline {
+    display: grid;
+    grid-template-columns: repeat(var(--fire-use-count), minmax(0, 1fr));
+    gap: 8px;
     width: 100%;
     max-width: 100%;
   }
 
-  .localized-restrictions-table .fire-use-point {
-    flex: 0 0 42px;
+  .forest-restrictions-page .localized-restrictions-table .fire-use-point {
+    width: auto;
+    justify-items: center;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table .fire-use-symbol {
+    width: 30px;
+    height: 30px;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table .fire-use-label {
+    width: 100%;
+    max-width: 5.5em;
+    font-size: 0.62rem;
+    line-height: 1.08;
   }
 }
 
@@ -1669,10 +1696,6 @@ h1 {
   .restrictions-table td:nth-child(5) {
     min-width: 0;
     max-width: none;
-  }
-
-  .localized-restrictions-table td:nth-child(2) {
-    min-width: 0;
   }
 
   .fire-use-profile {
