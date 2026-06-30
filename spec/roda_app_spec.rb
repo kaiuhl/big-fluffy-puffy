@@ -201,10 +201,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260630-unified-search-1"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260630-forest-summary-tone"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -291,6 +291,7 @@ RSpec.describe RodaApp do
     expect(last_response).to be_ok
     expect(last_response.body).to include("Deschutes National Forest")
     expect(last_response.body).not_to include("Area-wide status")
+    expect(last_response.body).to include("fire-use-verdict-limited")
     expect(last_response.body).to include('class="forest-summary-layout"')
     expect(last_response.body).to include('class="forest-summary-item forest-summary-item-climate"')
     expect(last_response.body).not_to include("<span>Campfires</span>")
@@ -312,6 +313,23 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-fit-zoom-offset="1"')
     expect(last_response.body).to include('data-map-status-mode="localized-restrictions"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
+  end
+
+  it "uses active fire-use shading for forest-wide campfire prohibitions" do
+    detail = forest_detail
+    forest = detail.fetch(:forest).merge(
+      status: "full",
+      campfire_policy: "prohibited",
+      summary: "All campfires are prohibited across the forest."
+    )
+
+    stub_fire_restriction_detail("deschutes", detail.merge(forest: forest, land_unit: forest))
+
+    get "/fire-restrictions/deschutes"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("fire-use-verdict-active")
+    expect(last_response.body).to include("<strong>No campfires.</strong>")
   end
 
   it "returns 404 for unknown per-forest pages" do
@@ -569,7 +587,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-focus-lat="45.35"')
     expect(last_response.body).to include('data-map-focus-zoom="10"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260517-trip-check-page-3"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')
   end
 
   it "noindexes low-context trip check pages" do
@@ -685,7 +703,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("addOutsideBoundaryMask")
     expect(last_response.body).to include("if (!isBoundaryFeature(feature)) return holes")
     expect(last_response.body).to include("return !isBoundaryFeature(feature)")
-    expect(last_response.body).to include("fillOpacity: 0.56")
+    expect(last_response.body).to include("fillOpacity: forestwide ? 0.46 : 0.56")
     expect(last_response.body).to include("fillOpacity: 0.72")
     expect(last_response.body).to include("fillRule: \"nonzero\"")
     expect(last_response.body).to include("fillRule: \"evenodd\"")
@@ -696,6 +714,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("mapStatusMessage")
     expect(last_response.body).to include("localizedRestrictionCount")
     expect(last_response.body).to include("uniqueLocalizedRestrictionCount")
+    expect(last_response.body).to include("isForestwideRestrictionFeature")
+    expect(last_response.body).to include("forestwideRestrictionMappedMessage")
+    expect(last_response.body).to include("Forest-wide restriction mapped")
+    expect(last_response.body).to include("forestwide_active")
     expect(last_response.body).to include("properties.rule_slug || properties.slug")
     expect(last_response.body).to include("properties.part_name")
     expect(last_response.body).to include("restriction_detail")
@@ -719,7 +741,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).not_to include("DEFAULT_FIT_ZOOM_OFFSET")
     expect(last_response.body).not_to include("zoomInAfterFit")
     expect(last_response.body).not_to include("isUnknownFeature")
-    expect(last_response.body).not_to include("isLocalizedRestrictionFeature")
+    expect(last_response.body).to include("isLocalizedRestrictionFeature")
     expect(last_response.body).not_to include("UNKNOWN_FILL_OPACITY")
     expect(last_response.body).not_to include("Geometry")
     expect(last_response.body).not_to include('color: isBoundary ? "#000000" : color')

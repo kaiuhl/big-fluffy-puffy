@@ -1,16 +1,17 @@
 require "json"
-require_relative "forest_status_presenter"
 require_relative "map_presenter"
+require_relative "status_display"
 
 module BFP
   module FireRestrictions
     class ForestMapPresenter
       BOUNDARY_PATH = MapPresenter::BOUNDARY_PATH
+      FORESTWIDE_MAP_STATUSES = %w[closure full stage_1 stage_2 year_round].freeze
 
-      def initialize(slug:, boundary_path: BOUNDARY_PATH, forest_presenter: ForestStatusPresenter.new)
+      def initialize(slug:, boundary_path: BOUNDARY_PATH, forest_presenter: nil)
         @slug = slug
         @boundary_path = boundary_path
-        @forest_presenter = forest_presenter
+        @forest_presenter = forest_presenter || default_forest_presenter
       end
 
       def geojson
@@ -20,7 +21,10 @@ module BFP
         forest = detail[:land_unit] || detail.fetch(:forest)
         features = []
         boundary = boundary_feature(forest.fetch(:slug))
-        features << map_boundary_feature(boundary, forest) if boundary
+        if boundary
+          features << map_boundary_feature(boundary, forest)
+          features << forestwide_feature(boundary, forest) if forestwide_map_restriction?(forest)
+        end
         features.concat(localized_features(detail.fetch(:localized_restrictions)))
 
         {
@@ -37,6 +41,12 @@ module BFP
         JSON.parse(File.read(@boundary_path)).fetch("features", [])
       rescue JSON::ParserError
         []
+      end
+
+      def default_forest_presenter
+        require_relative "forest_status_presenter"
+
+        ForestStatusPresenter.new
       end
 
       def boundary_feature(slug)
@@ -63,6 +73,47 @@ module BFP
             source_title: forest[:source_title]
           }
         }
+      end
+
+      def forestwide_feature(feature, forest)
+        checked_at = forest[:last_checked_at]
+
+        {
+          type: "Feature",
+          geometry: feature.fetch("geometry"),
+          properties: {
+            kind: "forestwide_restriction",
+            slug: forest[:slug],
+            name: forest[:name],
+            land_unit_url: forest[:land_unit_url] || forest[:forest_url],
+            forest_url: forest[:forest_url],
+            unit_type: forest[:unit_type],
+            agency: forest[:agency],
+            status: forest[:status],
+            status_label: "Forest-wide restriction",
+            campfire_policy: StatusDisplay.campfire_policy(
+              status: forest[:status],
+              campfire_policy: forest[:campfire_policy]
+            ),
+            review_status: forest[:review_status],
+            map_status: "forestwide_active",
+            affected_area: forest[:affected_area],
+            restriction_detail: forest[:summary],
+            geometry_basis: "Current land-unit boundary",
+            source_url: forest[:source_url],
+            source_title: forest[:source_title],
+            last_checked_at: checked_at,
+            last_checked_label: checked_at ? StatusDisplay.checked_date_label(checked_at) : "not checked"
+          }
+        }
+      end
+
+      def forestwide_map_restriction?(forest)
+        published_status?(forest) && FORESTWIDE_MAP_STATUSES.include?(forest[:status].to_s)
+      end
+
+      def published_status?(forest)
+        %w[accepted auto_accepted].include?(forest[:review_status].to_s)
       end
 
       def localized_features(rules)

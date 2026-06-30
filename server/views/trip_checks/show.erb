@@ -14,6 +14,7 @@
 <% location_parts << "#{place[:county_name]} County" if place[:county_name].to_s != "" %>
 <% location_parts << "#{place[:map_name]} USGS quad" if place[:map_name].to_s != "" %>
 <% forest_rules_url = primary_forest ? "#{primary_forest[:forest_url]}#current-localized-restrictions" : nil %>
+<% forestwide_map_restriction = forestwide_map_restriction?(primary_forest) %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -124,6 +125,9 @@
               </h2>
             </div>
             <ul class="restrictions-map-legend" aria-label="Map legend">
+              <% if forestwide_map_restriction %>
+                <li><span class="map-legend-swatch map-legend-forestwide" aria-hidden="true"></span>Forest-wide active restriction</li>
+              <% end %>
               <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
               <li><span class="map-legend-swatch map-legend-destination" aria-hidden="true"></span>Trip Location</li>
             </ul>

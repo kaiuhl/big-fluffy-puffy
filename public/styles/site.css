@@ -349,14 +349,17 @@ h1 {
   background: var(--off-white);
 }
 
+.fire-use-verdict-active,
 .trip-check-verdict-active {
   background: #fff0ea;
 }
 
+.fire-use-verdict-limited,
 .trip-check-verdict-limited {
   background: #fff8ec;
 }
 
+.fire-use-verdict-clear,
 .trip-check-verdict-clear {
   background: #edf7f2;
 }
@@ -578,6 +581,10 @@ h1 {
 
 .map-legend-active {
   background: var(--signal);
+}
+
+.map-legend-forestwide {
+  background: #d92312;
 }
 
 .map-legend-none {

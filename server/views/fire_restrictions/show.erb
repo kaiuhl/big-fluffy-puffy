@@ -3,7 +3,10 @@
 <% checked_at = checked_at_for(forest, source) %>
 <% climate_label = climate_low_column_label([forest]) %>
 <% rules = detail.fetch(:localized_restrictions) %>
-<% answer_statement = campfire_answer_statement(campfire_policy_for(forest)) %>
+<% campfire_policy = campfire_policy_for(forest) %>
+<% answer_statement = campfire_answer_statement(campfire_policy) %>
+<% summary_tone = fire_use_summary_tone(campfire_policy) %>
+<% forestwide_map_restriction = forestwide_map_restriction?(forest) %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -40,7 +43,7 @@
           </p>
         </section>
 
-        <section class="restrictions-summary forest-fire-use-summary restrictions-answer-summary" aria-label="Area-wide fire use summary">
+        <section class="restrictions-summary forest-fire-use-summary restrictions-answer-summary fire-use-verdict-<%= h(summary_tone) %>" aria-label="Area-wide fire use summary">
           <div class="forest-summary-layout">
             <div class="forest-summary-primary">
               <p class="summary-statement">
@@ -94,6 +97,9 @@
               <h2 id="forest-map-title"><%= h(forest.fetch(:name)) %> Map</h2>
             </div>
             <ul class="restrictions-map-legend" aria-label="Map legend">
+              <% if forestwide_map_restriction %>
+                <li><span class="map-legend-swatch map-legend-forestwide" aria-hidden="true"></span>Forest-wide active restriction</li>
+              <% end %>
               <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
             </ul>
           </div>

@@ -125,9 +125,27 @@
       active: "#ff4b1f",
       boundary: "#3f5f52",
       destination: "#050505",
+      forestwide_active: "#d92312",
       none: "#2f7f62",
       unknown: "#8b8b8b"
     }[status] || "#8b8b8b";
+  }
+
+  function mapStyle(feature) {
+    var status = feature.properties && feature.properties.map_status;
+    var color = mapColor(status);
+    var forestwide = status === "forestwide_active";
+
+    return {
+      color: color,
+      fillColor: color,
+      fillOpacity: forestwide ? 0.46 : 0.56,
+      fillRule: "nonzero",
+      lineCap: "round",
+      lineJoin: "round",
+      opacity: 1,
+      weight: forestwide ? 3 : 2
+    };
   }
 
   function addBaseMap(map, baseMap) {
@@ -161,6 +179,14 @@
     return feature.properties && feature.properties.map_status === "boundary";
   }
 
+  function isForestwideRestrictionFeature(feature) {
+    return feature.properties && feature.properties.kind === "forestwide_restriction";
+  }
+
+  function isLocalizedRestrictionFeature(feature) {
+    return feature.properties && feature.properties.kind === "localized_restriction";
+  }
+
   function isTripCheckPlaceFeature(feature) {
     return feature.properties && feature.properties.kind === "trip_check_place";
   }
@@ -171,8 +197,16 @@
     });
   }
 
+  function localizedMapFeatures(features) {
+    return features.filter(isLocalizedRestrictionFeature);
+  }
+
+  function forestwideRestrictionCount(features) {
+    return features.filter(isForestwideRestrictionFeature).length;
+  }
+
   function uniqueLocalizedRestrictionCount(features) {
-    return Object.keys(visibleMapFeatures(features).reduce(function (seen, feature) {
+    return Object.keys(localizedMapFeatures(features).reduce(function (seen, feature) {
       var properties = feature.properties || {};
       var key = properties.rule_slug || properties.slug;
 
@@ -181,19 +215,41 @@
     }, {})).length;
   }
 
+  function forestwideRestrictionMappedMessage(count) {
+    if (count === 0) return "";
+
+    return count === 1
+      ? "Forest-wide restriction mapped"
+      : count + " forest-wide restrictions mapped";
+  }
+
   function mapStatusMessage(container, features) {
     var visibleCount = container.dataset.mapStatusMode === "localized-restrictions"
       ? uniqueLocalizedRestrictionCount(features)
       : visibleMapFeatures(features).length;
+    var forestwideCount = forestwideRestrictionCount(features);
+    var forestwideMessage = forestwideRestrictionMappedMessage(forestwideCount);
     var totalRestrictions = parseInt(container.dataset.mapTotalRestrictions || "", 10);
 
     if (container.dataset.mapStatusMode === "localized-restrictions") {
       if (Number.isNaN(totalRestrictions)) {
+        if (forestwideMessage) {
+          return forestwideMessage + (
+            visibleCount > 0 ? "; map showing " + localizedRestrictionCount(visibleCount) + "." : "."
+          );
+        }
+
         return "Map showing " + localizedRestrictionCount(visibleCount) + ".";
       }
 
       if (totalRestrictions === 0) {
+        if (forestwideMessage) return forestwideMessage + ".";
+
         return "No localized restrictions mapped.";
+      }
+
+      if (forestwideMessage) {
+        return forestwideMessage + "; " + localizedRestrictionCount(visibleCount) + " mapped of " + totalRestrictions + " total.";
       }
 
       return localizedRestrictionCount(visibleCount) + " mapped of " + totalRestrictions + " total.";
@@ -421,20 +477,7 @@
           filter: function (feature) {
             return !isBoundaryFeature(feature);
           },
-          style: function (feature) {
-            var color = mapColor(feature.properties && feature.properties.map_status);
-
-            return {
-              color: color,
-              fillColor: color,
-              fillOpacity: 0.56,
-              fillRule: "nonzero",
-              lineCap: "round",
-              lineJoin: "round",
-              opacity: 1,
-              weight: 2
-            };
-          },
+          style: mapStyle,
           pointToLayer: function (feature, latlng) {
             if (!isTripCheckPlaceFeature(feature)) return L.marker(latlng);
 
@@ -504,7 +547,7 @@
       "<strong>" + escapeHtml(title) + "</strong>",
       ruleContext,
       "<dl>",
-      "<dt>Status</dt><dd>" + escapeHtml(labelize(properties.map_status)) + "</dd>",
+      "<dt>Status</dt><dd>" + escapeHtml(properties.status_label || labelize(properties.map_status)) + "</dd>",
       "<dt>Campfires</dt><dd>" + escapeHtml(labelize(properties.campfire_policy)) + "</dd>",
       restrictionDetail,
       geometryBasis,

@@ -1,4 +1,6 @@
 module FireRestrictionsHelper
+  FORESTWIDE_MAP_STATUSES = %w[closure full stage_1 stage_2 year_round].freeze
+
   def site_nav_links
     self.class::NAV_LINKS
   end
@@ -65,6 +67,10 @@ module FireRestrictionsHelper
 
   def published_status?(forest)
     %w[accepted auto_accepted].include?(forest[:review_status].to_s)
+  end
+
+  def forestwide_map_restriction?(forest)
+    forest && published_status?(forest) && FORESTWIDE_MAP_STATUSES.include?(forest[:status].to_s)
   end
 
   def climate_low_column_label(records)
@@ -149,6 +155,19 @@ module FireRestrictionsHelper
       allowed_text
     else
       "Campfire status unknown."
+    end
+  end
+
+  def fire_use_summary_tone(policy)
+    case policy.to_s
+    when "prohibited"
+      "active"
+    when "allowed"
+      "clear"
+    when "unknown", ""
+      "unknown"
+    else
+      "limited"
     end
   end
 
