@@ -201,7 +201,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260703-mobile-table-cards-2"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260703-mobile-table-cards-3"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')

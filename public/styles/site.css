@@ -1494,9 +1494,9 @@ h1 {
 
   .forest-restrictions-page .localized-restrictions-table .fire-use-sparkline {
     display: grid;
-    grid-template-columns: repeat(var(--fire-use-count), minmax(44px, 72px));
+    grid-template-columns: repeat(var(--fire-use-count), minmax(30px, max-content));
     justify-content: start;
-    gap: 10px;
+    gap: 12px 22px;
     width: 100%;
     max-width: 100%;
   }
