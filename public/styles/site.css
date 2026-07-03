@@ -1,3 +1,22 @@
+/* Layout conventions
+   -------------------
+   Breakpoints: 980px (restriction tables switch between desktop table
+   layout and stacked cards; summary grids drop from 4-up) and 720px
+   (phone: page border/gutter collapse, single-column grids, type
+   scale-down).
+
+   Rules that only make sense for the desktop table layout — column
+   widths, table min-widths, multi-column summary templates — MUST live
+   inside `@media (min-width: 981px)`. Writing them at base scope lets
+   higher-specificity desktop selectors leak into the stacked card
+   layouts, which mobile can't always out-specific.
+
+   Single-column grid sections that hold arbitrary content use
+   `grid-template-columns: minmax(0, 1fr)` so long unbreakable content
+   can't inflate the track past the page edge. Full-bleed children
+   (like the maps) use negative `margin-inline` with automatic width,
+   never `width: calc(100% + ...)`. */
+
 :root {
   --black: #050505;
   --near-black: #141414;
@@ -534,8 +553,11 @@ h1 {
   line-height: 1.45;
 }
 
+/* minmax(0, 1fr) keeps long headings and the full-bleed map from
+   inflating the grid track and pushing past the page edge. */
 .restrictions-map-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   border-bottom: 1px solid var(--black);
   padding: clamp(20px, 4vw, 36px) var(--restrictions-content-gutter) 0;
@@ -544,12 +566,12 @@ h1 {
 
 .restrictions-map-heading {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
 .restrictions-map-heading h2 {
   margin: 4px 0 0;
-  white-space: nowrap;
 }
 
 .restrictions-map-legend {
@@ -622,7 +644,6 @@ h1 {
 }
 
 .restrictions-map {
-  width: calc(100% + (var(--restrictions-content-gutter) * 2));
   height: clamp(340px, 34vw, 420px);
   margin-inline: calc(var(--restrictions-content-gutter) * -1);
   border-top: 1px solid var(--black);
@@ -948,26 +969,6 @@ h1 {
   text-transform: uppercase;
 }
 
-.restrictions-table thead th:nth-child(1) {
-  width: 26%;
-}
-
-.restrictions-table thead th:nth-child(2) {
-  width: 10%;
-}
-
-.restrictions-table thead th:nth-child(3) {
-  width: 17%;
-}
-
-.restrictions-table thead th:nth-child(4) {
-  width: 29%;
-}
-
-.restrictions-table thead th:nth-child(5) {
-  width: 18%;
-}
-
 .restrictions-section-none .restrictions-table thead th,
 .restrictions-section-unknown .restrictions-table thead th {
   background: #f1f0ec;
@@ -1006,7 +1007,7 @@ h1 {
 
 .forest-summary-grid {
   display: grid;
-  grid-template-columns: minmax(96px, 0.72fr) minmax(118px, 0.78fr) minmax(140px, 0.9fr) minmax(180px, 1.2fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px clamp(20px, 4vw, 52px);
   min-width: 0;
   margin: 0;
@@ -1014,8 +1015,17 @@ h1 {
   padding-top: clamp(16px, 2vw, 22px);
 }
 
-.trip-check-destination-summary .forest-summary-grid {
-  grid-template-columns: minmax(110px, 0.9fr) minmax(120px, 0.9fr) minmax(130px, 1fr) minmax(190px, 1.35fr);
+/* Summary facts ladder: 4-up on desktop, 2-up on tablet (base rule
+   above), single column on phones. Desktop templates live behind
+   min-width so they can never leak into the stacked layouts. */
+@media (min-width: 981px) {
+  .forest-summary-grid {
+    grid-template-columns: minmax(96px, 0.72fr) minmax(118px, 0.78fr) minmax(140px, 0.9fr) minmax(180px, 1.2fr);
+  }
+
+  .trip-check-destination-summary .forest-summary-grid {
+    grid-template-columns: minmax(110px, 0.9fr) minmax(120px, 0.9fr) minmax(130px, 1fr) minmax(190px, 1.35fr);
+  }
 }
 
 .forest-summary-item {
@@ -1269,9 +1279,30 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-/* Column widths only apply to the desktop table layout; the mobile card
-   layout needs every cell at full width. */
-@media (min-width: 721px) {
+/* Column widths only apply to the desktop table layout; at 980px and
+   below every restrictions table becomes stacked cards and needs every
+   cell at full width. */
+@media (min-width: 981px) {
+  .restrictions-table thead th:nth-child(1) {
+    width: 26%;
+  }
+
+  .restrictions-table thead th:nth-child(2) {
+    width: 10%;
+  }
+
+  .restrictions-table thead th:nth-child(3) {
+    width: 17%;
+  }
+
+  .restrictions-table thead th:nth-child(4) {
+    width: 29%;
+  }
+
+  .restrictions-table thead th:nth-child(5) {
+    width: 18%;
+  }
+
   .restrictions-table tbody th {
     width: 26%;
   }
@@ -1399,279 +1430,14 @@ h1 {
   color: var(--black);
 }
 
+/* At 980px and below every restrictions table renders as stacked
+   field-notice cards: hidden thead, one card per row, label/value
+   rows separated by hairline rules. Localized-rule tables (forest and
+   trip-check pages) refine the same cards with stacked labels. */
 @media (max-width: 980px) {
-  .forest-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .forest-restrictions-page .localized-restrictions-table {
-    display: block;
-    min-width: 0;
-    background: transparent;
-    font-size: 0.9rem;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tbody {
-    display: grid;
-    gap: 26px;
-    padding: 0;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tr {
-    display: grid;
-    gap: 0;
-    border: 0;
-    padding: 0;
-    background: transparent;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tr + tr {
-    border-top: 1px solid var(--rule-gray);
-    padding-top: 26px;
-  }
-
-  .forest-restrictions-page .restrictions-table.localized-restrictions-table th,
-  .forest-restrictions-page .restrictions-table.localized-restrictions-table td {
-    width: 100%;
-    max-width: none;
-    border-bottom: 0;
-    padding: 0;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tbody th {
-    margin: 0 0 16px;
-    border-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tbody th span {
-    font-size: 1.08rem;
-    line-height: 1.18;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tbody th small {
-    max-width: 34rem;
-    font-size: 0.88rem;
-    line-height: 1.3;
-  }
-
-  .forest-restrictions-page .restrictions-table.localized-restrictions-table td {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    border-top: 1px solid var(--rule-gray);
-    padding: 16px 0;
-  }
-
-  .forest-restrictions-page .restrictions-table.localized-restrictions-table tbody th + td {
-    border-top: 0;
-    padding-top: 0;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table td::before {
-    content: attr(data-label);
-    display: block;
-    color: var(--mid-gray);
-    font-size: 0.66rem;
-    font-weight: 900;
-    letter-spacing: 0.12em;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table .fire-use-profile {
-    width: 100%;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table .fire-use-sparkline {
-    display: grid;
-    grid-template-columns: repeat(var(--fire-use-count), minmax(30px, max-content));
-    justify-content: start;
-    gap: 12px 22px;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table .fire-use-point {
-    width: auto;
-    justify-items: start;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table .fire-use-symbol {
-    width: 30px;
-    height: 30px;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table .fire-use-label {
-    width: 100%;
-    max-width: 5.5em;
-    font-size: 0.62rem;
-    line-height: 1.08;
-    text-align: left;
-  }
-}
-
-@media (max-width: 720px) {
-  .page {
-    padding: 0;
-  }
-
-  .restrictions-page,
-  .identity-page {
-    --page-content-gutter: 18px;
-  }
-
-  .landing {
-    min-height: 100vh;
-    border-right: 0;
-    border-left: 0;
-  }
-
-  .restrictions-page {
-    border-right: 0;
-    border-left: 0;
-  }
-
-  .identity-page {
-    border-right: 0;
-    border-left: 0;
-  }
-
-  .site-header,
-  .site-footer,
-  .mission,
-  .identity-row {
-    grid-template-columns: 1fr;
-  }
-
-  .site-header,
-  .site-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .site-nav ul {
-    justify-content: flex-start;
-  }
-
-  .mission {
-    gap: 16px;
-  }
-
-  .restrictions-section-heading {
-    align-items: start;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .restrictions-table-wrap {
-    padding: 0;
-    overflow-x: visible;
-  }
-
-  .restrictions-table-wrap .empty-state {
-    margin: 22px var(--page-content-gutter) 32px;
-  }
-
-  .restrictions-intro {
-    padding: 28px var(--page-content-gutter);
-  }
-
-  .restrictions-intro h1 {
-    font-size: 2.75rem;
-    line-height: 0.92;
-  }
-
-  .restrictions-summary {
-    padding: 22px var(--page-content-gutter);
-  }
-
-  .restrictions-trust {
-    padding: 22px var(--page-content-gutter);
-  }
-
-  .restrictions-trust-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .restrictions-filter {
-    grid-template-columns: 1fr;
-    padding: 18px var(--page-content-gutter);
-  }
-
-  .restrictions-filter p {
-    white-space: normal;
-  }
-
-  .summary-statement {
-    font-size: 1.7rem;
-  }
-
-  .forest-summary-layout,
-  .forest-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .forest-fire-use-summary .summary-statement strong {
-    font-size: 2.65rem;
-  }
-
-  .forest-summary-item-climate {
-    grid-column: auto;
-    grid-template-columns: 1fr;
-  }
-
-  .restrictions-map-section {
-    padding-top: 20px;
-  }
-
-  .restrictions-map-heading {
-    gap: 12px;
-  }
-
-  .restrictions-map-heading h2 {
-    white-space: normal;
-  }
-
-  .restrictions-map {
-    height: 340px;
-  }
-
-  .restrictions-map-expanded {
-    height: min(72vh, 560px);
-  }
-
-  .restrictions-section-heading {
-    padding: 42px var(--page-content-gutter) 0;
-  }
-
-  .forest-restrictions-page .restrictions-sections .restrictions-section + .restrictions-section .restrictions-section-heading {
-    padding-top: 56px;
-  }
-
-  .forest-restrictions-page .localized-restrictions-table tbody {
-    padding: 26px var(--page-content-gutter) 40px;
-  }
-
-  .restrictions-map-heading h2,
-  .restrictions-section-heading h2,
-  .restrictions-trust h2 {
-    font-size: 2rem;
-  }
-
   .restrictions-table {
     display: block;
     min-width: 0;
-    font-size: 0.78rem;
   }
 
   .restrictions-table thead {
@@ -1746,6 +1512,24 @@ h1 {
     max-width: none;
   }
 
+  .restrictions-table td:nth-child(4) a {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .restrictions-table-wrap {
+    padding: 0;
+    overflow-x: visible;
+  }
+
+  .restrictions-table-wrap .empty-state {
+    margin: 22px var(--page-content-gutter) 32px;
+  }
+
+  .restrictions-table-wrap .trip-check-forest-link {
+    margin: 0 var(--page-content-gutter) 28px;
+  }
+
   .fire-use-profile {
     max-width: none;
   }
@@ -1754,13 +1538,236 @@ h1 {
     width: min(100%, var(--fire-use-width));
   }
 
-  .fire-use-label {
-    font-size: 7px;
+  .restrictions-table.localized-restrictions-table {
+    background: transparent;
+    font-size: 0.9rem;
   }
 
-  .restrictions-table td:nth-child(4) a {
-    margin: 0;
-    overflow-wrap: anywhere;
+  .restrictions-table.localized-restrictions-table tbody {
+    display: grid;
+    gap: 26px;
+    padding: 26px var(--page-content-gutter) 40px;
+  }
+
+  .restrictions-table.localized-restrictions-table tr {
+    display: grid;
+    gap: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .restrictions-table.localized-restrictions-table tr + tr {
+    border-top: 1px solid var(--rule-gray);
+    padding-top: 26px;
+  }
+
+  .restrictions-table.localized-restrictions-table th,
+  .restrictions-table.localized-restrictions-table td {
+    width: 100%;
+    max-width: none;
+    border-bottom: 0;
+    padding: 0;
+  }
+
+  .restrictions-table.localized-restrictions-table tbody th {
+    margin: 0 0 16px;
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .restrictions-table.localized-restrictions-table tbody th span {
+    font-size: 1.08rem;
+    line-height: 1.18;
+  }
+
+  .restrictions-table.localized-restrictions-table tbody th small {
+    max-width: 34rem;
+    font-size: 0.88rem;
+    line-height: 1.3;
+  }
+
+  .restrictions-table.localized-restrictions-table td {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    border-top: 1px solid var(--rule-gray);
+    padding: 16px 0;
+  }
+
+  .restrictions-table.localized-restrictions-table tbody th + td {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .restrictions-table.localized-restrictions-table td::before {
+    display: block;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .restrictions-table.localized-restrictions-table .fire-use-profile {
+    width: 100%;
+  }
+
+  .restrictions-table.localized-restrictions-table .fire-use-sparkline {
+    display: grid;
+    grid-template-columns: repeat(var(--fire-use-count), minmax(30px, max-content));
+    justify-content: start;
+    gap: 12px 22px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .restrictions-table.localized-restrictions-table .fire-use-point {
+    width: auto;
+    justify-items: start;
+  }
+
+  .restrictions-table.localized-restrictions-table .fire-use-symbol {
+    width: 30px;
+    height: 30px;
+  }
+
+  .restrictions-table.localized-restrictions-table .fire-use-label {
+    width: 100%;
+    max-width: 5.5em;
+    font-size: 0.62rem;
+    line-height: 1.08;
+    text-align: left;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 0;
+  }
+
+  .restrictions-page,
+  .identity-page {
+    --page-content-gutter: 18px;
+  }
+
+  .landing {
+    min-height: 100vh;
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .restrictions-page {
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .identity-page {
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .site-header,
+  .site-footer,
+  .mission,
+  .identity-row {
+    grid-template-columns: 1fr;
+  }
+
+  .site-header,
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-nav ul {
+    justify-content: flex-start;
+  }
+
+  .mission {
+    gap: 16px;
+  }
+
+  .restrictions-section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .restrictions-intro {
+    padding: 28px var(--page-content-gutter);
+  }
+
+  .restrictions-intro h1 {
+    font-size: 2.75rem;
+    line-height: 0.92;
+  }
+
+  .restrictions-summary {
+    padding: 22px var(--page-content-gutter);
+  }
+
+  .restrictions-trust {
+    padding: 22px var(--page-content-gutter);
+  }
+
+  .restrictions-trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .restrictions-filter {
+    grid-template-columns: 1fr;
+    padding: 18px var(--page-content-gutter);
+  }
+
+  .restrictions-filter p {
+    white-space: normal;
+  }
+
+  .summary-statement {
+    font-size: 1.7rem;
+  }
+
+  .forest-summary-layout,
+  .forest-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .forest-fire-use-summary .summary-statement strong {
+    font-size: 2.65rem;
+  }
+
+  .forest-summary-item-climate {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .restrictions-map-section {
+    padding-top: 20px;
+  }
+
+  .restrictions-map-heading {
+    gap: 12px;
+  }
+
+  .restrictions-map {
+    height: 340px;
+  }
+
+  .restrictions-map-expanded {
+    height: min(72vh, 560px);
+  }
+
+  .restrictions-section-heading {
+    padding: 42px var(--page-content-gutter) 0;
+  }
+
+  .forest-restrictions-page .restrictions-sections .restrictions-section + .restrictions-section .restrictions-section-heading {
+    padding-top: 56px;
+  }
+
+  .restrictions-map-heading h2,
+  .restrictions-section-heading h2,
+  .restrictions-trust h2 {
+    font-size: 2rem;
   }
 
   .identity-intro {
