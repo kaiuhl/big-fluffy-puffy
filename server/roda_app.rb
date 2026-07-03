@@ -20,7 +20,7 @@ class RodaApp < Roda
     {href: "/about", label: "About"},
     {href: "/contact", label: "Contact"}
   ].freeze
-  SITE_CSS_PATH = "/styles/site.css?v=20260630-localized-mobile-cards-1".freeze
+  SITE_CSS_PATH = "/styles/site.css?v=20260703-mobile-table-cards-1".freeze
   FIRE_RESTRICTIONS_JS_PATH = "/scripts/fire-restrictions.js?v=20260630-forestwide-map".freeze
   PLACE_SEARCH_JS_PATH = "/scripts/place-search.js?v=20260630-unified-search-1".freeze
 

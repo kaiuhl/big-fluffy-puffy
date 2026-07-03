@@ -974,7 +974,6 @@ h1 {
 }
 
 .restrictions-table tbody th {
-  width: 26%;
   min-width: 0;
   color: var(--near-black);
   font-size: 0.86rem;
@@ -1058,7 +1057,7 @@ h1 {
 }
 
 .map-status {
-  margin: -10px 0 16px;
+  margin: 14px 0 18px;
   color: var(--mid-gray);
   font-size: 0.72rem;
   font-weight: 900;
@@ -1066,29 +1065,33 @@ h1 {
   text-transform: uppercase;
 }
 
-.localized-restrictions-table {
-  min-width: 920px;
-}
+/* Localized-rule column widths only apply to the desktop table layout;
+   below 981px these rows become stacked cards. */
+@media (min-width: 981px) {
+  .localized-restrictions-table {
+    min-width: 920px;
+  }
 
-.restrictions-table.localized-restrictions-table thead th:nth-child(1),
-.restrictions-table.localized-restrictions-table tbody th {
-  width: 29%;
-}
+  .restrictions-table.localized-restrictions-table thead th:nth-child(1),
+  .restrictions-table.localized-restrictions-table tbody th {
+    width: 29%;
+  }
 
-.restrictions-table.localized-restrictions-table thead th:nth-child(2),
-.restrictions-table.localized-restrictions-table td:nth-child(2) {
-  width: 33%;
-  min-width: 0;
-}
+  .restrictions-table.localized-restrictions-table thead th:nth-child(2),
+  .restrictions-table.localized-restrictions-table td:nth-child(2) {
+    width: 33%;
+    min-width: 0;
+  }
 
-.restrictions-table.localized-restrictions-table thead th:nth-child(3),
-.restrictions-table.localized-restrictions-table td:nth-child(3) {
-  width: 17%;
-}
+  .restrictions-table.localized-restrictions-table thead th:nth-child(3),
+  .restrictions-table.localized-restrictions-table td:nth-child(3) {
+    width: 17%;
+  }
 
-.restrictions-table.localized-restrictions-table thead th:nth-child(4),
-.restrictions-table.localized-restrictions-table td:nth-child(4) {
-  width: 21%;
+  .restrictions-table.localized-restrictions-table thead th:nth-child(4),
+  .restrictions-table.localized-restrictions-table td:nth-child(4) {
+    width: 21%;
+  }
 }
 
 .fire-use-profile {
@@ -1178,11 +1181,6 @@ h1 {
   text-align: center;
 }
 
-.restrictions-table td:nth-child(3) {
-  width: 17%;
-  min-width: 0;
-}
-
 .climate-low-context {
   display: block;
   width: max-content;
@@ -1240,7 +1238,6 @@ h1 {
 }
 
 .restrictions-table td:nth-child(4) {
-  width: 29%;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -1268,10 +1265,30 @@ h1 {
 }
 
 .restrictions-table td:nth-child(5) {
-  width: 18%;
-  max-width: 420px;
   color: var(--charcoal);
   overflow-wrap: anywhere;
+}
+
+/* Column widths only apply to the desktop table layout; the mobile card
+   layout needs every cell at full width. */
+@media (min-width: 721px) {
+  .restrictions-table tbody th {
+    width: 26%;
+  }
+
+  .restrictions-table td:nth-child(3) {
+    width: 17%;
+    min-width: 0;
+  }
+
+  .restrictions-table td:nth-child(4) {
+    width: 29%;
+  }
+
+  .restrictions-table td:nth-child(5) {
+    width: 18%;
+    max-width: 420px;
+  }
 }
 
 .empty-state {
@@ -1405,16 +1422,21 @@ h1 {
 
   .forest-restrictions-page .localized-restrictions-table tbody {
     display: grid;
-    gap: 14px;
-    padding: 0 var(--page-content-gutter) 24px;
+    gap: 26px;
+    padding: 0;
   }
 
   .forest-restrictions-page .localized-restrictions-table tr {
     display: grid;
     gap: 0;
-    border: 1px solid var(--black);
-    padding: 16px;
-    background: var(--white);
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table tr + tr {
+    border-top: 1px solid var(--rule-gray);
+    padding-top: 26px;
   }
 
   .forest-restrictions-page .restrictions-table.localized-restrictions-table th,
@@ -1426,9 +1448,9 @@ h1 {
   }
 
   .forest-restrictions-page .localized-restrictions-table tbody th {
-    margin: 0;
-    border-bottom: 1px solid var(--rule-gray);
-    padding-bottom: 14px;
+    margin: 0 0 16px;
+    border-bottom: 0;
+    padding-bottom: 0;
   }
 
   .forest-restrictions-page .localized-restrictions-table tbody th span {
@@ -1442,17 +1464,17 @@ h1 {
     line-height: 1.3;
   }
 
-  .forest-restrictions-page .localized-restrictions-table td {
+  .forest-restrictions-page .restrictions-table.localized-restrictions-table td {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 7px;
+    gap: 10px;
     border-top: 1px solid var(--rule-gray);
-    padding: 13px 0;
+    padding: 16px 0;
   }
 
-  .forest-restrictions-page .localized-restrictions-table tbody th + td {
+  .forest-restrictions-page .restrictions-table.localized-restrictions-table tbody th + td {
     border-top: 0;
-    padding-top: 14px;
+    padding-top: 0;
   }
 
   .forest-restrictions-page .localized-restrictions-table td::before {
@@ -1472,8 +1494,9 @@ h1 {
 
   .forest-restrictions-page .localized-restrictions-table .fire-use-sparkline {
     display: grid;
-    grid-template-columns: repeat(var(--fire-use-count), minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(var(--fire-use-count), minmax(44px, 72px));
+    justify-content: start;
+    gap: 10px;
     width: 100%;
     max-width: 100%;
   }
@@ -1546,11 +1569,16 @@ h1 {
   .restrictions-section-heading {
     align-items: start;
     flex-direction: column;
+    gap: 8px;
   }
 
   .restrictions-table-wrap {
     padding: 0;
     overflow-x: visible;
+  }
+
+  .restrictions-table-wrap .empty-state {
+    margin: 22px var(--page-content-gutter) 32px;
   }
 
   .restrictions-intro {
@@ -1622,7 +1650,15 @@ h1 {
   }
 
   .restrictions-section-heading {
-    padding: 22px var(--page-content-gutter) 0;
+    padding: 42px var(--page-content-gutter) 0;
+  }
+
+  .forest-restrictions-page .restrictions-sections .restrictions-section + .restrictions-section .restrictions-section-heading {
+    padding-top: 56px;
+  }
+
+  .forest-restrictions-page .localized-restrictions-table tbody {
+    padding: 26px var(--page-content-gutter) 40px;
   }
 
   .restrictions-map-heading h2,
@@ -1656,7 +1692,11 @@ h1 {
 
   .restrictions-table tr {
     border-bottom: 1px solid var(--rule-gray);
-    padding: 18px;
+    padding: 26px var(--page-content-gutter) 24px;
+  }
+
+  .restrictions-table tbody tr:last-child {
+    border-bottom: 0;
   }
 
   .restrictions-table th,
@@ -1666,20 +1706,26 @@ h1 {
   }
 
   .restrictions-table tbody th {
+    width: 100%;
     min-width: 0;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   .restrictions-table tbody th span {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     line-height: 1.22;
   }
 
   .restrictions-table td {
     display: grid;
-    grid-template-columns: minmax(86px, 0.34fr) minmax(0, 1fr);
-    gap: 12px;
-    padding: 7px 0;
+    grid-template-columns: minmax(96px, 0.36fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 4px 16px;
+    padding: 9px 0;
+  }
+
+  .restrictions-table td .restrictions-source-checked {
+    grid-column: 2;
   }
 
   .restrictions-table td::before {
@@ -1694,6 +1740,7 @@ h1 {
   .restrictions-table td:nth-child(3),
   .restrictions-table td:nth-child(4),
   .restrictions-table td:nth-child(5) {
+    width: 100%;
     min-width: 0;
     max-width: none;
   }
