@@ -1503,7 +1503,7 @@ h1 {
 
   .forest-restrictions-page .localized-restrictions-table .fire-use-point {
     width: auto;
-    justify-items: center;
+    justify-items: start;
   }
 
   .forest-restrictions-page .localized-restrictions-table .fire-use-symbol {
@@ -1516,6 +1516,7 @@ h1 {
     max-width: 5.5em;
     font-size: 0.62rem;
     line-height: 1.08;
+    text-align: left;
   }
 }
 
