@@ -53,6 +53,7 @@ module BFP
           region_code: unit&.region_code,
           market_bucket: unit&.market_bucket,
           first_record: change.from_status.nil?,
+          reconstructed: change.origin == "backfill",
           direction: direction(change),
           from_label: from_label,
           to_label: to_label,

@@ -90,6 +90,9 @@
                         <% if entry[:effective_label] %>
                           <span>Effective <%= h(entry[:effective_label]) %></span>
                         <% end %>
+                        <% if entry[:reconstructed] %>
+                          <span>Reconstructed from archived evidence</span>
+                        <% end %>
                       </p>
                     </article>
                   <% end %>

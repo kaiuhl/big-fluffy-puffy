@@ -86,6 +86,16 @@ namespace :fire do
     Rake::Task["fire:localized:seed"].invoke
   end
 
+  namespace :changes do
+    desc "Rebuild reconstructed change-log history from archived accepted observations"
+    task :backfill do
+      load_fire_restrictions
+
+      counts = BFP::FireRestrictions::ChangeLogBackfill.new.run
+      puts "Reconstructed #{counts[:entries]} change-log entries across #{counts[:land_units]} land units."
+    end
+  end
+
   desc "Poll all due fire restriction sources synchronously"
   task :poll_due do
     load_fire_restrictions

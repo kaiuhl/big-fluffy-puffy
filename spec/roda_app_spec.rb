@@ -313,6 +313,7 @@ RSpec.describe RodaApp do
               region_code: "R6",
               market_bucket: "oregon",
               first_record: false,
+              reconstructed: true,
               direction: "tightened",
               from_label: "Developed sites only",
               to_label: "No campfires",
@@ -367,6 +368,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="https://example.gov/order"')
     expect(last_response.body).to include("Order 06-25-01")
     expect(last_response.body).to include("Effective Jul 5, 2026")
+    expect(last_response.body).to include("Reconstructed from archived evidence")
     expect(last_response.body).to include("First recorded status")
     expect(last_response.body).to include("Campfires allowed")
   end

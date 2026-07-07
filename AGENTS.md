@@ -161,6 +161,7 @@ mise exec -- bundle exec rake fire:localized:seed
 mise exec -- bundle exec rake fire:seed
 mise exec -- bundle exec rake 'fire:poll[willamette-fire-info]'
 mise exec -- bundle exec rake fire:poll_due
+mise exec -- bundle exec rake fire:changes:backfill
 mise exec -- bundle exec rake fire:review:candidates
 mise exec -- bundle exec rake 'fire:review:forest[willamette]'
 mise exec -- bundle exec rake fire:review:list

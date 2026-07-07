@@ -343,6 +343,59 @@ RSpec.describe "fire restriction database integration", :db do
     expect(latest[:land_unit_url]).to eq("/fire-restrictions/willamette")
   end
 
+  it "reconstructs change-log history from archived accepted observations" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    land_unit = BFP::FireRestrictions::LandUnit.first(slug: "willamette")
+    source = preferred_html_source(land_unit)
+
+    create_observation = lambda do |attrs|
+      BFP::FireRestrictions::RestrictionObservation.create({
+        land_unit_id: land_unit.id,
+        restriction_source_id: source.id
+      }.merge(attrs))
+    end
+
+    create_observation.call(
+      status: "none", campfire_policy: "allowed", review_status: "auto_accepted",
+      summary: "No restrictions were published.", created_at: Time.utc(2026, 5, 10, 12)
+    )
+    create_observation.call(
+      status: "none", campfire_policy: "allowed", review_status: "auto_accepted",
+      summary: "Still no restrictions.", created_at: Time.utc(2026, 6, 1, 12)
+    )
+    create_observation.call(
+      status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted",
+      summary: "Stage 1 restrictions announced.", order_number: "06-18-01",
+      created_at: Time.utc(2026, 6, 20, 12)
+    )
+    create_observation.call(
+      status: "stage_2", campfire_policy: "prohibited", review_status: "needs_review",
+      summary: "Unreviewed stage 2 claim.", created_at: Time.utc(2026, 6, 25, 12)
+    )
+
+    counts = BFP::FireRestrictions::ChangeLogBackfill.new.run
+    expect(counts[:entries]).to eq(2)
+
+    changes = BFP::FireRestrictions::RestrictionStatusChange.where(land_unit_id: land_unit.id).order(:id).all
+    expect(changes.map(&:origin).uniq).to eq(["backfill"])
+    expect(changes.first.from_status).to be_nil
+    expect(changes.first.to_status).to eq("none")
+    expect(changes.first.changed_at.strftime("%Y-%m-%d")).to eq("2026-05-10")
+    expect(changes.last.from_status).to eq("none")
+    expect(changes.last.to_status).to eq("stage_1")
+    expect(changes.last.order_number).to eq("06-18-01")
+
+    rerun = BFP::FireRestrictions::ChangeLogBackfill.new.run
+    expect(rerun[:entries]).to eq(counts[:entries])
+    expect(BFP::FireRestrictions::RestrictionStatusChange.where(land_unit_id: land_unit.id).count).to eq(2)
+
+    entry = BFP::FireRestrictions::ChangeLogPresenter.new.day_groups.flat_map { |day| day[:entries] }
+      .find { |candidate| candidate[:slug] == "willamette" }
+    expect(entry[:reconstructed]).to be(true)
+  end
+
   it "preserves accepted review state when adding derived geometry to a reviewed text-only rule" do
     prepare_fire_restriction_database
     BFP::FireRestrictions::SourceSeeder.new.seed
