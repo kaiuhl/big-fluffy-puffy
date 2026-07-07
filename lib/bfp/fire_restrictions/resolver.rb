@@ -1,5 +1,6 @@
 require_relative "observation_freshness"
 require_relative "localized_rule_resolver"
+require_relative "status_display"
 require "date"
 
 module BFP
@@ -167,11 +168,15 @@ module BFP
           RestrictionStatus.new(land_unit_id: land_unit.id, created_at: Time.now)
       end
 
-      # Appends to the public change log whenever the published
-      # (status, campfire_policy) pair actually transitions. A from-less
-      # entry marks the first published status for a land unit.
+      # Appends to the public change log whenever the published status
+      # or the effective campfire answer transitions. Raw campfire_policy
+      # flaps that do not change the public meaning (for example
+      # none/unknown to none/allowed) are not logged. A from-less entry
+      # marks the first published status for a land unit.
       def record_status_change(land_unit, status, previous)
-        return if previous && previous[:status] == status.status && previous[:campfire_policy] == status.campfire_policy
+        return if previous && previous[:status] == status.status &&
+          effective_campfire_policy(previous[:status], previous[:campfire_policy]) ==
+            effective_campfire_policy(status.status, status.campfire_policy)
 
         RestrictionStatusChange.create(
           land_unit_id: land_unit.id,
@@ -188,6 +193,10 @@ module BFP
           effective_end: status.effective_end,
           changed_at: Time.now
         )
+      end
+
+      def effective_campfire_policy(status_value, campfire_policy)
+        StatusDisplay.campfire_policy(status: status_value, campfire_policy: campfire_policy)
       end
 
       def latest_checked_at(land_unit)

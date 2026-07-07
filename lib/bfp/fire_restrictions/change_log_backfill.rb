@@ -1,5 +1,6 @@
 require_relative "models"
 require_relative "resolver"
+require_relative "status_display"
 
 module BFP
   module FireRestrictions
@@ -36,7 +37,7 @@ module BFP
         created = 0
 
         accepted_observations(land_unit, before: live_boundary).each do |observation|
-          pair = [observation.status, observation.campfire_policy]
+          pair = effective_pair(observation.status, observation.campfire_policy)
           next if previous == pair
 
           create_entry(land_unit, observation, previous)
@@ -45,6 +46,13 @@ module BFP
         end
 
         created + reconcile_with_current_status(land_unit, previous, live_boundary)
+      end
+
+      # Compares the public meaning, not raw stored values, so a
+      # campfire_policy flap like none/unknown to none/allowed does not
+      # produce a visible non-change entry.
+      def effective_pair(status_value, campfire_policy)
+        [status_value, StatusDisplay.campfire_policy(status: status_value, campfire_policy: campfire_policy)]
       end
 
       def accepted_observations(land_unit, before:)
@@ -86,7 +94,7 @@ module BFP
         return 0 unless status
         return 0 if previous.nil? && status.status == "unknown"
 
-        pair = [status.status, status.campfire_policy]
+        pair = effective_pair(status.status, status.campfire_policy)
         return 0 if previous == pair
 
         RestrictionStatusChange.create(

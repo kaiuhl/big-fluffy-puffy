@@ -366,6 +366,10 @@ RSpec.describe "fire restriction database integration", :db do
       summary: "Still no restrictions.", created_at: Time.utc(2026, 6, 1, 12)
     )
     create_observation.call(
+      status: "none", campfire_policy: "unknown", review_status: "auto_accepted",
+      summary: "Same public meaning; raw policy flap must not log.", created_at: Time.utc(2026, 6, 10, 12)
+    )
+    create_observation.call(
       status: "stage_1", campfire_policy: "developed_sites_only", review_status: "accepted",
       summary: "Stage 1 restrictions announced.", order_number: "06-18-01",
       created_at: Time.utc(2026, 6, 20, 12)
