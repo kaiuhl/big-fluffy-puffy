@@ -44,6 +44,7 @@ module BFP
         candidates = accepted_candidates(land_unit)
         observation = candidates.max_by { |candidate| candidate_sort_key(candidate) }
         status = status_record(land_unit)
+        previous = status.new? ? nil : {status: status.status, campfire_policy: status.campfire_policy}
 
         if observation.nil?
           localized_rules = @localized_rule_resolver.active_rules_for(land_unit, on: @today)
@@ -57,6 +58,9 @@ module BFP
         else
           publish_observation(status, land_unit, observation)
         end
+
+        record_status_change(land_unit, status, previous)
+        status
       end
 
       private
@@ -161,6 +165,29 @@ module BFP
       def status_record(land_unit)
         RestrictionStatus.first(land_unit_id: land_unit.id) ||
           RestrictionStatus.new(land_unit_id: land_unit.id, created_at: Time.now)
+      end
+
+      # Appends to the public change log whenever the published
+      # (status, campfire_policy) pair actually transitions. A from-less
+      # entry marks the first published status for a land unit.
+      def record_status_change(land_unit, status, previous)
+        return if previous && previous[:status] == status.status && previous[:campfire_policy] == status.campfire_policy
+
+        RestrictionStatusChange.create(
+          land_unit_id: land_unit.id,
+          restriction_observation_id: status.restriction_observation_id,
+          from_status: previous && previous[:status],
+          from_campfire_policy: previous && previous[:campfire_policy],
+          to_status: status.status,
+          to_campfire_policy: status.campfire_policy,
+          summary: status.summary,
+          source_url: status.source_url,
+          source_title: status.source_title,
+          order_number: status.order_number,
+          effective_start: status.effective_start,
+          effective_end: status.effective_end,
+          changed_at: Time.now
+        )
       end
 
       def latest_checked_at(land_unit)

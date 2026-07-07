@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <% page_title = "What Changed | PNW Fire Restrictions | Big Fluffy Puffy" %>
+    <% page_description = "Published fire restriction status changes for Oregon, Washington, and Northern California forests and national parks, newest first." %>
+    <%= partial("shared/seo_meta",
+      title: page_title,
+      description: page_description,
+      canonical_path: "/fire-restrictions/changes",
+      structured_data: seo_graph(
+        webpage_schema(path: "/fire-restrictions/changes", title: page_title, description: page_description, breadcrumbs: true),
+        breadcrumb_schema(path: "/fire-restrictions/changes", items: [{name: "Home", path: "/"}, {name: "Fire Restrictions", path: "/fire-restrictions"}, {name: "What Changed", path: "/fire-restrictions/changes"}])
+      )
+    ) %>
+    <link rel="stylesheet" href="<%= h(RodaApp::SITE_CSS_PATH) %>">
+    <%= partial("shared/analytics") %>
+  </head>
+  <body>
+    <div class="page">
+      <main class="restrictions-page change-log-page">
+        <%= partial("shared/site_header", current_path: "/fire-restrictions") %>
+
+        <section class="restrictions-intro" aria-labelledby="change-log-title">
+          <p class="kicker">Source monitor</p>
+          <h1 id="change-log-title">What Changed</h1>
+          <p>
+            Published status changes across every monitored area, newest first. BFP records an entry
+            whenever accepted source evidence moves an area's fire-use status.
+            Back to <a href="/fire-restrictions">the full monitor</a>.
+          </p>
+        </section>
+
+        <% if day_groups.empty? %>
+          <section class="restrictions-section" aria-label="Change log">
+            <div class="restrictions-table-wrap">
+              <div class="empty-state empty-state-section">
+                <p>
+                  No published status changes are recorded yet. The change log started in July 2026;
+                  entries appear here the next time accepted source evidence moves an area's status.
+                </p>
+              </div>
+            </div>
+          </section>
+        <% else %>
+          <div class="restrictions-sections">
+            <% day_groups.each do |day| %>
+              <% noun = day[:entries].length == 1 ? "change" : "changes" %>
+              <section class="restrictions-section" aria-label="Changes on <%= h(day[:label]) %>">
+                <div class="restrictions-section-heading">
+                  <h2><%= h(day[:label]) %></h2>
+                  <p class="restrictions-section-count"><%= day[:entries].length %> <%= noun %></p>
+                </div>
+                <div class="change-log-entries">
+                  <% day[:entries].each do |entry| %>
+                    <article class="change-entry">
+                      <p class="change-direction change-direction-<%= h(entry[:direction]) %>">
+                        <%= h(change_direction_label(entry)) %>
+                      </p>
+                      <h3 class="change-entry-name">
+                        <% if entry[:land_unit_url] %>
+                          <a href="<%= h(entry[:land_unit_url]) %>"><%= h(entry[:name]) %></a>
+                        <% else %>
+                          <%= h(entry[:name] || "Monitored area") %>
+                        <% end %>
+                      </h3>
+                      <p class="change-entry-meta"><%= h([land_unit_type_label(entry), region_state_label(entry)].reject(&:empty?).join(" / ")) %></p>
+                      <p class="change-transition">
+                        <% if entry[:first_record] %>
+                          <span class="change-policy change-policy-to"><%= h(entry[:to_label]) %></span>
+                        <% else %>
+                          <span class="change-policy"><%= h(entry[:from_label]) %></span>
+                          <span class="change-arrow" aria-hidden="true">&rarr;</span>
+                          <span class="visually-hidden">changed to</span>
+                          <span class="change-policy change-policy-to"><%= h(entry[:to_label]) %></span>
+                        <% end %>
+                      </p>
+                      <% summary = entry[:summary].to_s.strip %>
+                      <% unless summary.empty? %>
+                        <p class="change-summary"><%= h(summary) %></p>
+                      <% end %>
+                      <p class="change-source">
+                        <% if entry[:source_url] %>
+                          <a href="<%= h(entry[:source_url]) %>" rel="noreferrer"><%= h(entry[:source_title] || "Source") %></a>
+                        <% end %>
+                        <% if entry[:order_number] %>
+                          <span>Order <%= h(entry[:order_number]) %></span>
+                        <% end %>
+                        <% if entry[:effective_label] %>
+                          <span>Effective <%= h(entry[:effective_label]) %></span>
+                        <% end %>
+                      </p>
+                    </article>
+                  <% end %>
+                </div>
+              </section>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%= partial("fire_restrictions/_trust") %>
+      </main>
+    </div>
+  </body>
+</html>

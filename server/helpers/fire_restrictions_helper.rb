@@ -21,6 +21,14 @@ module FireRestrictionsHelper
     []
   end
 
+  def fire_restriction_change_log
+    require "bfp/fire_restrictions"
+
+    BFP::FireRestrictions::ChangeLogPresenter.new.day_groups
+  rescue Sequel::DatabaseError, LoadError
+    []
+  end
+
   def fire_restriction_map
     require "bfp/fire_restrictions/map_presenter"
 
@@ -132,6 +140,19 @@ module FireRestrictionsHelper
 
   def date_label(value)
     BFP::FireRestrictions::StatusDisplay.checked_date_label(value)
+  end
+
+  def change_direction_label(entry)
+    case entry[:direction].to_s
+    when "first"
+      "First recorded status"
+    when "tightened"
+      "Tightened"
+    when "eased"
+      "Eased"
+    else
+      "Updated"
+    end
   end
 
   def campfire_policy_for(forest)

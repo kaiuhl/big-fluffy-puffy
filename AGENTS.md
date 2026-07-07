@@ -126,6 +126,7 @@ Current public endpoints:
 - `GET /api/fire-restrictions/forests/:slug`
 - `GET /api/fire-restrictions/forests/:slug/map`
 - `GET /fire-restrictions`
+- `GET /fire-restrictions/changes`
 - `GET /fire-restrictions/:slug`
 
 Core fire-restriction files:

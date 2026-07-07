@@ -302,6 +302,47 @@ RSpec.describe "fire restriction database integration", :db do
     expect(rule.review_notes).to be_nil
   end
 
+  it "records published status transitions in the change log" do
+    prepare_fire_restriction_database
+    BFP::FireRestrictions::SourceSeeder.new.seed
+
+    land_unit = BFP::FireRestrictions::LandUnit.first(slug: "willamette")
+    source = preferred_html_source(land_unit)
+    fetch = create_fixture_fetch(land_unit, source)
+    observation = BFP::FireRestrictions::SourceParser.new.parse_fetch(fetch)
+    observation.update(review_status: "accepted")
+
+    resolver = BFP::FireRestrictions::Resolver.new
+    resolver.resolve(land_unit)
+
+    change_dataset = BFP::FireRestrictions::RestrictionStatusChange.where(land_unit_id: land_unit.id)
+    changes = change_dataset.order(:id).all
+    expect(changes.first.from_status).to be_nil
+    expect(changes.last.to_status).to eq("stage_1")
+    expect(changes.last.to_campfire_policy).to eq("developed_sites_only")
+
+    published_count = change_dataset.count
+    resolver.resolve(land_unit)
+    expect(change_dataset.count).to eq(published_count)
+
+    observation.update(status: "stage_2", campfire_policy: "prohibited")
+    resolver.resolve(land_unit)
+
+    changes = change_dataset.order(:id).all
+    expect(changes.length).to eq(published_count + 1)
+    expect(changes.last.from_status).to eq("stage_1")
+    expect(changes.last.from_campfire_policy).to eq("developed_sites_only")
+    expect(changes.last.to_status).to eq("stage_2")
+    expect(changes.last.to_campfire_policy).to eq("prohibited")
+
+    entries = BFP::FireRestrictions::ChangeLogPresenter.new.day_groups.flat_map { |day| day[:entries] }
+    latest = entries.find { |entry| entry[:slug] == "willamette" }
+    expect(latest[:direction]).to eq("tightened")
+    expect(latest[:from_label]).to eq("Developed sites only")
+    expect(latest[:to_label]).to eq("No campfires")
+    expect(latest[:land_unit_url]).to eq("/fire-restrictions/willamette")
+  end
+
   it "preserves accepted review state when adding derived geometry to a reviewed text-only rule" do
     prepare_fire_restriction_database
     BFP::FireRestrictions::SourceSeeder.new.seed

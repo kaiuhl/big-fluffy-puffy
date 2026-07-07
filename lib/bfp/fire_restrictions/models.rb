@@ -84,5 +84,10 @@ module BFP
       many_to_one :land_unit
       many_to_one :restriction_observation
     end
+
+    class RestrictionStatusChange < Sequel::Model(:restriction_status_changes)
+      many_to_one :land_unit
+      many_to_one :restriction_observation
+    end
   end
 end

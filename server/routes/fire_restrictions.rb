@@ -1,6 +1,10 @@
 module FireRestrictionsRoutes
   def route_fire_restrictions(r)
     r.on "fire-restrictions" do
+      r.get "changes" do
+        html_response(render_view("fire_restrictions/changes", day_groups: fire_restriction_change_log))
+      end
+
       r.get String do |slug|
         detail = land_unit_fire_restriction_detail(slug)
         next html_response(render_view("errors/not_found", title: "Area Not Found", message: "BFP does not track that active forest or park."), status: 404) unless detail

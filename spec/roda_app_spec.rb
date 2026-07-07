@@ -201,7 +201,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260703-responsive-audit-1"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260707-change-log-1"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
     expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')
@@ -281,6 +281,94 @@ RSpec.describe RodaApp do
     expect(last_response.body).not_to include('data-label="Checked"')
     expect(last_response.body).to include('data-label="Note"')
     expect(last_response.body).to include("restrictions-filter-empty")
+    expect(last_response.body).to include('href="/fire-restrictions/changes"')
+  end
+
+  it "serves the change log page with an empty state" do
+    allow_any_instance_of(described_class).to receive(:fire_restriction_change_log).and_return([])
+
+    get "/fire-restrictions/changes"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("What Changed")
+    expect(last_response.body).to include("https://bigfluffypuffy.org/fire-restrictions/changes")
+    expect(last_response.body).to include("No published status changes are recorded yet")
+    expect(last_response.body).to include('href="/fire-restrictions"')
+  end
+
+  it "renders change log entries grouped by day" do
+    allow_any_instance_of(described_class).to receive(:fire_restriction_change_log).and_return(
+      [
+        {
+          date: "2026-07-07",
+          label: "Jul 7, 2026",
+          entries: [
+            {
+              id: 2,
+              slug: "deschutes",
+              name: "Deschutes National Forest",
+              land_unit_url: "/fire-restrictions/deschutes",
+              agency: "USFS",
+              unit_type: "national_forest",
+              region_code: "R6",
+              market_bucket: "oregon",
+              first_record: false,
+              direction: "tightened",
+              from_label: "Developed sites only",
+              to_label: "No campfires",
+              summary: "Stage 2 fire restrictions are in effect.",
+              source_url: "https://example.gov/order",
+              source_title: "Forest Order 06-25-01",
+              order_number: "06-25-01",
+              effective_start: "2026-07-05",
+              effective_end: nil,
+              effective_label: "Jul 5, 2026",
+              changed_at: "2026-07-07T15:00:00Z",
+              changed_on: "2026-07-07"
+            },
+            {
+              id: 1,
+              slug: "olympic",
+              name: "Olympic National Forest",
+              land_unit_url: "/fire-restrictions/olympic",
+              agency: "USFS",
+              unit_type: "national_forest",
+              region_code: "R6",
+              market_bucket: "washington",
+              first_record: true,
+              direction: "first",
+              from_label: nil,
+              to_label: "Campfires allowed",
+              summary: "No restrictions are published.",
+              source_url: nil,
+              source_title: nil,
+              order_number: nil,
+              effective_start: nil,
+              effective_end: nil,
+              effective_label: nil,
+              changed_at: "2026-07-07T14:00:00Z",
+              changed_on: "2026-07-07"
+            }
+          ]
+        }
+      ]
+    )
+
+    get "/fire-restrictions/changes"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Jul 7, 2026")
+    expect(last_response.body).to include("2 changes")
+    expect(last_response.body).to include('href="/fire-restrictions/deschutes"')
+    expect(last_response.body).to include("Tightened")
+    expect(last_response.body).to include("Developed sites only")
+    expect(last_response.body).to include("No campfires")
+    expect(last_response.body).to include("USFS National Forest / R6 / Oregon")
+    expect(last_response.body).to include('href="https://example.gov/order"')
+    expect(last_response.body).to include("Order 06-25-01")
+    expect(last_response.body).to include("Effective Jul 5, 2026")
+    expect(last_response.body).to include("First recorded status")
+    expect(last_response.body).to include("Campfires allowed")
   end
 
   it "serves per-forest fire restriction detail pages" do

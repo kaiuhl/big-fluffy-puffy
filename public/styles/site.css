@@ -1322,6 +1322,126 @@ h1 {
   }
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.summary-change-link {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.summary-change-link a {
+  color: var(--black);
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Change log entries keep one stacked presentation at every width. */
+.change-log-entries {
+  display: grid;
+  padding-bottom: 8px;
+}
+
+.change-entry {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--rule-gray);
+  padding: 24px var(--restrictions-content-gutter) 26px;
+}
+
+.change-log-entries .change-entry:first-child {
+  border-top: 0;
+}
+
+.change-direction {
+  margin: 0;
+  color: var(--mid-gray);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.change-direction-tightened {
+  color: var(--signal);
+}
+
+.change-direction-eased {
+  color: #2f7f62;
+}
+
+.change-entry-name {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.change-entry-name a {
+  color: inherit;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.change-entry-meta {
+  margin: 0;
+  color: var(--mid-gray);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.change-transition {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.change-transition .change-policy:not(.change-policy-to) {
+  color: var(--mid-gray);
+  font-weight: 700;
+}
+
+.change-arrow {
+  color: var(--mid-gray);
+  font-weight: 400;
+}
+
+.change-summary {
+  margin: 2px 0 0;
+  max-width: 62ch;
+  color: var(--charcoal);
+  font-size: 0.92rem;
+}
+
+.change-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 0;
+  color: var(--mid-gray);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.change-source a {
+  color: var(--signal);
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
 .empty-state {
   border: 1px solid var(--black);
   padding: 20px;

@@ -14,6 +14,7 @@ module SiteMetaRoutes
   SITEMAP_STATIC_PATHS = [
     {path: "/", priority: "1.0"},
     {path: "/fire-restrictions", priority: "0.9"},
+    {path: "/fire-restrictions/changes", priority: "0.6"},
     {path: "/why-fireless", priority: "0.5"},
     {path: "/about", priority: "0.5"},
     {path: "/contact", priority: "0.4"}
