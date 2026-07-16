@@ -1,0 +1,50 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "IncidentName": "Cedar Creek",
+        "PercentContained": 35,
+        "IncidentSize": 12000.5,
+        "FireDiscoveryDateTime": 1662512400000,
+        "FireBehaviorGeneral": "Active with group tree torching",
+        "IrwinID": "{A1B2C3D4-1111-2222-3333-444455556666}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-121.70, 44.00]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "IncidentName": "Whisky Ridge",
+        "PercentContained": 0,
+        "IncidentSize": 45.0,
+        "FireDiscoveryDateTime": 1690000000000,
+        "FireBehaviorGeneral": "Smoldering",
+        "IrwinID": "b7c8d9e0-aaaa-bbbb-cccc-ddddeeeeffff"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-120.50, 43.50]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "IncidentName": "Old Ridge",
+        "PercentContained": 100,
+        "IncidentSize": 800.0,
+        "FireDiscoveryDateTime": 1659920400000,
+        "FireBehaviorGeneral": "Minimal",
+        "IrwinID": "{99999999-0000-1111-2222-333344445555}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.00, 45.00]
+      }
+    }
+  ]
+}

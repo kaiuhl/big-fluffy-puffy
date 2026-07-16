@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "poly_IncidentName": "Cedar Creek",
+        "attr_PercentContained": 40,
+        "poly_GISAcres": 12500.75,
+        "attr_FireDiscoveryDateTime": 1662512400000,
+        "poly_IRWINID": "a1b2c3d4-1111-2222-3333-444455556666"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-121.75, 43.97],
+            [-121.65, 43.97],
+            [-121.65, 44.03],
+            [-121.75, 44.03],
+            [-121.75, 43.97]
+          ]
+        ]
+      }
+    }
+  ]
+}

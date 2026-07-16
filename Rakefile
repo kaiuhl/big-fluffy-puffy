@@ -252,6 +252,17 @@ namespace :fire do
   end
 end
 
+namespace :wildfires do
+  desc "Sync active NIFC/WFIGS wildfire incidents synchronously and print counts"
+  task :sync do
+    require_relative "config/boot"
+    require "bfp/wildfires"
+
+    counts = BFP::Wildfires::Sync.new.run
+    puts "Wildfire sync success=#{counts[:success]} incidents=#{counts[:incidents]} perimeters=#{counts[:perimeters]} deactivated=#{counts[:deactivated]}"
+  end
+end
+
 namespace :places do
   def load_places
     require_relative "config/boot"

@@ -15,6 +15,8 @@
 <% location_parts << "#{place[:map_name]} USGS quad" if place[:map_name].to_s != "" %>
 <% forest_rules_url = primary_forest ? "#{primary_forest[:forest_url]}#current-localized-restrictions" : nil %>
 <% forestwide_map_restriction = forestwide_map_restriction?(primary_forest) %>
+<% wildfires = check[:wildfires] %>
+<% wildfire_active = !!(wildfires && [:inside, :near, :regional].include?(wildfires[:status])) %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -112,6 +114,8 @@
           </div>
         </section>
 
+        <%= partial("shared/_wildfire_callout", wildfires: wildfires, wildfire_scope: :place) %>
+
         <section class="restrictions-map-section" aria-labelledby="trip-map-title">
           <div class="restrictions-map-heading">
             <div>
@@ -129,6 +133,9 @@
                 <li><span class="map-legend-swatch map-legend-forestwide" aria-hidden="true"></span>Forest-wide active restriction</li>
               <% end %>
               <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
+              <% if wildfire_active %>
+                <li><span class="map-legend-swatch map-legend-wildfire" aria-hidden="true"></span>Active wildfire (NIFC/WFIGS)</li>
+              <% end %>
               <li><span class="map-legend-swatch map-legend-destination" aria-hidden="true"></span>Trip Location</li>
             </ul>
           </div>

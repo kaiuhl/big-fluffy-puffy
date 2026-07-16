@@ -7,6 +7,8 @@
 <% answer_statement = campfire_answer_statement(campfire_policy) %>
 <% summary_tone = fire_use_summary_tone(campfire_policy) %>
 <% forestwide_map_restriction = forestwide_map_restriction?(forest) %>
+<% wildfires = detail[:wildfires] %>
+<% wildfire_active = !!(wildfires && [:inside, :near, :regional].include?(wildfires[:status])) %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -90,6 +92,8 @@
           </div>
         </section>
 
+        <%= partial("shared/_wildfire_callout", wildfires: wildfires, wildfire_scope: :area) %>
+
         <section class="restrictions-map-section" aria-labelledby="forest-map-title">
           <div class="restrictions-map-heading">
             <div>
@@ -101,6 +105,9 @@
                 <li><span class="map-legend-swatch map-legend-forestwide" aria-hidden="true"></span>Forest-wide active restriction</li>
               <% end %>
               <li><span class="map-legend-swatch map-legend-active" aria-hidden="true"></span>Mapped active localized restriction</li>
+              <% if wildfire_active %>
+                <li><span class="map-legend-swatch map-legend-wildfire" aria-hidden="true"></span>Active wildfire (NIFC/WFIGS)</li>
+              <% end %>
             </ul>
           </div>
           <div

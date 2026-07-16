@@ -44,8 +44,21 @@ module FireRestrictionsHelper
   def land_unit_fire_restriction_detail(slug)
     require "bfp/fire_restrictions/forest_status_presenter"
 
-    BFP::FireRestrictions::ForestStatusPresenter.new.land_unit(slug)
+    detail = BFP::FireRestrictions::ForestStatusPresenter.new.land_unit(slug)
+    return detail unless detail
+
+    detail.merge(wildfires: land_unit_wildfire_context(slug))
   rescue Sequel::DatabaseError, LoadError
+    nil
+  end
+
+  # Best-effort overlay: wildfire lookups must never break the land-unit page,
+  # so a missing table or load error yields nil rather than raising.
+  def land_unit_wildfire_context(slug)
+    require "bfp/wildfires"
+
+    BFP::Wildfires::ContextPresenter.new.for_land_unit(slug)
+  rescue LoadError, StandardError
     nil
   end
 
@@ -56,9 +69,20 @@ module FireRestrictionsHelper
   def land_unit_fire_restriction_map(slug)
     require "bfp/fire_restrictions/forest_map_presenter"
 
-    BFP::FireRestrictions::ForestMapPresenter.new(slug: slug).geojson
+    map = BFP::FireRestrictions::ForestMapPresenter.new(slug: slug).geojson
+    return map unless map
+
+    map.merge(features: Array(map[:features]) + land_unit_wildfire_map_features(slug))
   rescue Sequel::DatabaseError, LoadError
     nil
+  end
+
+  def land_unit_wildfire_map_features(slug)
+    require "bfp/wildfires"
+
+    BFP::Wildfires::ContextPresenter.new.map_features_for_land_unit(slug)
+  rescue LoadError, StandardError
+    []
   end
 
   def partition_fire_restrictions(records)

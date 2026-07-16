@@ -609,6 +609,10 @@ h1 {
   background: #d92312;
 }
 
+.map-legend-wildfire {
+  background: #8c1d18;
+}
+
 .map-legend-none {
   background: #2f7f62;
 }
@@ -726,6 +730,101 @@ h1 {
 .trip-check-waypoint-dot {
   inset: 8px;
   background: var(--black);
+}
+
+.wildfire-marker {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.wildfire-marker::before {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  background: #8c1d18;
+  box-shadow: 0 2px 7px rgba(140, 29, 24, 0.45);
+  content: "";
+}
+
+.wildfire-callout {
+  display: grid;
+  gap: 10px;
+  border-bottom: 1px solid var(--black);
+  border-left: 6px solid #8c1d18;
+  padding: clamp(20px, 3.5vw, 34px) var(--restrictions-content-gutter);
+  background: #fdeceb;
+  color: var(--charcoal);
+}
+
+.wildfire-callout-inside,
+.wildfire-callout-near {
+  border-left-color: #8c1d18;
+  background: #fbe2e0;
+}
+
+.wildfire-callout-regional {
+  border-left-color: #b8433c;
+  background: #fbf1ec;
+}
+
+.wildfire-callout-kicker {
+  margin: 0;
+  color: #8c1d18;
+  font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.wildfire-callout-headline {
+  margin: 0;
+  max-width: 760px;
+  color: var(--black);
+  font-size: clamp(1.14rem, 2.4vw, 1.6rem);
+  line-height: 1.16;
+}
+
+.wildfire-incident-list {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wildfire-incident {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.wildfire-incident-name {
+  color: var(--black);
+  font-weight: 800;
+}
+
+.wildfire-incident-meta {
+  color: var(--mid-gray);
+  font-size: clamp(0.86rem, 1.3vw, 0.98rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.wildfire-callout-footer {
+  margin: 6px 0 0;
+  color: var(--charcoal);
+  font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+  font-weight: 700;
+}
+
+.wildfire-callout-caveat {
+  margin: 0;
+  max-width: 720px;
+  color: var(--mid-gray);
+  font-size: clamp(0.82rem, 1.2vw, 0.92rem);
 }
 
 .map-popup {

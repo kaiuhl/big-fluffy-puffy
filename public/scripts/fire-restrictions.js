@@ -127,7 +127,8 @@
       destination: "#050505",
       forestwide_active: "#d92312",
       none: "#2f7f62",
-      unknown: "#8b8b8b"
+      unknown: "#8b8b8b",
+      wildfire: "#8c1d18"
     }[status] || "#8b8b8b";
   }
 
@@ -135,16 +136,27 @@
     var status = feature.properties && feature.properties.map_status;
     var color = mapColor(status);
     var forestwide = status === "forestwide_active";
+    var wildfire = status === "wildfire";
+    var fillOpacity = 0.56;
+    var weight = 2;
+
+    if (wildfire) {
+      fillOpacity = 0.3;
+      weight = 4;
+    } else if (forestwide) {
+      fillOpacity = 0.46;
+      weight = 3;
+    }
 
     return {
       color: color,
       fillColor: color,
-      fillOpacity: forestwide ? 0.46 : 0.56,
+      fillOpacity: fillOpacity,
       fillRule: "nonzero",
       lineCap: "round",
       lineJoin: "round",
       opacity: 1,
-      weight: forestwide ? 3 : 2
+      weight: weight
     };
   }
 
@@ -191,9 +203,17 @@
     return feature.properties && feature.properties.kind === "trip_check_place";
   }
 
+  function isWildfireFeature(feature) {
+    return feature.properties && feature.properties.map_status === "wildfire";
+  }
+
+  function isWildfireIncidentPointFeature(feature) {
+    return feature.properties && feature.properties.kind === "wildfire_incident";
+  }
+
   function visibleMapFeatures(features) {
     return features.filter(function (feature) {
-      return !isBoundaryFeature(feature);
+      return !isBoundaryFeature(feature) && !isWildfireFeature(feature);
     });
   }
 
@@ -479,6 +499,12 @@
           },
           style: mapStyle,
           pointToLayer: function (feature, latlng) {
+            if (isWildfireIncidentPointFeature(feature)) {
+              return L.marker(latlng, {
+                icon: wildfireIncidentIcon()
+              });
+            }
+
             if (!isTripCheckPlaceFeature(feature)) return L.marker(latlng);
 
             return L.marker(latlng, {
@@ -517,6 +543,7 @@
 
   function popupContent(properties) {
     if (properties.kind === "trip_check_place") return tripCheckPlacePopupContent(properties);
+    if (properties.map_status === "wildfire") return wildfirePopupContent(properties);
 
     var sourceUrl = safeHttpUrl(properties.source_url);
     var forestUrl = (properties.land_unit_url || properties.forest_url || "").toString();
@@ -568,6 +595,45 @@
       iconSize: [28, 28],
       popupAnchor: [0, -16]
     });
+  }
+
+  function wildfireIncidentIcon() {
+    return L.divIcon({
+      className: "wildfire-marker",
+      html: "",
+      iconAnchor: [10, 10],
+      iconSize: [20, 20],
+      popupAnchor: [0, -12]
+    });
+  }
+
+  function wildfirePopupContent(properties) {
+    var acresRow = typeof properties.acres === "number" && properties.acres >= 1
+      ? "<dt>Size</dt><dd>" + escapeHtml(String(Math.round(properties.acres).toLocaleString())) + " acres</dd>"
+      : "";
+    var containedRow = typeof properties.percent_contained === "number"
+      ? "<dt>Contained</dt><dd>" + escapeHtml(String(Math.round(properties.percent_contained))) + "%</dd>"
+      : "";
+    var discoveredRow = properties.discovered_at
+      ? "<dt>Discovered</dt><dd>" + escapeHtml(formattedDate(properties.discovered_at)) + "</dd>"
+      : "";
+    var attribution = properties.data_attribution || "NIFC/WFIGS";
+    var asOfText = properties.as_of
+      ? " · as of " + escapeHtml(formattedDate(properties.as_of))
+      : "";
+
+    return [
+      '<div class="map-popup map-popup-wildfire">',
+      "<strong>" + escapeHtml(properties.name || "Active wildfire") + "</strong>",
+      "<dl>",
+      acresRow,
+      containedRow,
+      discoveredRow,
+      "</dl>",
+      '<p class="map-popup-source">Data: ' + escapeHtml(attribution) + asOfText + "</p>",
+      '<p class="map-popup-caveat">Planning context — follow official alerts and closures.</p>',
+      "</div>"
+    ].join("");
   }
 
   function tripCheckPlacePopupContent(properties) {

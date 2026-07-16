@@ -138,6 +138,23 @@ Core fire-restriction files:
 - `lib/bfp/llm/`: parser interface, fake parser, Bedrock parser.
 - `jobs/fire_restriction_jobs.rb`: Que jobs.
 
+## Active Wildfires
+
+`lib/bfp/wildfires/` flags active wildfires near destinations from the NIFC/WFIGS
+ArcGIS feeds (points + perimeters, PNW bounding box, joined on IRWIN ID). It is a
+deterministic JSON pipeline separate from the restriction/LLM path: `Sync` upserts
+`wildfire_incidents` and records `wildfire_syncs`, `Proximity` does request-time
+RGeo matching (tiers: inside / near ≤10 mi / regional ≤30 mi and ≥100 acres), and
+`ContextPresenter` owns wording, GeoJSON map features, and the staleness TTL —
+past `WILDFIRE_MAX_AGE_HOURS` (default 6) since the last successful sync, all
+wildfire UI is suppressed, so stopping the poller off-season is safe.
+
+- Manual refresh: `mise exec -- bundle exec rake wildfires:sync` (plain HTTP, no LLM cost).
+- Scheduled: the clock enqueues `BFP::Wildfires::SyncJob` when `WILDFIRE_POLL_ENABLED=true`,
+  at `WILDFIRE_POLL_INTERVAL_MINUTES` (default 45).
+- Surfaced via `server/views/shared/_wildfire_callout.erb` on trip-check and land-unit
+  pages, plus `map_status: "wildfire"` features on both map endpoints.
+
 The catalog currently seeds:
 
 - 26 land units total.
@@ -150,6 +167,7 @@ Cost safety matters. Defaults should stay manual and cheap:
 - `LLM_PARSE_ENABLED=false`
 - `LLM_ESCALATION_ENABLED=false`
 - `FIRE_AUTO_POLL_ENABLED=false`
+- `WILDFIRE_POLL_ENABLED=false` (wildfire sync is free HTTP, but polling stays opt-in)
 
 Do not start automatic polling or enable Bedrock parsing unless the user explicitly asks. Do not enable Sonnet escalation unless the user explicitly asks for an escalation run. Manual fetches can still persist source documents with LLM parsing off.
 

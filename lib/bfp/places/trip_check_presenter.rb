@@ -56,6 +56,7 @@ module BFP
           official_sources: official_sources(forest_details, active_rules),
           confidence: confidence_for(place, land_unit_matches, active_rules),
           checked_at: checked_at_for(forest_details),
+          wildfires: wildfire_context(place),
           map: map_payload(place, forest_rules)
         }
       rescue Sequel::DatabaseError
@@ -78,8 +79,30 @@ module BFP
         features = forest_map_features(check)
         place = check.fetch(:place)
         forest = check.fetch(:matched_land_units, []).first&.fetch(:forest, nil)
-        features << place_feature(place, forest) if place[:latitude] && place[:longitude]
+        if place[:latitude] && place[:longitude]
+          features << place_feature(place, forest)
+          features.concat(wildfire_map_features(place[:latitude], place[:longitude]))
+        end
         features
+      end
+
+      # Wildfire context is a best-effort overlay: a missing table, load error,
+      # or any wildfire-side failure must never break the trip check itself, so
+      # this is rescued locally rather than through the outer DatabaseError guard.
+      def wildfire_context(place)
+        return unless place.latitude && place.longitude
+
+        require "bfp/wildfires"
+        BFP::Wildfires::ContextPresenter.new.for_point(latitude: place.latitude, longitude: place.longitude)
+      rescue LoadError, StandardError
+        nil
+      end
+
+      def wildfire_map_features(latitude, longitude)
+        require "bfp/wildfires"
+        BFP::Wildfires::ContextPresenter.new.map_features(latitude: latitude, longitude: longitude)
+      rescue LoadError, StandardError
+        []
       end
 
       def forest_map_features(check)

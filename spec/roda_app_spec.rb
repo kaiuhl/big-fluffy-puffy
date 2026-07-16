@@ -201,10 +201,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260707-change-log-1"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260715-wildfire-callout-1"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260715-wildfire-overlay-1"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -677,7 +677,17 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-focus-lat="45.35"')
     expect(last_response.body).to include('data-map-focus-zoom="10"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260630-forestwide-map"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260715-wildfire-overlay-1"')
+  end
+
+  it "renders a trip check page when no wildfire context is present" do
+    payload = trip_check_payload.merge(wildfires: nil)
+    allow_any_instance_of(described_class).to receive(:trip_check_detail).with("burnt-lake").and_return(payload)
+
+    get "/trip-check/burnt-lake"
+
+    expect(last_response).to be_ok
+    expect(last_response.body).to include("Burnt Lake Fire Restrictions &amp; Campfire Trip Check")
   end
 
   it "noindexes low-context trip check pages" do
@@ -793,7 +803,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("addOutsideBoundaryMask")
     expect(last_response.body).to include("if (!isBoundaryFeature(feature)) return holes")
     expect(last_response.body).to include("return !isBoundaryFeature(feature)")
-    expect(last_response.body).to include("fillOpacity: forestwide ? 0.46 : 0.56")
+    expect(last_response.body).to include("var fillOpacity = 0.56")
+    expect(last_response.body).to include("fillOpacity = 0.46")
+    expect(last_response.body).to include('wildfire: "#8c1d18"')
+    expect(last_response.body).to include("wildfirePopupContent")
     expect(last_response.body).to include("fillOpacity: 0.72")
     expect(last_response.body).to include("fillRule: \"nonzero\"")
     expect(last_response.body).to include("fillRule: \"evenodd\"")
