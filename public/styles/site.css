@@ -749,82 +749,107 @@ h1 {
   content: "";
 }
 
+/* Wildfire notice: intentionally the only dark band on the page so it
+   reads as a hazard bulletin, not another pastel section. Identity red
+   (#8c1d18) stays on the edge band, markers, and legend; text accents
+   use lightened fire tones that pass contrast on the near-black. */
 .wildfire-callout {
   display: grid;
-  gap: 10px;
+  gap: 14px;
   border-bottom: 1px solid var(--black);
   border-left: 6px solid #8c1d18;
-  padding: clamp(20px, 3.5vw, 34px) var(--restrictions-content-gutter);
-  background: #fdeceb;
-  color: var(--charcoal);
-}
-
-.wildfire-callout-inside,
-.wildfire-callout-near {
-  border-left-color: #8c1d18;
-  background: #fbe2e0;
+  padding: clamp(22px, 3.5vw, 36px) var(--restrictions-content-gutter);
+  background: #170907;
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .wildfire-callout-regional {
-  border-left-color: #b8433c;
-  background: #fbf1ec;
+  border-left-color: #5c2320;
+  background: #131010;
 }
 
 .wildfire-callout-kicker {
   margin: 0;
-  color: #8c1d18;
+  color: #f2867b;
   font-size: clamp(0.72rem, 1.1vw, 0.82rem);
   font-weight: 850;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
+.wildfire-callout-regional .wildfire-callout-kicker {
+  color: #cfa29b;
+}
+
 .wildfire-callout-headline {
   margin: 0;
   max-width: 760px;
-  color: var(--black);
+  color: var(--white);
   font-size: clamp(1.14rem, 2.4vw, 1.6rem);
   line-height: 1.16;
 }
 
-.wildfire-incident-list {
-  display: grid;
-  gap: 6px;
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
+.wildfire-incident-table {
+  width: 100%;
+  max-width: 760px;
+  border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  line-height: 1.35;
 }
 
-.wildfire-incident {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
+.wildfire-incident-table th,
+.wildfire-incident-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 9px 18px 9px 0;
+  text-align: left;
+  vertical-align: baseline;
 }
 
-.wildfire-incident-name {
-  color: var(--black);
+.wildfire-incident-table thead th {
+  border-bottom-color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.68rem;
   font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
-.wildfire-incident-meta {
-  color: var(--mid-gray);
-  font-size: clamp(0.86rem, 1.3vw, 0.98rem);
+.wildfire-incident-table tbody th {
+  color: var(--white);
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.wildfire-incident-table tbody tr:last-child th,
+.wildfire-incident-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.wildfire-incident-table td {
+  color: rgba(255, 255, 255, 0.82);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .wildfire-cell-discovered {
+    display: none;
+  }
 }
 
 .wildfire-callout-footer {
-  margin: 6px 0 0;
-  color: var(--charcoal);
+  margin: 0;
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.72);
   font-size: clamp(0.82rem, 1.2vw, 0.92rem);
   font-weight: 700;
 }
 
 .wildfire-callout-caveat {
-  margin: 0;
-  max-width: 720px;
-  color: var(--mid-gray);
-  font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.48);
+  font-weight: 500;
 }
 
 .map-popup {

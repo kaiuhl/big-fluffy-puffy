@@ -3,7 +3,6 @@
   <% incidents = wildfires[:incidents] || [] %>
   <% closest = incidents.first %>
   <% area_scope = wildfire_scope == :area %>
-  <% inside_label = area_scope ? "inside this area" : "mapped at this location" %>
   <% headline = case status
        when :inside
          area_scope ? "An active wildfire is mapped inside this area." : "An active wildfire is mapped at this location."
@@ -12,34 +11,51 @@
        else
          "Active wildfire activity in the region."
        end %>
-  <section class="wildfire-callout wildfire-callout-<%= h(status) %>" aria-label="Active wildfire notice">
+  <section id="wildfire-notice" class="wildfire-callout wildfire-callout-<%= h(status) %>" aria-label="Active wildfire notice">
     <p class="wildfire-callout-kicker">Active wildfire</p>
     <p class="wildfire-callout-headline"><strong><%= h(headline) %></strong></p>
     <% unless incidents.empty? %>
-      <ul class="wildfire-incident-list">
-        <% incidents.each do |incident| %>
-          <% parts = [] %>
-          <% if incident[:distance_miles] %>
-            <% parts << ((incident[:distance_miles] <= 0) ? inside_label : "#{format("%.1f", incident[:distance_miles])} mi") %>
+      <table class="wildfire-incident-table">
+        <thead>
+          <tr>
+            <th scope="col">Fire</th>
+            <th scope="col">Distance</th>
+            <th scope="col">Size</th>
+            <th scope="col">Contained</th>
+            <th scope="col" class="wildfire-cell-discovered">Discovered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% incidents.each do |incident| %>
+            <% dash = "\u2014" %>
+            <% distance = if incident[:distance_miles].nil?
+                 dash
+               elsif incident[:distance_miles] <= 0
+                 "Inside"
+               else
+                 "#{format("%.1f", incident[:distance_miles])} mi"
+               end %>
+            <% size = if incident[:acres] && incident[:acres] >= 1
+                 "#{incident[:acres].round.to_s.reverse.gsub(/(\d{3})(?=\d)/, "\\1,").reverse} ac"
+               else
+                 dash
+               end %>
+            <% contained = incident[:percent_contained] ? "#{incident[:percent_contained].round}%" : dash %>
+            <% discovered = incident[:discovered_at] ? date_label(incident[:discovered_at]) : dash %>
+            <tr>
+              <th scope="row"><%= h(incident[:name] || "Unnamed fire") %></th>
+              <td><%= h(distance) %></td>
+              <td><%= h(size) %></td>
+              <td><%= h(contained) %></td>
+              <td class="wildfire-cell-discovered"><%= h(discovered) %></td>
+            </tr>
           <% end %>
-          <% if incident[:acres] && incident[:acres] >= 1 %>
-            <% acres_display = incident[:acres].round.to_s.reverse.gsub(/(\d{3})(?=\d)/, "\\1,").reverse %>
-            <% parts << "#{acres_display} acres" %>
-          <% end %>
-          <% parts << "#{incident[:percent_contained].round}% contained" if incident[:percent_contained] %>
-          <% parts << "discovered #{date_label(incident[:discovered_at])}" if incident[:discovered_at] %>
-          <li class="wildfire-incident">
-            <span class="wildfire-incident-name"><%= h(incident[:name] || "Unnamed fire") %></span>
-            <% unless parts.empty? %>
-              <span class="wildfire-incident-meta"><%= h(parts.join(" \u00b7 ")) %></span>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
+        </tbody>
+      </table>
     <% end %>
     <p class="wildfire-callout-footer">
       Fire data: NIFC/WFIGS<% if wildfires[:as_of] %> &middot; as of <%= h(date_label(wildfires[:as_of])) %><% end %>
+      <span class="wildfire-callout-caveat">Fire locations are planning context, not an evacuation or safety tool. Follow official emergency alerts and closures.</span>
     </p>
-    <p class="wildfire-callout-caveat">Fire locations are planning context, not an evacuation or safety tool. Follow official emergency alerts and closures.</p>
   </section>
 <% end %>
