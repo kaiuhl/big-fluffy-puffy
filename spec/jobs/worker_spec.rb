@@ -5,8 +5,8 @@ RSpec.describe "jobs/worker.rb" do
   # file the clock can enqueue must also be loaded by the worker, or those
   # jobs fail with NameError at run time.
   it "loads every job file the clock enqueues from" do
-    worker_source = File.read(File.expand_path("../../jobs/worker.rb", __dir__))
-    clock_source = File.read(File.expand_path("../../jobs/clock.rb", __dir__))
+    worker_source = File.read(File.expand_path("../../jobs/worker.rb", __dir__), encoding: "UTF-8")
+    clock_source = File.read(File.expand_path("../../jobs/clock.rb", __dir__), encoding: "UTF-8")
 
     clock_source.scan(%r{require_relative "(\w+_jobs)"}).flatten.each do |job_file|
       expect(worker_source).to include("./jobs/#{job_file}"),
