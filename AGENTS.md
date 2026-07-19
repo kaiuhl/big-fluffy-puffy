@@ -152,6 +152,10 @@ wildfire UI is suppressed, so stopping the poller off-season is safe.
 - Manual refresh: `mise exec -- bundle exec rake wildfires:sync` (plain HTTP, no LLM cost).
 - Scheduled: the clock enqueues `BFP::Wildfires::SyncJob` when `WILDFIRE_POLL_ENABLED=true`,
   at `WILDFIRE_POLL_INTERVAL_MINUTES` (default 45).
+- The clock loop must stay a fast heartbeat (`CLOCK_INTERVAL_SECONDS` ~300). To slow one
+  pipeline, use its own gate — `FIRE_POLL_INTERVAL_MINUTES` (production uses 10080 for the
+  weekly LLM-cost throttle) or `WILDFIRE_POLL_INTERVAL_MINUTES` — never the loop interval;
+  a weekly loop interval once put wildfire sync to sleep for days and tripped the staleness TTL.
 - Surfaced via `server/views/shared/_wildfire_callout.erb` on trip-check and land-unit
   pages, plus `map_status: "wildfire"` features on both map endpoints.
 
