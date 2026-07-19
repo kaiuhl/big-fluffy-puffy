@@ -9,5 +9,6 @@ exec(
   worker_count,
   "--poll-interval",
   poll_interval,
-  "./jobs/fire_restriction_jobs"
+  "./jobs/fire_restriction_jobs",
+  "./jobs/wildfire_jobs"
 )
