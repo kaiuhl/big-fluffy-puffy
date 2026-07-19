@@ -4,6 +4,7 @@ require "bfp/wildfires/context_presenter"
 
 WildfireIncidentDouble = Struct.new(
   :irwin_id, :name, :acres, :percent_contained, :discovered_at, :behavior,
+  :information_url, :attributes,
   :latitude, :longitude, :perimeter_geometry, :min_lon, :min_lat, :max_lon, :max_lat,
   keyword_init: true
 )
@@ -27,7 +28,9 @@ RSpec.describe BFP::Wildfires::ContextPresenter do
   let(:perimeter_fire) do
     WildfireIncidentDouble.new(
       irwin_id: "PERI-0002", name: "Cedar Creek", acres: 12500.0, percent_contained: 35.0,
-      discovered_at: discovered, behavior: "Active", latitude: 44.0, longitude: -121.0,
+      discovered_at: discovered, behavior: "Active",
+      information_url: "http://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire",
+      latitude: 44.0, longitude: -121.0,
       perimeter_geometry: {
         "type" => "Polygon",
         "coordinates" => [[[-121.05, 43.95], [-120.95, 43.95], [-120.95, 44.05], [-121.05, 44.05], [-121.05, 43.95]]]
@@ -53,13 +56,45 @@ RSpec.describe BFP::Wildfires::ContextPresenter do
       incident = presenter.for_point(latitude: 44.0, longitude: -121.0).fetch(:incidents).first
 
       expect(incident.keys).to contain_exactly(
-        :name, :distance_miles, :acres, :percent_contained, :discovered_at, :behavior, :irwin_id
+        :name, :distance_miles, :acres, :percent_contained, :discovered_at, :behavior,
+        :information_url, :personnel, :short_description, :irwin_id
       )
       expect(incident[:name]).to eq("Whisky Ridge")
       expect(incident[:distance_miles]).to be_a(Float)
       expect(incident[:distance_miles].round(1)).to eq(incident[:distance_miles])
       expect(incident[:discovered_at]).to eq(discovered.iso8601)
       expect(incident[:irwin_id]).to eq("NEAR-0001")
+      # A fire with no InciWeb page and no staffing attributes stays quiet.
+      expect(incident[:information_url]).to be_nil
+      expect(incident[:personnel]).to be_nil
+      expect(incident[:short_description]).to be_nil
+    end
+  end
+
+  describe "#for_point serializes InciWeb link and staffing context" do
+    let(:detailed_fire) do
+      latitude = 44.0 + (5 * deg_per_mile)
+      WildfireIncidentDouble.new(
+        irwin_id: "DET-0003", name: "Detail Creek", acres: 100.0, percent_contained: 10.0,
+        discovered_at: discovered, behavior: "Active",
+        information_url: "http://inciweb.wildfire.gov/incident-information/det-detail-creek-fire",
+        attributes: {"point" => {"TotalIncidentPersonnel" => 47, "IncidentShortDescription" => "  12 miles NE of Sisters  "}},
+        latitude: latitude, longitude: -121.0, perimeter_geometry: nil,
+        min_lon: -121.03, min_lat: latitude - 0.03, max_lon: -120.97, max_lat: latitude + 0.03
+      )
+    end
+
+    before do
+      allow(presenter).to receive(:last_successful_sync).and_return(fresh_sync)
+      allow(presenter).to receive(:active_incidents).and_return([detailed_fire])
+    end
+
+    it "exposes information_url, integer personnel, and a trimmed short_description" do
+      incident = presenter.for_point(latitude: 44.0, longitude: -121.0).fetch(:incidents).first
+
+      expect(incident[:information_url]).to eq("http://inciweb.wildfire.gov/incident-information/det-detail-creek-fire")
+      expect(incident[:personnel]).to eq(47)
+      expect(incident[:short_description]).to eq("12 miles NE of Sisters")
     end
   end
 
@@ -109,8 +144,11 @@ RSpec.describe BFP::Wildfires::ContextPresenter do
 
       perimeter_feature = features.find { |feature| feature.dig(:properties, :kind) == "wildfire" }
       expect(perimeter_feature.dig(:geometry, "type")).to eq("Polygon")
+      expect(perimeter_feature.dig(:properties, :behavior)).to eq("Active")
+      expect(perimeter_feature.dig(:properties, :information_url)).to eq("http://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire")
       point_feature = features.find { |feature| feature.dig(:properties, :kind) == "wildfire_incident" }
       expect(point_feature.dig(:geometry, "type")).to eq("Point")
+      expect(point_feature.dig(:properties, :information_url)).to be_nil
     end
   end
 

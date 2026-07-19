@@ -149,6 +149,14 @@ RGeo matching (tiers: inside / near ≤10 mi / regional ≤30 mi and ≥100 acre
 past `WILDFIRE_MAX_AGE_HOURS` (default 6) since the last successful sync, all
 wildfire UI is suppressed, so stopping the poller off-season is safe.
 
+`Sync` also fetches the InciWeb incidents RSS (`Feed::INCIWEB_RSS_URL`) to attach
+an authoritative per-fire `information_url` (`Feed.parse_inciweb` joins on
+protecting unit + normalized name, with a unique name-only fallback). The RSS
+fetch is best-effort and non-fatal: a failure never fails a sync, it just records
+`inciweb_error` in `wildfire_syncs.metadata_json` and proceeds with no links. Only
+larger, staffed incidents get an InciWeb page, so most fires have no link and that
+is expected; a stored link is preserved across runs that lack a matching entry.
+
 - Manual refresh: `mise exec -- bundle exec rake wildfires:sync` (plain HTTP, no LLM cost).
 - Scheduled: the clock enqueues `BFP::Wildfires::SyncJob` when `WILDFIRE_POLL_ENABLED=true`,
   at `WILDFIRE_POLL_INTERVAL_MINUTES` (default 45).

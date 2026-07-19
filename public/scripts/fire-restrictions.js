@@ -614,12 +614,19 @@
     var containedRow = typeof properties.percent_contained === "number"
       ? "<dt>Contained</dt><dd>" + escapeHtml(String(Math.round(properties.percent_contained))) + "%</dd>"
       : "";
+    var behaviorRow = properties.behavior
+      ? "<dt>Behavior</dt><dd>" + escapeHtml(String(properties.behavior)) + "</dd>"
+      : "";
     var discoveredRow = properties.discovered_at
       ? "<dt>Discovered</dt><dd>" + escapeHtml(formattedDate(properties.discovered_at)) + "</dd>"
       : "";
     var attribution = properties.data_attribution || "NIFC/WFIGS";
     var asOfText = properties.as_of
       ? " · as of " + escapeHtml(formattedDate(properties.as_of))
+      : "";
+    var infoUrl = safeHttpUrl(properties.information_url);
+    var infoLink = infoUrl
+      ? '<p class="map-popup-source"><a href="' + escapeHtml(infoUrl) + '" target="_blank" rel="noopener">Fire information (InciWeb)</a></p>'
       : "";
 
     return [
@@ -628,8 +635,10 @@
       "<dl>",
       acresRow,
       containedRow,
+      behaviorRow,
       discoveredRow,
       "</dl>",
+      infoLink,
       '<p class="map-popup-source">Data: ' + escapeHtml(attribution) + asOfText + "</p>",
       '<p class="map-popup-caveat">Planning context — follow official alerts and closures.</p>',
       "</div>"

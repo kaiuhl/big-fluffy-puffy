@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="http://inciweb.wildfire.gov/">
+  <channel>
+    <title>InciWeb</title>
+    <link>http://inciweb.wildfire.gov/</link>
+    <description>Inciweb Fire Incidents</description>
+    <language>en</language>
+    <item>
+      <title>ORDEF Cedar Creek Fire</title>
+      <link>http://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire</link>
+      <description>Last updated: 2026-07-19</description>
+      <pubDate>Sat, 11 Jul 2026 11:35:30 EDT</pubDate>
+      <guid isPermaLink="false">328001</guid>
+    </item>
+    <item>
+      <title>WAOKA Whisky Ridge Fire</title>
+      <link>http://inciweb.wildfire.gov/incident-information/waoka-whisky-ridge-fire</link>
+      <description>Last updated: 2026-07-19</description>
+      <pubDate>Sat, 11 Jul 2026 09:12:04 EDT</pubDate>
+      <guid isPermaLink="false">328002</guid>
+    </item>
+    <item>
+      <title>IDNIA Turner Fire</title>
+      <link>http://inciweb.wildfire.gov/incident-information/idnia-turner-fire</link>
+      <description>Last updated: 2026-07-19</description>
+      <pubDate>Fri, 10 Jul 2026 18:44:51 EDT</pubDate>
+      <guid isPermaLink="false">328003</guid>
+    </item>
+  </channel>
+</rss>

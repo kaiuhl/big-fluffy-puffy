@@ -42,8 +42,20 @@
                end %>
             <% contained = incident[:percent_contained] ? "#{incident[:percent_contained].round}%" : dash %>
             <% discovered = incident[:discovered_at] ? date_label(incident[:discovered_at]) : dash %>
+            <% name = incident[:name] || "Unnamed fire" %>
+            <% info_url = incident[:information_url] %>
+            <% note = incident[:short_description] %>
             <tr>
-              <th scope="row"><%= h(incident[:name] || "Unnamed fire") %></th>
+              <th scope="row">
+                <% if info_url %>
+                  <a class="wildfire-incident-link" href="<%= h(info_url) %>" target="_blank" rel="noopener"><%= h(name) %></a>
+                <% else %>
+                  <%= h(name) %>
+                <% end %>
+                <% if note %>
+                  <span class="wildfire-incident-note"><%= h(note) %></span>
+                <% end %>
+              </th>
               <td><%= h(distance) %></td>
               <td><%= h(size) %></td>
               <td><%= h(contained) %></td>

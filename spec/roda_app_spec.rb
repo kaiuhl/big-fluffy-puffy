@@ -201,10 +201,10 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/"')
     expect(last_response.body).to include('aria-current="page">Fire Restrictions')
     expect(last_response.body).to include('href="/vendor/leaflet/leaflet.css"')
-    expect(last_response.body).to include('href="/styles/site.css?v=20260716-wildfire-dark-panel-1"')
+    expect(last_response.body).to include('href="/styles/site.css?v=20260719-wildfire-inciweb-1"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260715-wildfire-overlay-1"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260719-wildfire-inciweb-1"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -677,7 +677,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-focus-lat="45.35"')
     expect(last_response.body).to include('data-map-focus-zoom="10"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260715-wildfire-overlay-1"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260719-wildfire-inciweb-1"')
   end
 
   it "renders a trip check page when no wildfire context is present" do
@@ -778,6 +778,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include(".map-popup-place-meta")
     expect(last_response.body).to include("transition: height 160ms ease")
     expect(last_response.body).to include("stroke-width: 2.5")
+    expect(last_response.body).to include(".wildfire-incident-link")
+    expect(last_response.body).to include(".wildfire-incident-note")
   end
 
   it "serves the fire restrictions search script" do
@@ -807,6 +809,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("fillOpacity = 0.46")
     expect(last_response.body).to include('wildfire: "#8c1d18"')
     expect(last_response.body).to include("wildfirePopupContent")
+    expect(last_response.body).to include("<dt>Behavior</dt>")
+    expect(last_response.body).to include("Fire information (InciWeb)")
     expect(last_response.body).to include("fillOpacity: 0.72")
     expect(last_response.body).to include("fillRule: \"nonzero\"")
     expect(last_response.body).to include("fillRule: \"evenodd\"")

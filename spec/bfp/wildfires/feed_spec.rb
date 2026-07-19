@@ -17,7 +17,7 @@ RSpec.describe BFP::Wildfires::Feed do
       expect(query["inSR"]).to eq("4326")
       expect(query["spatialRel"]).to eq("esriSpatialRelIntersects")
       expect(query["f"]).to eq("geojson")
-      expect(query["outFields"]).to eq("IncidentName,PercentContained,IncidentSize,FireDiscoveryDateTime,FireBehaviorGeneral,IrwinID")
+      expect(query["outFields"]).to eq("IncidentName,PercentContained,IncidentSize,FireDiscoveryDateTime,FireBehaviorGeneral,IrwinID,POOProtectingUnit,IncidentTypeCategory,IncidentShortDescription,TotalIncidentPersonnel")
     end
 
     it "builds a query for the perimeters layer with perimeter fields" do
@@ -90,6 +90,77 @@ RSpec.describe BFP::Wildfires::Feed do
       expect {
         described_class.parse({"type" => "FeatureCollection"}.to_json, perimeters_body)
       }.to raise_error(BFP::Wildfires::Feed::FeedError, /no features array/)
+    end
+
+    it "leaves information_url nil when no InciWeb entries are supplied" do
+      expect(incidents.map { |incident| incident[:information_url] }).to all(be_nil)
+    end
+  end
+
+  describe ".parse_inciweb" do
+    let(:inciweb_body) { File.read(fixture_path("inciweb.xml")) }
+
+    it "parses items into normalized unit/name/url entries" do
+      entries = described_class.parse_inciweb(inciweb_body)
+
+      expect(entries).to include(
+        {unit: "ORDEF", name: "cedar creek", url: "https://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire"}
+      )
+      # Units upcase; names drop a trailing "Fire" and downcase so they line up
+      # with WFIGS IncidentName.
+      expect(entries.map { |entry| entry[:name] }).to contain_exactly("cedar creek", "whisky ridge", "turner")
+      expect(entries.map { |entry| entry[:unit] }).to contain_exactly("ORDEF", "WAOKA", "IDNIA")
+    end
+
+    it "raises FeedError on nil, empty, or non-RSS bodies" do
+      expect { described_class.parse_inciweb(nil) }.to raise_error(BFP::Wildfires::Feed::FeedError)
+      expect { described_class.parse_inciweb("   ") }.to raise_error(BFP::Wildfires::Feed::FeedError)
+      expect { described_class.parse_inciweb("not xml at all") }.to raise_error(BFP::Wildfires::Feed::FeedError)
+    end
+
+    it "returns an empty list for a well-formed RSS feed with no incidents" do
+      empty = %(<?xml version="1.0"?><rss version="2.0"><channel><title>InciWeb</title></channel></rss>)
+
+      expect(described_class.parse_inciweb(empty)).to eq([])
+    end
+  end
+
+  describe ".parse joining InciWeb information URLs" do
+    let(:inciweb_entries) { described_class.parse_inciweb(File.read(fixture_path("inciweb.xml"))) }
+    subject(:joined) { described_class.parse(points_body, perimeters_body, inciweb_entries: inciweb_entries) }
+
+    it "attaches an information_url by an exact unit and name match" do
+      cedar = joined.find { |incident| incident[:name] == "Cedar Creek" }
+
+      expect(cedar[:information_url]).to eq("https://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire")
+    end
+
+    it "falls back to a unique name-only match when the protecting unit differs" do
+      whisky = joined.find { |incident| incident[:name] == "Whisky Ridge" }
+
+      expect(whisky[:information_url]).to eq("https://inciweb.wildfire.gov/incident-information/waoka-whisky-ridge-fire")
+    end
+
+    it "leaves information_url nil when nothing matches" do
+      old_ridge = joined.find { |incident| incident[:name] == "Old Ridge" }
+
+      expect(old_ridge[:information_url]).to be_nil
+    end
+
+    it "does not name-match when more than one entry shares that name" do
+      duplicate = <<~XML
+        <?xml version="1.0"?>
+        <rss version="2.0"><channel>
+          <item><title>WAOKA Whisky Ridge Fire</title><link>http://inciweb.wildfire.gov/incident-information/waoka-whisky-ridge-fire</link></item>
+          <item><title>IDABC Whisky Ridge Fire</title><link>http://inciweb.wildfire.gov/incident-information/idabc-whisky-ridge-fire</link></item>
+        </channel></rss>
+      XML
+      entries = described_class.parse_inciweb(duplicate)
+
+      whisky = described_class.parse(points_body, perimeters_body, inciweb_entries: entries)
+        .find { |incident| incident[:name] == "Whisky Ridge" }
+
+      expect(whisky[:information_url]).to be_nil
     end
   end
 

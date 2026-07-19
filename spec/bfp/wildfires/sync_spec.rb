@@ -10,6 +10,9 @@ RSpec.describe "BFP::Wildfires::Sync", :db do
 
   let(:points_body) { File.read(fixture_path("points.geojson")) }
   let(:perimeters_body) { File.read(fixture_path("perimeters.geojson")) }
+  let(:inciweb_body) { File.read(fixture_path("inciweb.xml")) }
+  let(:cedar_irwin) { "A1B2C3D4-1111-2222-3333-444455556666" }
+  let(:cedar_information_url) { "https://inciweb.wildfire.gov/incident-information/ordef-cedar-creek-fire" }
 
   it "upserts incidents and records a successful sync" do
     counts = run_sync(points_body, perimeters_body)
@@ -55,6 +58,47 @@ RSpec.describe "BFP::Wildfires::Sync", :db do
     expect([cedar.min_lon, cedar.min_lat, cedar.max_lon, cedar.max_lat]).to eq(original_bounds)
   end
 
+  it "persists a matched InciWeb information_url and records a link count" do
+    run_sync(points_body, perimeters_body)
+
+    cedar = BFP::Wildfires::WildfireIncident.first(irwin_id: cedar_irwin)
+    expect(cedar.information_url).to eq(cedar_information_url)
+
+    sync = BFP::Wildfires::WildfireSync.last_successful
+    expect(sync.metadata_json.to_hash["information_urls"]).to eq(2)
+    expect(sync.metadata_json.to_hash).not_to have_key("inciweb_error")
+  end
+
+  it "preserves an existing information_url when a later run has no matching RSS entry" do
+    run_sync(points_body, perimeters_body)
+    cedar = BFP::Wildfires::WildfireIncident.first(irwin_id: cedar_irwin)
+    expect(cedar.information_url).to eq(cedar_information_url)
+
+    counts = run_sync(points_body, perimeters_body, empty_inciweb_body)
+
+    expect(counts[:success]).to be(true)
+    cedar.refresh
+    expect(cedar.information_url).to eq(cedar_information_url)
+  end
+
+  it "still succeeds and records the error class when the InciWeb fetch raises" do
+    sync = BFP::Wildfires::Sync.new
+    allow(sync).to receive(:get).with(BFP::Wildfires::Feed.points_query_url)
+      .and_return(BFP::Wildfires::Sync::Response.new("200", points_body))
+    allow(sync).to receive(:get).with(BFP::Wildfires::Feed.perimeters_query_url)
+      .and_return(BFP::Wildfires::Sync::Response.new("200", perimeters_body))
+    allow(sync).to receive(:get).with(BFP::Wildfires::Feed::INCIWEB_RSS_URL)
+      .and_raise(RuntimeError.new("rss down"))
+
+    counts = sync.run
+
+    expect(counts[:success]).to be(true)
+    expect(BFP::Wildfires::WildfireIncident.where(active: true).count).to eq(3)
+    expect(BFP::Wildfires::WildfireIncident.first(irwin_id: cedar_irwin).information_url).to be_nil
+    sync_row = BFP::Wildfires::WildfireSync.last_successful
+    expect(sync_row.metadata_json.to_hash["inciweb_error"]).to eq("RuntimeError")
+  end
+
   it "fails the run instead of deactivating everything when the points feed is empty" do
     run_sync(points_body, perimeters_body)
 
@@ -90,13 +134,18 @@ RSpec.describe "BFP::Wildfires::Sync", :db do
     expect(latest.error_class).to eq("RuntimeError")
   end
 
-  def run_sync(points, perimeters)
+  def run_sync(points, perimeters, inciweb = inciweb_body)
     sync = BFP::Wildfires::Sync.new
     allow(sync).to receive(:get).and_return(
       BFP::Wildfires::Sync::Response.new("200", points),
-      BFP::Wildfires::Sync::Response.new("200", perimeters)
+      BFP::Wildfires::Sync::Response.new("200", perimeters),
+      BFP::Wildfires::Sync::Response.new("200", inciweb)
     )
     sync.run
+  end
+
+  def empty_inciweb_body
+    %(<?xml version="1.0"?><rss version="2.0"><channel><title>InciWeb</title></channel></rss>)
   end
 
   def single_point_body

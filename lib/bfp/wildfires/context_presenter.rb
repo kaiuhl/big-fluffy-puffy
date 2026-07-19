@@ -75,6 +75,7 @@ module BFP
 
       def serialize_incident(match)
         incident = match[:incident]
+        point = point_attributes(incident)
         {
           name: incident.name,
           distance_miles: match[:distance_miles].to_f.round(1),
@@ -82,6 +83,9 @@ module BFP
           percent_contained: incident.percent_contained,
           discovered_at: iso8601(incident.discovered_at),
           behavior: incident.behavior,
+          information_url: incident.information_url,
+          personnel: integer_or_nil(point["TotalIncidentPersonnel"]),
+          short_description: presence(point["IncidentShortDescription"]),
           irwin_id: incident.irwin_id
         }
       end
@@ -104,6 +108,8 @@ module BFP
             acres: incident.acres,
             percent_contained: incident.percent_contained,
             discovered_at: iso8601(incident.discovered_at),
+            behavior: incident.behavior,
+            information_url: incident.information_url,
             irwin_id: incident.irwin_id,
             as_of: stamp,
             data_attribution: DATA_ATTRIBUTION
@@ -164,6 +170,27 @@ module BFP
         JSON.parse(File.read(@boundary_path)).fetch("features", [])
       rescue JSON::ParserError
         []
+      end
+
+      def point_attributes(incident)
+        attributes = incident.respond_to?(:attributes) ? incident.attributes : nil
+        return {} unless attributes.is_a?(Hash)
+
+        point = attributes["point"] || attributes[:point]
+        point.is_a?(Hash) ? point : {}
+      end
+
+      def integer_or_nil(value)
+        return if value.nil? || value == ""
+
+        Integer(value)
+      rescue ArgumentError, TypeError
+        Float(value, exception: false)&.to_i
+      end
+
+      def presence(value)
+        text = value.to_s.strip
+        text.empty? ? nil : text
       end
 
       def iso8601(value)

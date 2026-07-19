@@ -9,7 +9,11 @@
         "IncidentSize": 12000.5,
         "FireDiscoveryDateTime": 1662512400000,
         "FireBehaviorGeneral": "Active with group tree torching",
-        "IrwinID": "{A1B2C3D4-1111-2222-3333-444455556666}"
+        "IrwinID": "{A1B2C3D4-1111-2222-3333-444455556666}",
+        "POOProtectingUnit": "ORDEF",
+        "IncidentTypeCategory": "WF",
+        "IncidentShortDescription": "12 miles NE of Sisters, Oregon",
+        "TotalIncidentPersonnel": 247
       },
       "geometry": {
         "type": "Point",
@@ -24,7 +28,9 @@
         "IncidentSize": 45.0,
         "FireDiscoveryDateTime": 1690000000000,
         "FireBehaviorGeneral": "Smoldering",
-        "IrwinID": "b7c8d9e0-aaaa-bbbb-cccc-ddddeeeeffff"
+        "IrwinID": "b7c8d9e0-aaaa-bbbb-cccc-ddddeeeeffff",
+        "POOProtectingUnit": "ORXXX",
+        "IncidentTypeCategory": "WF"
       },
       "geometry": {
         "type": "Point",

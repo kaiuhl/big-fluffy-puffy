@@ -20,10 +20,16 @@ module BFP
       POINTS_LAYER_URL = "https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Incident_Locations_Current/FeatureServer/0".freeze
       PERIMETERS_LAYER_URL = "https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0".freeze
 
+      # National InciWeb incident feed. Only larger, staffed incidents get an
+      # InciWeb page, so this is a best-effort enrichment: it supplies an
+      # authoritative per-fire information link and is joined by protecting unit
+      # plus incident name. Fetched non-fatally by Sync.
+      INCIWEB_RSS_URL = "https://inciweb.wildfire.gov/incidents/rss.xml".freeze
+
       # Pacific Northwest bounding envelope: west, south, east, north (WGS84).
       PNW_ENVELOPE = [-125.1, 41.5, -116.4, 49.1].freeze
 
-      POINT_OUT_FIELDS = %w[IncidentName PercentContained IncidentSize FireDiscoveryDateTime FireBehaviorGeneral IrwinID].freeze
+      POINT_OUT_FIELDS = %w[IncidentName PercentContained IncidentSize FireDiscoveryDateTime FireBehaviorGeneral IrwinID POOProtectingUnit IncidentTypeCategory IncidentShortDescription TotalIncidentPersonnel].freeze
       PERIMETER_OUT_FIELDS = %w[poly_IncidentName attr_PercentContained poly_GISAcres attr_FireDiscoveryDateTime poly_IRWINID].freeze
 
       EARTH_RADIUS_METERS = 6_378_137.0
@@ -56,12 +62,61 @@ module BFP
 
       # Returns an array of normalized incident hashes with keys matching the
       # wildfire_incidents columns (perimeter/attributes still plain hashes).
-      def parse(points_body, perimeters_body)
+      # inciweb_entries is the already-parsed output of parse_inciweb; parse
+      # stays pure and never does HTTP, so callers fetch the RSS themselves.
+      def parse(points_body, perimeters_body, inciweb_entries: [])
         perimeters_by_irwin = index_perimeters(feature_list(perimeters_body, label: "perimeters"))
 
         feature_list(points_body, label: "points").filter_map do |feature|
-          incident_hash(feature, perimeters_by_irwin)
+          incident_hash(feature, perimeters_by_irwin, inciweb_entries)
         end
+      end
+
+      # Parses the InciWeb incidents RSS into normalized join entries. Each item
+      # title is "<UNITID> <Fire Name>"; the first whitespace token is the
+      # protecting unit and the remainder is the incident name (with a trailing
+      # "Fire" stripped) so it lines up with WFIGS IncidentName. Raises FeedError
+      # on nil/empty/unrecognizable bodies, matching the rest of the feed's
+      # strictness; Sync rescues that so a bad RSS reply never fails a sync.
+      def parse_inciweb(body)
+        raise FeedError, "InciWeb RSS feed body was empty" if body.nil?
+
+        text = body.to_s.dup.force_encoding("UTF-8")
+        raise FeedError, "InciWeb RSS feed body was empty" if text.strip.empty?
+        unless text.include?("<item") || text.include?("<rss") || text.include?("<channel")
+          raise FeedError, "InciWeb RSS feed body was not recognizable RSS"
+        end
+
+        text.scan(%r{<item\b[^>]*>(.*?)</item>}mi).filter_map do |(item)|
+          title = decode_entities(extract_tag(item, "title"))
+          link = decode_entities(extract_tag(item, "link"))
+          next if title.nil? || link.nil?
+
+          unit, name = split_inciweb_title(title)
+          next if unit.nil? || name.nil?
+
+          # The RSS still emits http:// links; InciWeb 301s them to https.
+          {unit: unit, name: name, url: link.sub(%r{\Ahttp://(?=inciweb\.wildfire\.gov/)}, "https://")}
+        end
+      end
+
+      # Best-effort authoritative link for a WFIGS point: prefer an exact match
+      # on protecting unit and normalized name, then fall back to a name-only
+      # match but only when exactly one RSS entry carries that name.
+      def information_url_for(properties, entries)
+        return if entries.nil? || entries.empty?
+
+        name = normalize_incident_name(properties["IncidentName"])
+        return if name.nil?
+
+        unit = normalize_unit(properties["POOProtectingUnit"])
+        if unit
+          exact = entries.find { |entry| entry[:unit] == unit && entry[:name] == name }
+          return exact[:url] if exact
+        end
+
+        name_matches = entries.select { |entry| entry[:name] == name }
+        (name_matches.length == 1) ? name_matches.first[:url] : nil
       end
 
       def feature_list(body, label: "wildfire")
@@ -87,7 +142,7 @@ module BFP
         end
       end
 
-      def incident_hash(feature, perimeters_by_irwin)
+      def incident_hash(feature, perimeters_by_irwin, inciweb_entries = [])
         properties = feature["properties"] || {}
         irwin = normalize_irwin(properties["IrwinID"])
         return unless irwin
@@ -113,6 +168,7 @@ module BFP
           percent_contained: percent_contained,
           discovered_at: discovered_at,
           behavior: properties["FireBehaviorGeneral"],
+          information_url: information_url_for(properties, inciweb_entries),
           latitude: latitude,
           longitude: longitude,
           perimeter_geometry_json: perimeter_geometry,
@@ -165,6 +221,44 @@ module BFP
       def normalize_irwin(value)
         normalized = value.to_s.gsub(/[{}]/, "").strip.upcase
         normalized.empty? ? nil : normalized
+      end
+
+      def split_inciweb_title(title)
+        parts = title.to_s.strip.split(/\s+/, 2)
+        return [nil, nil] if parts.length < 2
+
+        [normalize_unit(parts[0]), normalize_incident_name(parts[1])]
+      end
+
+      def normalize_unit(value)
+        normalized = value.to_s.strip.upcase
+        normalized.empty? ? nil : normalized
+      end
+
+      def normalize_incident_name(value)
+        normalized = value.to_s.strip.sub(/\s*fire\z/i, "").strip.downcase
+        normalized.empty? ? nil : normalized
+      end
+
+      def extract_tag(fragment, tag)
+        raw = fragment[%r{<#{tag}\b[^>]*>(.*?)</#{tag}>}mi, 1]
+        return if raw.nil?
+
+        raw = raw[/\A\s*<!\[CDATA\[(.*?)\]\]>\s*\z/m, 1] || raw
+        stripped = raw.strip
+        stripped.empty? ? nil : stripped
+      end
+
+      def decode_entities(value)
+        return if value.nil?
+
+        value
+          .gsub("&lt;", "<")
+          .gsub("&gt;", ">")
+          .gsub("&quot;", "\"")
+          .gsub("&#39;", "'")
+          .gsub("&apos;", "'")
+          .gsub("&amp;", "&")
       end
 
       def epoch_ms_to_time(value)

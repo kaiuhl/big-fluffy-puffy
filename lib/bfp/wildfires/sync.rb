@@ -26,7 +26,10 @@ module BFP
 
         points = get(Feed.points_query_url)
         perimeters = get(Feed.perimeters_query_url)
-        incidents = Feed.parse(points.body, perimeters.body)
+        # InciWeb only carries the larger, staffed incidents and is a best-effort
+        # enrichment; a failed or unparseable RSS reply must not fail the sync.
+        inciweb = fetch_inciweb_entries
+        incidents = Feed.parse(points.body, perimeters.body, inciweb_entries: inciweb[:entries])
         # An empty points response would deactivate every incident and let the
         # site claim "no fires" off one bad upstream reply; fail the run and
         # keep the previous set instead.
@@ -34,6 +37,7 @@ module BFP
 
         counts = persist(incidents)
         perimeter_count = incidents.count { |incident| incident[:perimeter_geometry_json] }
+        information_url_count = incidents.count { |incident| incident[:information_url] }
 
         record_sync(
           started_at: started_at,
@@ -43,7 +47,7 @@ module BFP
           incident_count: counts[:incidents],
           perimeter_count: perimeter_count,
           duration_ms: elapsed_ms(monotonic),
-          metadata: {deactivated: counts[:deactivated]}
+          metadata: sync_metadata(counts[:deactivated], information_url_count, inciweb[:error])
         )
 
         {incidents: counts[:incidents], perimeters: perimeter_count, deactivated: counts[:deactivated], success: true}
@@ -61,12 +65,29 @@ module BFP
 
       private
 
+      # Fetches and parses the InciWeb RSS without letting a failure escape:
+      # returns the parsed entries plus the error (if any) so the caller can
+      # proceed with no links and record the error class in sync metadata.
+      def fetch_inciweb_entries
+        response = get(Feed::INCIWEB_RSS_URL)
+        {entries: Feed.parse_inciweb(response.body), error: nil}
+      rescue => error
+        {entries: [], error: error}
+      end
+
+      def sync_metadata(deactivated, information_url_count, inciweb_error)
+        metadata = {deactivated: deactivated, information_urls: information_url_count}
+        metadata[:inciweb_error] = inciweb_error.class.name if inciweb_error
+        metadata
+      end
+
       def persist(incidents)
         now = Time.now
         seen = []
 
         WildfireIncident.db.transaction do
           existing_perimeters = WildfireIncident.exclude(perimeter_geometry_json: nil).select_map(:irwin_id).to_set
+          existing_information_urls = WildfireIncident.exclude(information_url: nil).select_map(:irwin_id).to_set
 
           incidents.each do |attrs|
             row = row_for(attrs, now)
@@ -77,6 +98,12 @@ module BFP
             # AABB) rather than degrading an active fire back to a point.
             if attrs[:perimeter_geometry_json].nil? && existing_perimeters.include?(row[:irwin_id])
               update = update.except(:perimeter_geometry_json, :min_lon, :min_lat, :max_lon, :max_lat)
+            end
+            # InciWeb only lists staffed incidents and drops them once staffing
+            # ends; keep the last known information link rather than clearing it
+            # on a run where the RSS had no (or no matching) entry.
+            if attrs[:information_url].nil? && existing_information_urls.include?(row[:irwin_id])
+              update = update.except(:information_url)
             end
             WildfireIncident.dataset.insert_conflict(target: :irwin_id, update: update).insert(row)
           end
