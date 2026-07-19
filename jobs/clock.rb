@@ -8,8 +8,22 @@ require_relative "wildfire_jobs"
 # FIRE_POLL_INTERVAL_MINUTES / WILDFIRE_POLL_INTERVAL_MINUTES instead.
 interval = Integer(ENV.fetch("CLOCK_INTERVAL_SECONDS", "300"))
 
+# Jun 1 through Sep 30: sources must be checked at least daily even when the
+# configured interval is slower (production throttles to weekly off-season).
+def fire_season?(today = Date.today)
+  today >= Date.new(today.year, 6, 1) && today < Date.new(today.year, 10, 1)
+end
+
+def fire_poll_interval_minutes
+  configured = Integer(ENV.fetch("FIRE_POLL_INTERVAL_MINUTES", "0"))
+  return configured unless fire_season?
+
+  season_cap = Integer(ENV.fetch("FIRE_SEASON_POLL_INTERVAL_MINUTES", "1440"))
+  [configured, season_cap].min
+end
+
 def fire_poll_due?
-  minutes = Integer(ENV.fetch("FIRE_POLL_INTERVAL_MINUTES", "0"))
+  minutes = fire_poll_interval_minutes
   return true if minutes <= 0
 
   latest = BFP::FireRestrictions::RestrictionSource.where(active: true).max(:last_checked_at)
