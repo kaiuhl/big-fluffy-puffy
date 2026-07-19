@@ -94,6 +94,16 @@ RSpec.describe BFP::Wildfires::Proximity do
       expect(results.map { |result| result[:incident].name }).to include("EdgeFire")
     end
 
+    it "drops fires beyond within_miles even when they qualify for a regional tier" do
+      big_regional = point_fire(name: "BigRegional", miles_north: 20, acres: 5000.0)
+
+      default_names = described_class.for_geometry(boundary, incidents: [big_regional]).map { |r| r[:incident].name }
+      limited_names = described_class.for_geometry(boundary, incidents: [big_regional], within_miles: described_class::LAND_UNIT_NEARBY_MILES).map { |r| r[:incident].name }
+
+      expect(default_names).to include("BigRegional")
+      expect(limited_names).to be_empty
+    end
+
     it "handles GeometryCollection boundaries like the national park shapes" do
       collection = BFP::Places::Geometry.factory.collection([boundary])
       outside = point_fire(name: "Outside", miles_north: 15, acres: 200.0)

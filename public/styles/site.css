@@ -768,6 +768,16 @@ h1 {
   background: #131010;
 }
 
+/* Only small, unstaffed fires present: same bulletin, calmer voice. */
+.wildfire-callout-minor {
+  border-left-color: #5c2320;
+  background: #131010;
+}
+
+.wildfire-callout-minor .wildfire-callout-kicker {
+  color: #cfa29b;
+}
+
 .wildfire-callout-kicker {
   margin: 0;
   color: #f2867b;

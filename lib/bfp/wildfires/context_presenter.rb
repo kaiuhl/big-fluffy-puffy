@@ -32,7 +32,7 @@ module BFP
         geometry = boundary_geometry(slug)
         return none_context unless geometry
 
-        matches = Proximity.for_geometry(geometry, incidents: active_incidents)
+        matches = Proximity.for_geometry(geometry, incidents: active_incidents, within_miles: Proximity::LAND_UNIT_NEARBY_MILES)
         context_for(matches)
       end
 
@@ -51,7 +51,7 @@ module BFP
         return [] unless geometry
 
         stamp = as_of
-        Proximity.for_geometry(geometry, incidents: active_incidents)
+        Proximity.for_geometry(geometry, incidents: active_incidents, within_miles: Proximity::LAND_UNIT_NEARBY_MILES)
           .map { |entry| map_feature(entry[:incident], stamp) }
       end
 
@@ -60,9 +60,23 @@ module BFP
       def context_for(matches)
         {
           status: status_for(matches),
+          minor: minor_only?(matches),
           as_of: as_of,
           incidents: matches.first(MAX_INCIDENTS).map { |match| serialize_incident(match) }
         }
+      end
+
+      # A fire is significant when it is big enough to matter regionally or
+      # staffed enough to have a public information page; a set of purely
+      # minor fires still renders, but with calmer wording and tone.
+      def minor_only?(matches)
+        matches.any? && matches.none? { |match| significant?(match[:incident]) }
+      end
+
+      def significant?(incident)
+        return true unless incident.information_url.to_s.empty?
+
+        incident.acres.to_f >= Proximity::REGIONAL_MIN_ACRES
       end
 
       def status_for(matches)
@@ -118,11 +132,11 @@ module BFP
       end
 
       def stale_context
-        {status: :stale, as_of: nil, incidents: []}
+        {status: :stale, minor: false, as_of: nil, incidents: []}
       end
 
       def none_context
-        {status: :none, as_of: as_of, incidents: []}
+        {status: :none, minor: false, as_of: as_of, incidents: []}
       end
 
       def fresh?

@@ -1,18 +1,29 @@
 <% if wildfires && ![:none, :stale].include?(wildfires[:status]) %>
   <% status = wildfires[:status] %>
+  <% minor = wildfires[:minor] %>
   <% incidents = wildfires[:incidents] || [] %>
   <% closest = incidents.first %>
   <% area_scope = wildfire_scope == :area %>
-  <% headline = case status
+  <% place_word = area_scope ? "area" : "destination" %>
+  <% headline = if minor
+       case status
+       when :inside
+         area_scope ? "Small local fire activity is mapped inside this area." : "Small local fire activity is mapped at this location."
+       else
+         "Small local fire activity nearby \u2014 #{closest ? format("%.1f", closest[:distance_miles]) : "0.0"} mi from this #{place_word}."
+       end
+     else
+       case status
        when :inside
          area_scope ? "An active wildfire is mapped inside this area." : "An active wildfire is mapped at this location."
        when :near
-         "Active wildfire nearby \u2014 #{closest ? format("%.1f", closest[:distance_miles]) : "0.0"} mi from this #{area_scope ? "area" : "destination"}."
+         "Active wildfire nearby \u2014 #{closest ? format("%.1f", closest[:distance_miles]) : "0.0"} mi from this #{place_word}."
        else
          "Active wildfire activity in the region."
-       end %>
-  <section id="wildfire-notice" class="wildfire-callout wildfire-callout-<%= h(status) %>" aria-label="Active wildfire notice">
-    <p class="wildfire-callout-kicker">Active wildfire</p>
+       end
+     end %>
+  <section id="wildfire-notice" class="wildfire-callout wildfire-callout-<%= h(status) %><%= " wildfire-callout-minor" if minor %>" aria-label="Active wildfire notice">
+    <p class="wildfire-callout-kicker"><%= minor ? "Local fire activity" : "Active wildfire" %></p>
     <p class="wildfire-callout-headline"><strong><%= h(headline) %></strong></p>
     <% unless incidents.empty? %>
       <table class="wildfire-incident-table">

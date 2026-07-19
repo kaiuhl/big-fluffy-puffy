@@ -13,6 +13,10 @@ module BFP
       NEAR_MILES = 10
       REGIONAL_MILES = 30
       REGIONAL_MIN_ACRES = 100
+      # Land-unit pages cover huge areas already; fires beyond this distance
+      # from the boundary are regional noise there (trip-check points keep
+      # the wider REGIONAL_MILES context).
+      LAND_UNIT_NEARBY_MILES = 10
       METERS_PER_MILE = 1609.344
       EARTH_RADIUS_METERS = 6_378_137.0
       ACRE_SQUARE_METERS = 4046.86
@@ -81,14 +85,14 @@ module BFP
       # Classification against an arbitrary rgeo geometry (a forest boundary):
       # :inside when the incident footprint intersects the boundary, otherwise
       # the boundary-to-footprint distance.
-      def for_geometry(geometry, incidents:)
+      def for_geometry(geometry, incidents:, within_miles: REGIONAL_MILES)
         return [] unless geometry
 
         bounds = geometry_bounds(geometry)
         return [] unless bounds
 
         origin = [(bounds[0] + bounds[2]) / 2.0, (bounds[1] + bounds[3]) / 2.0]
-        boundary_bounds = expanded_geometry_bounds(geometry, REGIONAL_MILES)
+        boundary_bounds = expanded_geometry_bounds(geometry, within_miles)
         return [] unless boundary_bounds
         projected_boundary = reproject(geometry) { |x, y| project_coordinate(x, y, origin) }
 
@@ -103,6 +107,8 @@ module BFP
           else
             projected_footprint = reproject(footprint) { |x, y| project_coordinate(x, y, origin) }
             distance_miles = projected_boundary.distance(projected_footprint) / METERS_PER_MILE
+            next if distance_miles > within_miles
+
             tier = tier_for(distance_miles, incident)
             {incident: incident, tier: tier, distance_miles: distance_miles} if tier
           end

@@ -111,13 +111,71 @@ RSpec.describe BFP::Wildfires::ContextPresenter do
     end
   end
 
+  describe "minor rollup" do
+    before do
+      allow(presenter).to receive(:last_successful_sync).and_return(fresh_sync)
+    end
+
+    it "marks a set of small unlinked fires as minor" do
+      allow(presenter).to receive(:active_incidents).and_return([near_fire])
+
+      result = presenter.for_point(latitude: 44.0, longitude: -121.0)
+
+      expect(result[:status]).to eq(:near)
+      expect(result[:minor]).to be(true)
+    end
+
+    it "is not minor when any fire is big or has an information page" do
+      allow(presenter).to receive(:active_incidents).and_return([near_fire, perimeter_fire])
+
+      result = presenter.for_point(latitude: 44.0, longitude: -121.0)
+
+      expect(result[:minor]).to be(false)
+    end
+
+    it "treats a small fire with an InciWeb page as significant" do
+      linked_small = near_fire.dup
+      linked_small.information_url = "https://inciweb.wildfire.gov/incident-information/waoka-whisky-ridge-fire"
+      allow(presenter).to receive(:active_incidents).and_return([linked_small])
+
+      result = presenter.for_point(latitude: 44.0, longitude: -121.0)
+
+      expect(result[:minor]).to be(false)
+    end
+  end
+
+  describe "#for_land_unit distance limit" do
+    it "excludes fires beyond LAND_UNIT_NEARBY_MILES of the boundary" do
+      allow(presenter).to receive(:last_successful_sync).and_return(fresh_sync)
+      boundary = BFP::Places::Geometry.geojson_geometry(
+        "type" => "Polygon",
+        "coordinates" => [[[-121.1, 43.9], [-120.9, 43.9], [-120.9, 44.1], [-121.1, 44.1], [-121.1, 43.9]]]
+      )
+      allow(presenter).to receive(:boundary_geometry).with("test-forest").and_return(boundary)
+
+      far_latitude = 44.1 + (20 * deg_per_mile)
+      far_big_fire = WildfireIncidentDouble.new(
+        irwin_id: "FAR-0003", name: "Far Butte", acres: 6000.0, percent_contained: 0.0,
+        discovered_at: discovered, latitude: far_latitude, longitude: -121.0,
+        perimeter_geometry: nil,
+        min_lon: -121.05, min_lat: far_latitude - 0.05, max_lon: -120.95, max_lat: far_latitude + 0.05
+      )
+      allow(presenter).to receive(:active_incidents).and_return([far_big_fire])
+
+      result = presenter.for_land_unit("test-forest")
+
+      expect(result[:status]).to eq(:none)
+      expect(result[:incidents]).to eq([])
+    end
+  end
+
   describe "staleness TTL" do
     before { allow(presenter).to receive(:active_incidents).and_return([near_fire]) }
 
     it "suppresses everything past the max-age window" do
       allow(presenter).to receive(:last_successful_sync).and_return(double("WildfireSync", finished_at: now - (7 * 3600)))
 
-      expect(presenter.for_point(latitude: 44.0, longitude: -121.0)).to eq(status: :stale, as_of: nil, incidents: [])
+      expect(presenter.for_point(latitude: 44.0, longitude: -121.0)).to eq(status: :stale, minor: false, as_of: nil, incidents: [])
       expect(presenter.map_features(latitude: 44.0, longitude: -121.0)).to eq([])
     end
 
