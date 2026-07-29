@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Lint plus the full spec suite. Set RUN_DB_SPECS=true (with TEST_DATABASE_URL
+# pointing at a scratch database) to include the database integration specs.
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$root"
+
+run() {
+  if command -v mise >/dev/null 2>&1 && [[ -z "${BFP_SKIP_MISE:-}" ]]; then
+    mise exec -- "$@"
+  else
+    "$@"
+  fi
+}
+
+echo "==> standardrb"
+run bundle exec standardrb
+
+echo "==> rspec"
+run bundle exec rspec

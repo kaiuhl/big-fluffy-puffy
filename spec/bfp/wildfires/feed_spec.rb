@@ -26,6 +26,47 @@ RSpec.describe BFP::Wildfires::Feed do
       expect(query["outFields"]).to eq("poly_IncidentName,attr_PercentContained,poly_GISAcres,attr_FireDiscoveryDateTime,poly_IRWINID")
       expect(query["f"]).to eq("geojson")
     end
+
+    # Full-fidelity PNW perimeters passed 12 MB in July 2026 and blew Sync's
+    # body cap on every run; generalized rings keep the payload small.
+    it "generalizes perimeter geometry so the response stays far under the body cap" do
+      query = URI.decode_www_form(URI(described_class.perimeters_query_url).query).to_h
+
+      expect(query["geometryPrecision"]).to eq(described_class::PERIMETER_GEOMETRY_PRECISION.to_s)
+      expect(query["maxAllowableOffset"]).to eq(described_class::PERIMETER_MAX_ALLOWABLE_OFFSET.to_s)
+    end
+
+    it "pages both layers with a stable sort" do
+      points = URI.decode_www_form(URI(described_class.points_query_url(offset: 500)).query).to_h
+      perimeters = URI.decode_www_form(URI(described_class.perimeters_query_url).query).to_h
+
+      expect(points["orderByFields"]).to eq("IrwinID")
+      expect(points["resultOffset"]).to eq("500")
+      expect(points["resultRecordCount"]).to eq(described_class::PAGE_SIZE.to_s)
+      expect(perimeters["orderByFields"]).to eq("poly_IRWINID")
+      expect(perimeters["resultOffset"]).to eq("0")
+    end
+  end
+
+  describe ".more_pages?" do
+    it "is true only when ArcGIS reports a truncated page" do
+      truncated = {"type" => "FeatureCollection", "properties" => {"exceededTransferLimit" => true}, "features" => []}
+
+      expect(described_class.more_pages?(JSON.generate(truncated))).to be(true)
+      expect(described_class.more_pages?(JSON.generate({"features" => []}))).to be(false)
+      expect(described_class.more_pages?("not json")).to be(false)
+    end
+  end
+
+  describe ".retryable_error_code" do
+    it "returns the code for throttling and transient server errors" do
+      throttled = JSON.generate({"error" => {"code" => 429, "message" => "Too many requests."}})
+
+      expect(described_class.retryable_error_code(throttled)).to eq(429)
+      expect(described_class.retryable_error_code(JSON.generate({"error" => {"code" => 400}}))).to be_nil
+      expect(described_class.retryable_error_code(JSON.generate({"features" => []}))).to be_nil
+      expect(described_class.retryable_error_code("not json")).to be_nil
+    end
   end
 
   describe ".parse" do

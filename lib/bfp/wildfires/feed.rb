@@ -32,44 +32,103 @@ module BFP
       POINT_OUT_FIELDS = %w[IncidentName PercentContained IncidentSize FireDiscoveryDateTime FireBehaviorGeneral IrwinID POOProtectingUnit IncidentTypeCategory IncidentShortDescription TotalIncidentPersonnel].freeze
       PERIMETER_OUT_FIELDS = %w[poly_IncidentName attr_PercentContained poly_GISAcres attr_FireDiscoveryDateTime poly_IRWINID].freeze
 
+      # Both feeds are paged with a stable sort so a growing incident set can
+      # never silently truncate (or blow the fetcher's body cap) the way an
+      # unbounded single request does.
+      PAGE_SIZE = 250
+      POINT_ORDER_FIELD = "IrwinID".freeze
+      PERIMETER_ORDER_FIELD = "poly_IRWINID".freeze
+
+      # Full-fidelity PNW perimeters passed 12 MB in July 2026 and failed every
+      # sync for days. Generalizing rings to ~55 m at 5 decimal places is about
+      # twenty times smaller and still far finer than the 10/30-mile proximity
+      # tiers or map rendering need.
+      PERIMETER_GEOMETRY_PRECISION = 5
+      PERIMETER_MAX_ALLOWABLE_OFFSET = 0.0005
+
+      # ArcGIS reports throttling and transient server trouble as an error
+      # payload under HTTP 200; these codes are worth retrying, others are not.
+      RETRYABLE_ERROR_CODES = [429, 500, 502, 503, 504].freeze
+
       EARTH_RADIUS_METERS = 6_378_137.0
       ACRE_SQUARE_METERS = 4046.86
       DEFAULT_POINT_RADIUS_METERS = 500.0
 
-      def points_query_url
-        query_url(POINTS_LAYER_URL, POINT_OUT_FIELDS)
+      def points_query_url(offset: 0)
+        query_url(POINTS_LAYER_URL, POINT_OUT_FIELDS, order_by: POINT_ORDER_FIELD, offset: offset)
       end
 
-      def perimeters_query_url
-        query_url(PERIMETERS_LAYER_URL, PERIMETER_OUT_FIELDS)
+      def perimeters_query_url(offset: 0)
+        query_url(
+          PERIMETERS_LAYER_URL,
+          PERIMETER_OUT_FIELDS,
+          order_by: PERIMETER_ORDER_FIELD,
+          offset: offset,
+          extra: {
+            geometryPrecision: PERIMETER_GEOMETRY_PRECISION,
+            maxAllowableOffset: PERIMETER_MAX_ALLOWABLE_OFFSET
+          }
+        )
       end
 
-      def query_url(layer_url, out_fields)
+      def query_url(layer_url, out_fields, order_by: nil, offset: 0, extra: {})
         uri = URI("#{layer_url.sub(%r{/\z}, "")}/query")
         uri.query = URI.encode_www_form(
-          where: "1=1",
-          geometry: PNW_ENVELOPE.join(","),
-          geometryType: "esriGeometryEnvelope",
-          inSR: 4326,
-          spatialRel: "esriSpatialRelIntersects",
-          outFields: out_fields.join(","),
-          returnGeometry: "true",
-          outSR: 4326,
-          f: "geojson"
+          {
+            where: "1=1",
+            geometry: PNW_ENVELOPE.join(","),
+            geometryType: "esriGeometryEnvelope",
+            inSR: 4326,
+            spatialRel: "esriSpatialRelIntersects",
+            outFields: out_fields.join(","),
+            returnGeometry: "true",
+            outSR: 4326,
+            orderByFields: order_by,
+            resultOffset: offset,
+            resultRecordCount: PAGE_SIZE,
+            f: "geojson"
+          }.merge(extra).compact
         )
         uri.to_s
       end
 
+      # True when ArcGIS cut the page short at the layer's max record count, so
+      # the caller should request the next resultOffset.
+      def more_pages?(body)
+        payload = payload_for(body)
+        return false unless payload
+
+        value = payload.dig("properties", "exceededTransferLimit")
+        value = payload["exceededTransferLimit"] if value.nil?
+        value == true || value.to_s == "true"
+      end
+
+      # The ArcGIS error code when the reply is one worth retrying (throttling
+      # or a transient server error), otherwise nil.
+      def retryable_error_code(body)
+        payload = payload_for(body)
+        return unless payload
+
+        code = payload.dig("error", "code")
+        code if RETRYABLE_ERROR_CODES.include?(code)
+      end
+
       # Returns an array of normalized incident hashes with keys matching the
       # wildfire_incidents columns (perimeter/attributes still plain hashes).
+      # Each feed argument is either a single response body or an already
+      # validated feature array (Sync pages the feeds and validates per page).
       # inciweb_entries is the already-parsed output of parse_inciweb; parse
       # stays pure and never does HTTP, so callers fetch the RSS themselves.
-      def parse(points_body, perimeters_body, inciweb_entries: [])
-        perimeters_by_irwin = index_perimeters(feature_list(perimeters_body, label: "perimeters"))
+      def parse(points, perimeters, inciweb_entries: [])
+        perimeters_by_irwin = index_perimeters(features_for(perimeters, label: "perimeters"))
 
-        feature_list(points_body, label: "points").filter_map do |feature|
+        features_for(points, label: "points").filter_map do |feature|
           incident_hash(feature, perimeters_by_irwin, inciweb_entries)
         end
+      end
+
+      def features_for(value, label:)
+        value.is_a?(Array) ? value : feature_list(value, label: label)
       end
 
       # Parses the InciWeb incidents RSS into normalized join entries. Each item
@@ -130,6 +189,13 @@ module BFP
         features
       rescue JSON::ParserError => parse_error
         raise FeedError, "#{label} feed returned invalid JSON: #{parse_error.message}"
+      end
+
+      def payload_for(body)
+        payload = body.is_a?(Hash) ? body : JSON.parse(body.to_s)
+        payload.is_a?(Hash) ? payload : nil
+      rescue JSON::ParserError
+        nil
       end
 
       def index_perimeters(features)

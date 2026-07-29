@@ -12,24 +12,36 @@ module BFP
       TIMEOUT_SECONDS = 15
       MAX_BODY_BYTES = 8 * 1024 * 1024
       REDIRECT_LIMIT = 5
+      MAX_PAGES = 20
+      # ArcGIS throttles this shared public service often enough that a single
+      # 429 used to cost a whole sync cycle. Its quota window is a minute, so
+      # back off in that neighborhood rather than retrying straight away.
+      MAX_ATTEMPTS = 3
+      RETRY_BACKOFF_SECONDS = 20
 
       Response = Struct.new(:code, :body)
 
-      def initialize(timeout_seconds: TIMEOUT_SECONDS, max_body_bytes: MAX_BODY_BYTES)
+      def initialize(timeout_seconds: TIMEOUT_SECONDS, max_body_bytes: MAX_BODY_BYTES,
+        max_attempts: MAX_ATTEMPTS, retry_backoff_seconds: RETRY_BACKOFF_SECONDS)
         @timeout_seconds = timeout_seconds
         @max_body_bytes = max_body_bytes
+        @max_attempts = max_attempts
+        @retry_backoff_seconds = retry_backoff_seconds
       end
 
       def run
         started_at = Time.now
         monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-        points = get(Feed.points_query_url)
-        perimeters = get(Feed.perimeters_query_url)
+        points = fetch_feed("points") { |offset| Feed.points_query_url(offset: offset) }
+        # Perimeters are enrichment, not the incident set: an unusable reply
+        # degrades this run to points-only (each incident keeps its last known
+        # perimeter) instead of hiding every fire behind the staleness TTL.
+        perimeters = fetch_perimeters
         # InciWeb only carries the larger, staffed incidents and is a best-effort
         # enrichment; a failed or unparseable RSS reply must not fail the sync.
         inciweb = fetch_inciweb_entries
-        incidents = Feed.parse(points.body, perimeters.body, inciweb_entries: inciweb[:entries])
+        incidents = Feed.parse(points[:features], perimeters[:features], inciweb_entries: inciweb[:entries])
         # An empty points response would deactivate every incident and let the
         # site claim "no fires" off one bad upstream reply; fail the run and
         # keep the previous set instead.
@@ -42,12 +54,12 @@ module BFP
         record_sync(
           started_at: started_at,
           success: true,
-          points_status: points.code,
-          perimeters_status: perimeters.code,
+          points_status: points[:code],
+          perimeters_status: perimeters[:code],
           incident_count: counts[:incidents],
           perimeter_count: perimeter_count,
           duration_ms: elapsed_ms(monotonic),
-          metadata: sync_metadata(counts[:deactivated], information_url_count, inciweb[:error])
+          metadata: sync_metadata(counts[:deactivated], information_url_count, inciweb[:error], perimeters[:error])
         )
 
         {incidents: counts[:incidents], perimeters: perimeter_count, deactivated: counts[:deactivated], success: true}
@@ -55,8 +67,8 @@ module BFP
         record_sync(
           started_at: started_at || Time.now,
           success: false,
-          points_status: points&.code,
-          perimeters_status: perimeters&.code,
+          points_status: points&.dig(:code),
+          perimeters_status: perimeters&.dig(:code),
           duration_ms: elapsed_ms(monotonic),
           error: error
         )
@@ -64,6 +76,51 @@ module BFP
       end
 
       private
+
+      # Pages one feed until ArcGIS stops reporting a truncated page, returning
+      # the flattened features plus the first page's HTTP status. Each page is
+      # validated as it arrives so a bad page is retried, not parsed later.
+      def fetch_feed(label)
+        features = []
+        code = nil
+        pages = 0
+
+        while pages < MAX_PAGES
+          page = fetch_page(yield(pages * Feed::PAGE_SIZE), label)
+          code ||= page[:code]
+          features.concat(page[:features])
+          pages += 1
+          break unless page[:more]
+        end
+
+        {features: features, code: code, pages: pages}
+      end
+
+      def fetch_perimeters
+        fetch_feed("perimeters") { |offset| Feed.perimeters_query_url(offset: offset) }.merge(error: nil)
+      rescue => error
+        {features: [], code: nil, pages: 0, error: error}
+      end
+
+      # One validated page: throttling replies, transport failures, and
+      # unusable bodies are all retried with backoff before the run gives up.
+      def fetch_page(url, label)
+        attempts = 0
+
+        begin
+          attempts += 1
+          response = get(url)
+          retryable = Feed.retryable_error_code(response.body)
+          raise Feed::FeedError, "#{label} feed returned a retryable ArcGIS error #{retryable}" if retryable
+
+          {code: response.code, features: Feed.feature_list(response.body, label: label), more: Feed.more_pages?(response.body)}
+        rescue
+          raise if attempts >= @max_attempts
+
+          sleep(@retry_backoff_seconds * attempts) if @retry_backoff_seconds.to_f.positive?
+          retry
+        end
+      end
 
       # Fetches and parses the InciWeb RSS without letting a failure escape:
       # returns the parsed entries plus the error (if any) so the caller can
@@ -75,9 +132,13 @@ module BFP
         {entries: [], error: error}
       end
 
-      def sync_metadata(deactivated, information_url_count, inciweb_error)
+      def sync_metadata(deactivated, information_url_count, inciweb_error, perimeters_error)
         metadata = {deactivated: deactivated, information_urls: information_url_count}
         metadata[:inciweb_error] = inciweb_error.class.name if inciweb_error
+        if perimeters_error
+          metadata[:perimeters_error] = perimeters_error.class.name
+          metadata[:perimeters_error_message] = perimeters_error.message.to_s[0, 500]
+        end
         metadata
       end
 

@@ -34,6 +34,13 @@ mise exec -- bundle exec standardrb
 mise exec -- bundle exec puma -C config/puma.rb
 ```
 
+`bin/check` runs lint plus the full suite in one shot (it honors `RUN_DB_SPECS`
+and `TEST_DATABASE_URL`):
+
+```sh
+bin/check
+```
+
 Local Postgres through Docker:
 
 ```sh
@@ -156,6 +163,22 @@ fetch is best-effort and non-fatal: a failure never fails a sync, it just record
 `inciweb_error` in `wildfire_syncs.metadata_json` and proceeds with no links. Only
 larger, staffed incidents get an InciWeb page, so most fires have no link and that
 is expected; a stored link is preserved across runs that lack a matching entry.
+
+Feed fetching is deliberately defensive, because a run of failed syncs trips the
+staleness TTL and hides every fire sitewide (it did for four days in July 2026,
+when full-fidelity PNW perimeters grew past the 8 MB body cap):
+
+- Both layers are paged (`Feed::PAGE_SIZE`, `resultOffset`, stable `orderByFields`)
+  so a growing incident set can never truncate or outgrow the cap.
+- Perimeter geometry is generalized server-side (`maxAllowableOffset` ~55 m,
+  `geometryPrecision` 5) — about 20x smaller and still finer than the 10/30-mile
+  proximity tiers or the map need.
+- ArcGIS reports throttling as a 429 payload under HTTP 200; retryable codes and
+  transport failures get `Sync::MAX_ATTEMPTS` tries with backoff.
+- Only the points feed is fatal. A failed perimeters fetch degrades the run to
+  points-only (each incident keeps its last known perimeter) and records
+  `perimeters_error` in `wildfire_syncs.metadata_json`, exactly like InciWeb.
+  Never make an enrichment feed able to zero out the public fire set.
 
 - Manual refresh: `mise exec -- bundle exec rake wildfires:sync` (plain HTTP, no LLM cost).
 - Scheduled: the clock enqueues `BFP::Wildfires::SyncJob` when `WILDFIRE_POLL_ENABLED=true`,
