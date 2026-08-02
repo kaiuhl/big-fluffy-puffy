@@ -194,10 +194,10 @@ when full-fidelity PNW perimeters grew past the 8 MB body cap):
 
 The catalog currently seeds:
 
-- 26 land units total.
-- 23 active land units.
-- 113 sources total.
-- 101 active sources.
+- 31 land units total.
+- 28 active land units.
+- 135 sources total.
+- 123 active sources.
 
 Cost safety matters. Defaults should stay manual and cheap:
 
