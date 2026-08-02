@@ -10,7 +10,12 @@
     bfp_llm_parse_enabled: "false"
     bfp_llm_escalation_enabled: "false"
     bfp_fire_auto_poll_enabled: "false"
-    bfp_clock_interval_seconds: "604800"
+    # Keep the clock loop a fast heartbeat; throttle pipelines with their
+    # own interval gates below (a weekly loop interval once froze wildfire
+    # sync for days and tripped the staleness TTL).
+    bfp_clock_interval_seconds: "300"
+    bfp_fire_poll_interval_minutes: "10080"
+    bfp_fire_season_poll_interval_minutes: "10080"
     bfp_fire_poll_batch_size: "150"
     bfp_google_analytics_measurement_id: G-F2V4N8BKGS
     bfp_bedrock_primary_model_id: global.anthropic.claude-haiku-4-5-20251001-v1:0
@@ -51,6 +56,10 @@
           value: "{{ bfp_fire_auto_poll_enabled }}"
         - key: CLOCK_INTERVAL_SECONDS
           value: "{{ bfp_clock_interval_seconds }}"
+        - key: FIRE_POLL_INTERVAL_MINUTES
+          value: "{{ bfp_fire_poll_interval_minutes }}"
+        - key: FIRE_SEASON_POLL_INTERVAL_MINUTES
+          value: "{{ bfp_fire_season_poll_interval_minutes }}"
         - key: FIRE_POLL_BATCH_SIZE
           value: "{{ bfp_fire_poll_batch_size }}"
         - key: GOOGLE_ANALYTICS_MEASUREMENT_ID

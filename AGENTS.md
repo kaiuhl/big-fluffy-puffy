@@ -188,6 +188,9 @@ when full-fidelity PNW perimeters grew past the 8 MB body cap):
 - The clock loop must stay a fast heartbeat (`CLOCK_INTERVAL_SECONDS` ~300). To slow one
   pipeline, use its own gate — `FIRE_POLL_INTERVAL_MINUTES` (production uses 10080 for the
   weekly LLM-cost throttle) or `WILDFIRE_POLL_INTERVAL_MINUTES` — never the loop interval;
+  note the fire gate is capped at `FIRE_SEASON_POLL_INTERVAL_MINUTES` (default 1440, daily)
+  from Jun 1–Sep 30, so weekly parses in season require setting that cap too (production
+  sets both to 10080 as of Aug 2026);
   a weekly loop interval once put wildfire sync to sleep for days and tripped the staleness TTL.
 - Surfaced via `server/views/shared/_wildfire_callout.erb` on trip-check and land-unit
   pages, plus `map_status: "wildfire"` features on both map endpoints.
