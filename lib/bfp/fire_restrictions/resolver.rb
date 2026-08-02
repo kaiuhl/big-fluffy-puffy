@@ -16,6 +16,23 @@ module BFP
         allowed
         unknown
       ].freeze
+      # Statuses that represent an active emergency fire order, as opposed
+      # to a permanent baseline regulation or the absence of restrictions.
+      ACTIVE_ORDER_STATUSES = %w[stage_1 stage_2 full closure].freeze
+      # Used only to pick the published candidate when sources agree on the
+      # campfire answer but label the status differently; the stricter and
+      # more specific label wins.
+      STATUS_SEVERITY = {
+        "closure" => 100,
+        "full" => 90,
+        "stage_2" => 80,
+        "stage_1" => 70,
+        "year_round" => 60,
+        "advisory" => 50,
+        "partial" => 40,
+        "none" => 10,
+        "unknown" => 0
+      }.freeze
       SOURCE_PRECEDENCE = {
         "arcgis_feature_layer" => 100,
         "fs_fire_info_page" => 90,
@@ -43,7 +60,9 @@ module BFP
         return unless land_unit
 
         candidates = accepted_candidates(land_unit)
-        observation = candidates.max_by { |candidate| candidate_sort_key(candidate) }
+        comparison = comparison_candidates(candidates)
+        observation = preferred_candidate(comparison) ||
+          candidates.max_by { |candidate| candidate_sort_key(candidate) }
         status = status_record(land_unit)
         previous = status.new? ? nil : {status: status.status, campfire_policy: status.campfire_policy}
 
@@ -67,16 +86,57 @@ module BFP
       private
 
       def accepted_candidates(land_unit)
-        RestrictionObservation
+        current = RestrictionObservation
           .where(land_unit_id: land_unit.id, review_status: %w[accepted auto_accepted])
           .where(Sequel.|({scope: nil}, {scope: PUBLISHABLE_SCOPES}))
           .all
           .select { |candidate| @observation_freshness.current?(candidate) }
+
+        latest_per_source(current)
+      end
+
+      # A source's newest accepted parse supersedes its older ones; re-parsing
+      # unchanged content (for example after a parser fix) must not leave the
+      # earlier observation competing with its replacement.
+      def latest_per_source(observations)
+        observations
+          .group_by(&:restriction_source_id)
+          .map { |_, group| group.max_by(&:created_at) }
       end
 
       def conflicting?(candidates)
-        statuses = candidates.filter_map { |candidate| candidate.status unless candidate.status == "unknown" }.uniq
-        statuses.length > 1
+        comparison = comparison_candidates(candidates)
+        statuses = comparison.map(&:status).uniq
+        return false if statuses.length <= 1
+
+        # Sources often describe the same reality with different status
+        # vocabulary (an ArcGIS layer's stage number, an alerts page's
+        # campfire ban, a fire page's "full"). Only treat them as conflicting
+        # when they disagree on the effective campfire answer.
+        policies = comparison.map do |candidate|
+          effective_campfire_policy(candidate.status, candidate.campfire_policy)
+        end.uniq
+
+        policies.length > 1 || policies.first == "unknown"
+      end
+
+      # Candidates eligible to represent the published status. Status
+      # "unknown" rows never outrank a real status. A permanent year-round
+      # baseline regulation coexists with an active emergency fire order
+      # rather than conflicting with it, so it is set aside when such an
+      # order is present; without one it still participates, keeping the
+      # relaxed-season disagreement (year_round versus none) in human review.
+      def comparison_candidates(candidates)
+        active = candidates.reject { |candidate| candidate.status == "unknown" }
+        return active unless active.any? { |candidate| ACTIVE_ORDER_STATUSES.include?(candidate.status) }
+
+        active.reject { |candidate| candidate.status == "year_round" }
+      end
+
+      def preferred_candidate(comparison)
+        comparison.max_by do |candidate|
+          [STATUS_SEVERITY.fetch(candidate.status, 0)] + candidate_sort_key(candidate)
+        end
       end
 
       def publish_unknown(status, land_unit)

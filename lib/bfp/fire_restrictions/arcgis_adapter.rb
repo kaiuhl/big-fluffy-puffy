@@ -4,10 +4,14 @@ require "uri"
 module BFP
   module FireRestrictions
     class ArcgisAdapter
+      # The Central Oregon layer's Status field encodes public-use
+      # restriction stages, not a generic none/partial/full scale: its
+      # Comments link to stage announcements (for example "...move-to-stage-2
+      # -public-use-fire-restrictions").
       STATUS_MAP = {
         0 => ["none", "allowed", "No restrictions"],
-        1 => ["partial", "developed_sites_only", "Partial restrictions"],
-        2 => ["full", "prohibited", "Full restrictions"]
+        1 => ["stage_1", "developed_sites_only", "Stage 1 public use fire restrictions"],
+        2 => ["stage_2", "prohibited", "Stage 2 public use fire restrictions"]
       }.freeze
 
       STATUS_FIELDS = %w[Status FireRestrictionStatus RestrictionStatus restriction_status status].freeze

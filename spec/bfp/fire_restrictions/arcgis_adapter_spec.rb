@@ -20,10 +20,11 @@ RSpec.describe BFP::FireRestrictions::ArcgisAdapter do
     expect(url).to include("returnGeometry=true")
   end
 
-  it "maps known Central Oregon status values" do
+  it "maps known Central Oregon status values to public-use restriction stages" do
     expect(parse_status(0)).to include("status" => "none", "campfire_policy" => "allowed")
-    expect(parse_status(1)).to include("status" => "partial", "campfire_policy" => "developed_sites_only")
-    expect(parse_status(2)).to include("status" => "full", "campfire_policy" => "prohibited")
+    expect(parse_status(1)).to include("status" => "stage_1", "campfire_policy" => "developed_sites_only")
+    expect(parse_status(2)).to include("status" => "stage_2", "campfire_policy" => "prohibited")
+    expect(parse_status(2)["summary"]).to include("Stage 2 public use fire restrictions")
   end
 
   it "marks unexpected status values unknown" do
