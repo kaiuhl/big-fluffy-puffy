@@ -210,6 +210,11 @@ land_units:
         source_type: fs_fire_info_page
         path: /fire/info/public-use-restrictions
         parser_key: usfs_html
+      - key: public-use-restrictions-stage-2
+        name: Public Use Restrictions Stage 2
+        source_type: fs_alert_detail
+        path: /alerts/public-use-restrictions-stage-2
+        parser_key: usfs_html
 
   - slug: wallowa-whitman
     name: Wallowa-Whitman National Forest
@@ -246,6 +251,12 @@ land_units:
     market_bucket: northern_california
     official_url: https://www.fs.usda.gov/r05/sixrivers
     active: true
+    extra_source_paths:
+      - key: forest-fire-restrictions
+        name: Forest Fire Restrictions
+        source_type: fs_alert_detail
+        path: /alerts/forest-fire-restrictions
+        parser_key: usfs_html
 
   - slug: shasta-trinity
     name: Shasta-Trinity National Forest
@@ -264,6 +275,12 @@ land_units:
     market_bucket: northern_california
     official_url: https://www.fs.usda.gov/r05/mendocino
     active: true
+    extra_source_paths:
+      - key: fire-restrictions-effect
+        name: Fire Restrictions In Effect
+        source_type: fs_alert_detail
+        path: /alerts/fire-restrictions-effect
+        parser_key: usfs_html
 
   - slug: modoc
     name: Modoc National Forest
@@ -297,6 +314,12 @@ land_units:
     market_bucket: northern_california
     official_url: https://www.fs.usda.gov/r05/plumas
     active: true
+    extra_source_paths:
+      - key: stage-i-fire-restrictions
+        name: Stage I Fire Restrictions
+        source_type: fs_alert_detail
+        path: /alerts/stage-i-fire-restrictions-plumas-national-forest
+        parser_key: usfs_html
 
   - slug: north-cascades
     name: North Cascades National Park Service Complex
