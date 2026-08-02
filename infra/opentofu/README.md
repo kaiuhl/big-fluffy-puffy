@@ -13,11 +13,14 @@ Current resources:
   10:00 UTC via the `AutoSnapshot` add-on. `prevent_destroy` blocks any
   plan that would replace the box.
 
+- Versioned, lifecycle-managed S3 bucket for nightly Postgres dumps, with
+  a write-only IAM user whose credentials go on the box (see
+  `docs/postgres-backup-spec.md`).
+
 Planned resources:
 
 - static IPv4 attached to the instance
 - Route 53 hosted zones for BFP domains
-- S3 bucket for encrypted Postgres dumps
 
 ## One-Time Setup
 

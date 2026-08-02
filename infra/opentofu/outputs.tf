@@ -19,6 +19,22 @@ output "bedrock_parser_secret_access_key" {
   sensitive   = true
 }
 
+output "pg_backup_bucket" {
+  description = "S3 bucket that receives Postgres dumps."
+  value       = aws_s3_bucket.pg_backups.bucket
+}
+
+output "pg_backup_access_key_id" {
+  description = "Access key ID for the host's write-only Postgres backup credentials."
+  value       = aws_iam_access_key.pg_backup.id
+}
+
+output "pg_backup_secret_access_key" {
+  description = "Secret access key for the host's write-only Postgres backup credentials. This is also stored in OpenTofu state."
+  value       = aws_iam_access_key.pg_backup.secret
+  sensitive   = true
+}
+
 output "bedrock_parser_env" {
   description = "Environment lines for the production app .env. This contains secrets and is also stored in OpenTofu state."
   value       = <<-ENV

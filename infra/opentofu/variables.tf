@@ -42,6 +42,18 @@ variable "bedrock_primary_marketplace_product_id" {
   default     = "prod-xdkflymybwmvi"
 }
 
+variable "pg_backup_user_name" {
+  type        = string
+  description = "IAM user name for the host's write-only Postgres backup credentials."
+  default     = null
+}
+
+variable "pg_backup_bucket_name" {
+  type        = string
+  description = "S3 bucket name for Postgres dumps. Defaults to a name derived from environment and account ID."
+  default     = null
+}
+
 variable "bedrock_escalation_model_id" {
   type        = string
   description = "Escalation Bedrock inference profile model ID allowed for difficult parser cases."

@@ -125,6 +125,8 @@ OpenTofu in `infra/opentofu` owns the Bedrock parser IAM user, access key, allow
 
 Ansible in `infra/ansible` writes those credentials and conservative parser flags into the production `.env`. By default it keeps `LLM_PARSE_ENABLED=false`, `LLM_ESCALATION_ENABLED=false`, and `FIRE_AUTO_POLL_ENABLED=false`.
 
+Postgres backups follow `docs/postgres-backup-spec.md`: a nightly verified `pg_dump` (09:15 UTC, `bfp-pg-backup` systemd timer, script at `scripts/backup/pg_backup_to_s3.sh`) uploads to the versioned bucket `bfp-production-pg-backups-825135541567` with write-only credentials kept in `/etc/bfp/pg-backup.env`, deliberately outside the app `.env`. The dump runs before the 10:00 UTC snapshot so each snapshot carries that day's dump in `/var/backups/pg`.
+
 ## Fire Restrictions
 
 Current public endpoints:

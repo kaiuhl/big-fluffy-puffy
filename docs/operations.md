@@ -125,15 +125,39 @@ Remaining secret needs:
 
 ## Backups
 
-This is not implemented yet. The first acceptable backup plan is:
+Two layers, specified in `docs/postgres-backup-spec.md`:
 
-- Nightly `pg_dump` from the Postgres container.
-- Encrypt the dump before it leaves the instance.
-- Store it in a low-cost S3 bucket.
-- Keep at least 7 daily and 4 weekly restore points.
-- Test restore into a throwaway local database before trusting the system.
+- **Lightsail auto-snapshots** of `bfp-web-1`, daily at 10:00 UTC, 7-day
+  rolling window, managed in `infra/opentofu/lightsail.tf`. This is the
+  whole-box recovery path (OS, Docker, Caddy, certs, `.env`, Postgres
+  volume together).
+- **Nightly verified `pg_dump` to S3**, daily at 09:15 UTC via the
+  `bfp-pg-backup` systemd timer, uploaded with write-only credentials to
+  the versioned bucket `bfp-production-pg-backups-825135541567` (365-day
+  retention). This is the durable data backup.
 
-Lightsail snapshots are useful for machine recovery, but they are not a substitute for database dumps.
+Dumps are encrypted server-side (SSE-S3) rather than client-side — a
+deliberate deviation from the original plan here, because client-side keys
+need their own recovery story and the data is public fire information.
+
+Check the last dump from an operator machine:
+
+```sh
+aws s3 ls s3://bfp-production-pg-backups-825135541567/postgres/bfp_production/ | tail
+```
+
+Check the timer and last run on the box:
+
+```sh
+systemctl list-timers bfp-pg-backup.timer
+journalctl -u bfp-pg-backup -n 20
+```
+
+Run a manual backup:
+
+```sh
+sudo systemctl start bfp-pg-backup.service
+```
 
 ## Upgrade Posture
 

@@ -8,6 +8,10 @@ Current responsibilities:
 - Install least-privilege Bedrock parser access keys created by OpenTofu.
 - Install the optional NPS Data API key used by national park alert sources.
 - Keep paid parsing, automatic polling, and Sonnet escalation disabled by default.
+- Install the nightly Postgres dump timer: AWS CLI v2, write-only backup
+  credentials in `/etc/bfp/pg-backup.env`, and the `bfp-pg-backup`
+  systemd service and timer (tasks tagged `pg_backup`; see
+  `docs/postgres-backup-spec.md`).
 
 Planned responsibilities:
 
@@ -15,8 +19,6 @@ Planned responsibilities:
 - create deploy user
 - harden SSH
 - configure firewall
-- install project systemd units
-- install nightly Postgres dump timer
 
 ## Inventory
 
@@ -45,3 +47,22 @@ The playbook writes these values into `/srv/bfp/.env` with mode `0600`. It leave
 To configure National Park Service alert polling, pass the free NPS Data API key
 as `-e bfp_nps_api_key=...`. The playbook writes it as `NPS_API_KEY` and does
 not enable automatic polling.
+
+## Configure Postgres Backups
+
+From the repo root after `infra/opentofu` has been applied:
+
+```sh
+ansible-playbook \
+  -i infra/ansible/inventory.ini \
+  infra/ansible/playbook.yml \
+  --tags pg_backup \
+  -e bfp_pg_backup_bucket="$(cd infra/opentofu && tofu output -raw pg_backup_bucket)" \
+  -e bfp_pg_backup_access_key_id="$(cd infra/opentofu && tofu output -raw pg_backup_access_key_id)" \
+  -e bfp_pg_backup_secret_access_key="$(cd infra/opentofu && tofu output -raw pg_backup_secret_access_key)"
+```
+
+The backup credentials go to `/etc/bfp/pg-backup.env` (root, `0600`), not
+`/srv/bfp/.env`, so app containers never see them. The timer runs the dump
+script from the production checkout, so the script itself deploys with
+`git pull`.

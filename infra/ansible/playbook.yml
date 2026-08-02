@@ -15,6 +15,9 @@
     bfp_google_analytics_measurement_id: G-F2V4N8BKGS
     bfp_bedrock_primary_model_id: global.anthropic.claude-haiku-4-5-20251001-v1:0
     bfp_bedrock_escalation_model_id: global.anthropic.claude-sonnet-4-5-20250929-v1:0
+    bfp_pg_backup_env_file: /etc/bfp/pg-backup.env
+    bfp_pg_backup_spool_dir: /var/backups/pg
+    bfp_pg_backup_schedule: "*-*-* 09:15:00"
   tasks:
     - name: Ensure app directory exists
       ansible.builtin.file:
@@ -86,3 +89,130 @@
         mode: "0600"
       when: bfp_nps_api_key is defined
       no_log: true
+
+    - name: Ensure unzip is present for the AWS CLI installer
+      ansible.builtin.apt:
+        name: unzip
+        state: present
+      tags: [pg_backup]
+
+    - name: Install AWS CLI v2
+      ansible.builtin.shell: |
+        set -e
+        curl -fsSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
+        unzip -oq /tmp/awscliv2.zip -d /tmp/awscliv2
+        /tmp/awscliv2/aws/install
+        rm -rf /tmp/awscliv2 /tmp/awscliv2.zip
+      args:
+        creates: /usr/local/bin/aws
+      tags: [pg_backup]
+
+    - name: Ensure /etc/bfp exists
+      ansible.builtin.file:
+        path: /etc/bfp
+        state: directory
+        mode: "0755"
+      tags: [pg_backup]
+
+    - name: Ensure backup spool directory exists
+      ansible.builtin.file:
+        path: "{{ bfp_pg_backup_spool_dir }}"
+        state: directory
+        mode: "0700"
+      tags: [pg_backup]
+
+    - name: Ensure backup env file exists
+      ansible.builtin.file:
+        path: "{{ bfp_pg_backup_env_file }}"
+        state: touch
+        mode: "0600"
+        modification_time: preserve
+        access_time: preserve
+      tags: [pg_backup]
+
+    # Backup credentials deliberately live outside {{ bfp_env_file }} so the
+    # app containers never see S3 credentials.
+    - name: Configure non-secret backup environment
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_pg_backup_env_file }}"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+        mode: "0600"
+      loop:
+        - key: AWS_REGION
+          value: "{{ bfp_aws_region }}"
+        - key: PG_BACKUP_APP_PATH
+          value: "{{ bfp_app_path }}"
+        - key: PG_BACKUP_SPOOL_DIR
+          value: "{{ bfp_pg_backup_spool_dir }}"
+      tags: [pg_backup]
+
+    - name: Configure backup S3 bucket
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_pg_backup_env_file }}"
+        regexp: "^PG_BACKUP_BUCKET="
+        line: "PG_BACKUP_BUCKET={{ bfp_pg_backup_bucket }}"
+        mode: "0600"
+      when: bfp_pg_backup_bucket is defined
+      tags: [pg_backup]
+
+    - name: Configure backup access key ID
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_pg_backup_env_file }}"
+        regexp: "^AWS_ACCESS_KEY_ID="
+        line: "AWS_ACCESS_KEY_ID={{ bfp_pg_backup_access_key_id }}"
+        mode: "0600"
+      when: bfp_pg_backup_access_key_id is defined
+      no_log: true
+      tags: [pg_backup]
+
+    - name: Configure backup secret access key
+      ansible.builtin.lineinfile:
+        path: "{{ bfp_pg_backup_env_file }}"
+        regexp: "^AWS_SECRET_ACCESS_KEY="
+        line: "AWS_SECRET_ACCESS_KEY={{ bfp_pg_backup_secret_access_key }}"
+        mode: "0600"
+      when: bfp_pg_backup_secret_access_key is defined
+      no_log: true
+      tags: [pg_backup]
+
+    - name: Install backup service unit
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/bfp-pg-backup.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=BFP Postgres dump to S3
+          Wants=docker.service
+          After=docker.service
+
+          [Service]
+          Type=oneshot
+          EnvironmentFile={{ bfp_pg_backup_env_file }}
+          ExecStart={{ bfp_app_path }}/scripts/backup/pg_backup_to_s3.sh
+      tags: [pg_backup]
+
+    - name: Install backup timer unit
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/bfp-pg-backup.timer
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Daily BFP Postgres dump to S3
+
+          [Timer]
+          OnCalendar={{ bfp_pg_backup_schedule }}
+          RandomizedDelaySec=600
+          Persistent=true
+
+          [Install]
+          WantedBy=timers.target
+      tags: [pg_backup]
+
+    - name: Enable backup timer
+      ansible.builtin.systemd_service:
+        name: bfp-pg-backup.timer
+        enabled: true
+        state: started
+        daemon_reload: true
+      tags: [pg_backup]
