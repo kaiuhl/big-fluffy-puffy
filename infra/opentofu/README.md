@@ -8,10 +8,13 @@ Current resources:
 - Least-privilege `bedrock:InvokeModel` policy for the configured primary parser model and configured escalation parser model.
 - Scoped AWS Marketplace subscribe/view permissions for the Haiku 4.5 Bedrock product, only when called through Bedrock for first-use model enablement.
 - Explicit deny for every other Bedrock model invocation.
+- The production Lightsail instance `bfp-web-1` (imported from the manually
+  created instance, not recreated), with daily automatic snapshots at
+  10:00 UTC via the `AutoSnapshot` add-on. `prevent_destroy` blocks any
+  plan that would replace the box.
 
 Planned resources:
 
-- Lightsail 2 GB Linux instance in `us-west-2`
 - static IPv4 attached to the instance
 - Route 53 hosted zones for BFP domains
 - S3 bucket for encrypted Postgres dumps
@@ -36,7 +39,7 @@ tofu plan
 tofu apply
 ```
 
-The AWS provider is pinned to `aws_account_id`, so OpenTofu will refuse to apply if your active AWS credentials point at a different account. This should be the AWS account that owns the repo-managed Bedrock parser credentials; it does not have to be the same account that currently owns the manually created Lightsail instance.
+The AWS provider is pinned to `aws_account_id`, so OpenTofu will refuse to apply if your active AWS credentials point at a different account. This must be the AWS account that owns both the repo-managed Bedrock parser credentials and the `bfp-web-1` Lightsail instance.
 
 ## Production App Credentials
 
