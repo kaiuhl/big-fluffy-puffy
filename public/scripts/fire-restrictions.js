@@ -1,5 +1,6 @@
 (function () {
   var DEFAULT_FIT_MAX_ZOOM = 8;
+  var SHAPE_POPUP_DELAY = 220;
 
   function normalize(value) {
     return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -334,23 +335,6 @@
     ).addTo(map);
   }
 
-  function isInteractiveMapShape(target, container) {
-    if (!target || target === container || typeof target.closest !== "function") return false;
-
-    var interactiveTarget = target.closest(".leaflet-interactive");
-
-    return !!(interactiveTarget && container.contains(interactiveTarget));
-  }
-
-  function enableShapeDoubleClickZoom(map, container) {
-    container.addEventListener("dblclick", function (event) {
-      if (!isInteractiveMapShape(event.target, container)) return;
-
-      L.DomEvent.stop(event);
-      zoomMapAround(map, map.mouseEventToLatLng(event), event);
-    }, true);
-  }
-
   function zoomMapAround(map, latlng, originalEvent) {
     var zoomDelta = map.options.zoomDelta || 1;
     var nextZoom = map.getZoom() + (originalEvent && originalEvent.shiftKey ? -zoomDelta : zoomDelta);
@@ -423,31 +407,48 @@
     new ResizeControl().addTo(map);
   }
 
-  function shapeRepeatedClickZoomHandler(map) {
-    var lastClick = null;
+  function isMarkerLayer(layer) {
+    return !!layer && typeof layer.getLatLng === "function";
+  }
 
-    return function (event) {
-      var originalEvent = event.originalEvent || {};
-      var point = event.containerPoint;
-      var now = Date.now();
-      var repeatedClick = originalEvent.detail > 1;
+  function shapePopupLatLng(event) {
+    return isMarkerLayer(event.target) ? event.target.getLatLng() : event.latlng;
+  }
 
-      if (!repeatedClick && lastClick && point && lastClick.point) {
-        repeatedClick = now - lastClick.time < 450 && point.distanceTo(lastClick.point) < 12;
+  function shapePopupOptions(event) {
+    return isMarkerLayer(event.target) ? {offset: [0, -12]} : {};
+  }
+
+  // Leaflet stops click and dblclick on an interactive layer before the map's own
+  // double-click zoom sees them, so double clicking a shape used to only open its
+  // popup. Hold the popup for one double-click window: a single click still reads
+  // as immediate, and a double click zooms the way it does over open map.
+  function shapeClickIntent(map) {
+    var pendingPopup = null;
+
+    function cancelPendingPopup() {
+      if (pendingPopup === null) return;
+
+      clearTimeout(pendingPopup);
+      pendingPopup = null;
+    }
+
+    return {
+      click: function (event, content) {
+        var latlng = shapePopupLatLng(event);
+        var options = shapePopupOptions(event);
+
+        cancelPendingPopup();
+        pendingPopup = setTimeout(function () {
+          pendingPopup = null;
+          L.popup(options).setLatLng(latlng).setContent(content).openOn(map);
+        }, SHAPE_POPUP_DELAY);
+      },
+      dblclick: function (event) {
+        cancelPendingPopup();
+        map.closePopup();
+        zoomMapAround(map, event.latlng, event.originalEvent);
       }
-
-      lastClick = {
-        point: point,
-        time: now
-      };
-
-      if (!repeatedClick) return;
-
-      lastClick = null;
-      if (event.originalEvent && L.DomEvent) {
-        L.DomEvent.stop(event.originalEvent);
-      }
-      zoomMapAround(map, event.latlng, originalEvent);
     };
   }
 
@@ -471,7 +472,6 @@
     }).setView([43.9, -121.9], 6);
     var zoomOffset = fitZoomOffset(container.dataset.mapFitZoomOffset);
 
-    enableShapeDoubleClickZoom(map, container);
     addBaseMap(map, container.dataset.mapBasemap);
     addMapResizeControl(map, container);
 
@@ -492,7 +492,7 @@
         addOutsideBoundaryMask(map, features);
 
         var boundsLayer = L.geoJSON(data);
-        var shapeClickZoom = shapeRepeatedClickZoomHandler(map);
+        var clickIntent = shapeClickIntent(map);
         var layer = L.geoJSON(data, {
           filter: function (feature) {
             return !isBoundaryFeature(feature);
@@ -512,7 +512,8 @@
             });
           },
           onEachFeature: function (feature, featureLayer) {
-            featureLayer.bindPopup(popupContent(feature.properties || {}));
+            var content = popupContent(feature.properties || {});
+
             featureLayer.on({
               mouseover: function () {
                 featureLayer.setStyle({
@@ -524,7 +525,10 @@
                 layer.resetStyle(featureLayer);
               },
               click: function (event) {
-                shapeClickZoom(event);
+                clickIntent.click(event, content);
+              },
+              dblclick: function (event) {
+                clickIntent.dblclick(event);
               }
             });
           }
