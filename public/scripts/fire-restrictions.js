@@ -1,6 +1,7 @@
 (function () {
   var DEFAULT_FIT_MAX_ZOOM = 8;
   var SHAPE_POPUP_DELAY = 220;
+  var SHAPE_POPUP_DBLCLICK_GRACE = 700;
 
   function normalize(value) {
     return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -423,8 +424,9 @@
   // double-click zoom sees them, so double clicking a shape used to only open its
   // popup. Hold the popup for one double-click window: a single click still reads
   // as immediate, and a double click zooms the way it does over open map.
-  function shapeClickIntent(map) {
+  function shapeClickIntent(map, container) {
     var pendingPopup = null;
+    var openedPopup = null;
 
     function cancelPendingPopup() {
       if (pendingPopup === null) return;
@@ -432,6 +434,24 @@
       clearTimeout(pendingPopup);
       pendingPopup = null;
     }
+
+    // A slow double click lands its second click on the popup the first click
+    // just opened under the cursor (opening can also auto-pan the map), and the
+    // popup swallows the dblclick before the shape or map sees it. Popups only
+    // stop propagation at the bubble phase, so catch the dblclick in the
+    // capture phase on the container and zoom anyway while the popup is fresh.
+    container.addEventListener("dblclick", function (event) {
+      var onPopup = event.target && typeof event.target.closest === "function" &&
+        event.target.closest(".leaflet-popup");
+
+      if (!onPopup || !openedPopup) return;
+      if (Date.now() - openedPopup.time > SHAPE_POPUP_DBLCLICK_GRACE) return;
+
+      L.DomEvent.stop(event);
+      map.closePopup();
+      zoomMapAround(map, openedPopup.latlng, event);
+      openedPopup = null;
+    }, true);
 
     return {
       click: function (event, content) {
@@ -441,6 +461,10 @@
         cancelPendingPopup();
         pendingPopup = setTimeout(function () {
           pendingPopup = null;
+          openedPopup = {
+            latlng: latlng,
+            time: Date.now()
+          };
           L.popup(options).setLatLng(latlng).setContent(content).openOn(map);
         }, SHAPE_POPUP_DELAY);
       },
@@ -492,7 +516,7 @@
         addOutsideBoundaryMask(map, features);
 
         var boundsLayer = L.geoJSON(data);
-        var clickIntent = shapeClickIntent(map);
+        var clickIntent = shapeClickIntent(map, container);
         var layer = L.geoJSON(data, {
           filter: function (feature) {
             return !isBoundaryFeature(feature);
@@ -516,6 +540,8 @@
 
             featureLayer.on({
               mouseover: function () {
+                if (typeof featureLayer.setStyle !== "function") return;
+
                 featureLayer.setStyle({
                   fillOpacity: 0.72,
                   weight: 3

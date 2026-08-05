@@ -204,7 +204,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('href="/styles/site.css?v=20260719-wildfire-tone-1"')
     expect(last_response.body).to include('src="/vendor/leaflet/leaflet.js"')
     expect(last_response.body).to include('src="/scripts/place-search.js?v=20260630-unified-search-1"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260719-wildfire-inciweb-1"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260805-map-dblclick-zoom-1"')
     expect(last_response.body).to include("Source-linked, not official")
     expect(last_response.body).to include("Big Fluffy Puffy is not a government agency")
     expect(last_response.body).to include("Unknown means BFP has not published a claim yet")
@@ -677,7 +677,7 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include('data-map-focus-lat="45.35"')
     expect(last_response.body).to include('data-map-focus-zoom="10"')
     expect(last_response.body).to include('data-map-total-restrictions="2"')
-    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260719-wildfire-inciweb-1"')
+    expect(last_response.body).to include('src="/scripts/fire-restrictions.js?v=20260805-map-dblclick-zoom-1"')
   end
 
   it "renders a trip check page when no wildfire context is present" do
@@ -837,6 +837,8 @@ RSpec.describe RodaApp do
     expect(last_response.body).to include("clickIntent.dblclick(event)")
     expect(last_response.body).to include("zoomMapAround(map, event.latlng, event.originalEvent)")
     expect(last_response.body).to include("SHAPE_POPUP_DELAY")
+    expect(last_response.body).to include("SHAPE_POPUP_DBLCLICK_GRACE")
+    expect(last_response.body).to include('event.target.closest(".leaflet-popup")')
     expect(last_response.body).to include("clickIntent.click(event, content)")
     expect(last_response.body).not_to include("enableShapeDoubleClickZoom")
     expect(last_response.body).not_to include("shapeRepeatedClickZoomHandler")
